@@ -9,7 +9,6 @@ export const HERO_SOURCE = '/images/hero/sources';
 
 export interface CompositionLayer {
   src: string;
-  /** clip-path polygon or tailwind clip class */
   clip: string;
   className: string;
   objectPosition?: string;
@@ -21,7 +20,6 @@ export interface FloatingMetric {
   value: string;
   sub?: string;
   className: string;
-  delay?: number;
 }
 
 export interface HeroCompositionConfig {
@@ -31,105 +29,92 @@ export interface HeroCompositionConfig {
   alt: string;
   description: string;
   gradient: string;
-  ambient: string;
   layers: CompositionLayer[];
   metrics: FloatingMetric[];
   accentLine: 'cyan' | 'orange' | 'gold' | 'mixed';
 }
 
+/**
+ * Parejas elegidas por compatibilidad de color y módulo:
+ * 1. Informes (azul claro) + Indicadores (dark azul) — finanzas
+ * 2. Cocina + Mesas (naranja) — operación salón
+ * 3. Almacenes + Panel en vivo (dark/gold) — stock y KPIs
+ * 4. Informes + QR mesa — ventas digitales / comprobantes
+ * 5. Panel en vivo + Indicadores — vista más completa (2 capas)
+ */
 export const HERO_COMPOSITIONS: HeroCompositionConfig[] = [
   {
     id: 'ventas-reportes',
     title: 'Ventas y reportes',
     caption: 'Resto-FADEY — Ventas y reportes',
-    alt: 'Panel de ventas, caja POS, KPIs y gráficos financieros — Resto Fadey',
+    alt: 'Informes de ventas e indicadores financieros — Resto Fadey',
     description:
-      'Caja POS, informes de ventas, IGV y gráficos por hora en un solo centro financiero.',
-    gradient: 'from-brand-blue/25 via-brand-cyan/15 to-brand-deep/40',
-    ambient: 'from-brand-blue/40 via-brand-cyan/25 to-transparent',
+      'Informes de caja, IGV y gráficos junto al centro de indicadores en tiempo real.',
+    gradient: 'from-brand-deep/80 via-brand-navy/60 to-brand-deep/90',
     accentLine: 'cyan',
     layers: [
       {
-        src: `${HERO_SOURCE}/s05-informes-azul.png`,
-        clip: 'polygon(0 0, 100% 0, 100% 58%, 0 100%)',
-        className: 'absolute inset-0 z-[1] scale-[1.08] origin-top-left',
+        src: `${HERO_SOURCE}/s03-informes-azul.png`,
+        clip: 'polygon(0 0, 62% 0, 56% 100%, 0 100%)',
+        className: 'absolute inset-0 z-[1] scale-[1.02] origin-top-left',
         objectPosition: 'top left',
         priority: true,
       },
       {
-        src: `${HERO_SOURCE}/s03-indicadores-dark.png`,
-        clip: 'polygon(38% 42%, 100% 28%, 100% 100%, 0 100%)',
-        className: 'absolute inset-0 z-[2] scale-[1.12] origin-bottom-right',
+        src: `${HERO_SOURCE}/s05-indicadores.png`,
+        clip: 'polygon(44% 0, 100% 0, 100% 100%, 38% 100%)',
+        className: 'absolute inset-0 z-[2] scale-[1.02] origin-top-right shadow-[-12px_0_40px_rgba(0,0,0,0.45)]',
         objectPosition: 'top right',
       },
     ],
     metrics: [
       {
         label: 'Ventas hoy',
-        value: 'S/ 12,480',
-        sub: '+18% vs ayer',
-        className: 'left-[4%] top-[6%] border-brand-cyan/40 bg-brand-deep/80 text-brand-cyan',
-        delay: 0,
+        value: 'S/ 8,420',
+        sub: '+14%',
+        className: 'left-[5%] top-[7%] border-brand-cyan/35 bg-brand-deep/90 text-brand-cyan',
       },
       {
         label: 'Pedidos',
-        value: '156',
-        className: 'right-[5%] top-[12%] border-white/20 bg-white/10 text-white',
-        delay: 0.2,
-      },
-      {
-        label: 'IGV',
-        value: 'S/ 2,246',
-        className: 'left-[8%] bottom-[14%] border-brand-gold/35 bg-brand-gold/10 text-brand-gold-light',
-        delay: 0.4,
+        value: '127',
+        className: 'right-[5%] bottom-[10%] border-white/15 bg-black/55 text-white',
       },
     ],
   },
   {
     id: 'cocina-delivery',
-    title: 'Cocina y delivery',
-    caption: 'Resto-FADEY — Cocina y delivery',
-    alt: 'Panel de cocina, comandas, mesas y pedidos delivery activos — Resto Fadey',
+    title: 'Cocina y salón',
+    caption: 'Resto-FADEY — Cocina y mesas',
+    alt: 'Panel de cocina y mapa de mesas con pedidos — Resto Fadey',
     description:
-      'Comandas en tiempo real, estados de cocina y reparto conectados al salón.',
-    gradient: 'from-orange-500/20 via-brand-charcoal/30 to-brand-darker/50',
-    ambient: 'from-orange-500/35 via-brand-gold/15 to-transparent',
+      'Comandas en cocina conectadas al mapa de mesas y cobro en salón.',
+    gradient: 'from-[#1a1310]/95 via-[#120e0c]/90 to-[#0a0808]/95',
     accentLine: 'orange',
     layers: [
       {
         src: `${HERO_SOURCE}/s07-cocina.png`,
-        clip: 'polygon(0 0, 72% 0, 58% 100%, 0 100%)',
-        className: 'absolute inset-0 z-[1] scale-[1.1] origin-left',
+        clip: 'polygon(0 0, 58% 0, 52% 100%, 0 100%)',
+        className: 'absolute inset-0 z-[1] scale-[1.03] origin-left',
         objectPosition: 'left top',
         priority: true,
       },
       {
-        src: `${HERO_SOURCE}/s02-mesas-orange.png`,
-        clip: 'polygon(48% 8%, 100% 0, 100% 100%, 32% 100%)',
-        className: 'absolute inset-0 z-[2] scale-[1.06] origin-right',
+        src: `${HERO_SOURCE}/s06-mesas-naranja.png`,
+        clip: 'polygon(46% 0, 100% 0, 100% 100%, 40% 100%)',
+        className: 'absolute inset-0 z-[2] scale-[1.02] origin-right shadow-[-10px_0_32px_rgba(0,0,0,0.5)]',
         objectPosition: 'right top',
       },
     ],
     metrics: [
       {
         label: 'En cocina',
-        value: '8',
-        sub: '3 listos',
-        className: 'right-[6%] top-[8%] border-orange-400/50 bg-orange-500/15 text-orange-200',
-        delay: 0,
+        value: '6 pedidos',
+        className: 'left-[5%] top-[8%] border-orange-400/40 bg-black/50 text-orange-100',
       },
       {
-        label: 'Delivery',
-        value: '5 activos',
-        className: 'left-[5%] bottom-[18%] border-emerald-400/40 bg-emerald-500/10 text-emerald-200',
-        delay: 0.25,
-      },
-      {
-        label: 'Mesas',
-        value: '12',
-        sub: 'con pedido',
-        className: 'right-[8%] bottom-[10%] border-white/25 bg-black/40 text-white',
-        delay: 0.5,
+        label: 'Mesas activas',
+        value: '9',
+        className: 'right-[5%] bottom-[9%] border-orange-400/35 bg-orange-950/60 text-orange-50',
       },
     ],
   },
@@ -137,157 +122,111 @@ export const HERO_COMPOSITIONS: HeroCompositionConfig[] = [
     id: 'inventario-almacenes',
     title: 'Inventario y almacenes',
     caption: 'Resto-FADEY — Inventario',
-    alt: 'Control de stock, almacenes, alertas y valor de inventario — Resto Fadey',
+    alt: 'Almacenes, stock y panel operativo con alertas — Resto Fadey',
     description:
-      'Almacenes vinculados, kardex, stock crítico y valoración en tiempo real.',
-    gradient: 'from-brand-blue/20 via-brand-gold/15 to-brand-deep/45',
-    ambient: 'from-brand-gold/30 via-brand-blue/20 to-transparent',
+      'Control de almacenes, valor de inventario y alertas desde el panel en vivo.',
+    gradient: 'from-brand-darker/95 via-brand-charcoal/40 to-brand-darker/95',
     accentLine: 'gold',
     layers: [
       {
         src: `${HERO_SOURCE}/s04-almacenes.png`,
-        clip: 'polygon(0 0, 100% 0, 100% 52%, 18% 100%, 0 78%)',
-        className: 'absolute inset-0 z-[1] scale-[1.07] origin-top',
+        clip: 'polygon(0 0, 60% 0, 54% 100%, 0 100%)',
+        className: 'absolute inset-0 z-[1] scale-[1.02] origin-top',
         objectPosition: 'top center',
         priority: true,
       },
       {
-        src: `${HERO_SOURCE}/s01-dashboard-operativo.png`,
-        clip: 'polygon(55% 45%, 100% 38%, 100% 100%, 22% 100%)',
-        className: 'absolute inset-0 z-[2] scale-[1.14] origin-bottom-right',
+        src: `${HERO_SOURCE}/s01-panel-vivo.png`,
+        clip: 'polygon(42% 0, 100% 0, 100% 100%, 36% 100%)',
+        className: 'absolute inset-0 z-[2] scale-[1.03] origin-top-right shadow-[-10px_0_36px_rgba(0,0,0,0.55)]',
         objectPosition: 'top left',
       },
     ],
     metrics: [
       {
         label: 'Valor inventario',
-        value: 'S/ 48,200',
-        className: 'right-[4%] top-[10%] border-emerald-400/45 bg-emerald-500/15 text-emerald-200',
-        delay: 0,
+        value: 'S/ 32,800',
+        className: 'right-[5%] top-[8%] border-emerald-400/35 bg-black/55 text-emerald-200',
       },
       {
         label: 'Stock bajo',
-        value: '3 alertas',
-        className: 'left-[6%] top-[14%] border-brand-cyan/40 bg-brand-deep/75 text-brand-cyan',
-        delay: 0.2,
-      },
-      {
-        label: 'Almacenes',
-        value: '2 activos',
-        className: 'left-[10%] bottom-[12%] border-brand-gold/40 bg-brand-gold/15 text-brand-gold-light',
-        delay: 0.45,
+        value: '4 ítems',
+        className: 'left-[5%] bottom-[9%] border-brand-gold/35 bg-brand-gold/10 text-brand-gold-light',
       },
     ],
   },
   {
     id: 'facturacion-sunat',
-    title: 'Facturación SUNAT',
-    caption: 'Resto-FADEY — Facturación electrónica',
-    alt: 'Facturación electrónica, comprobantes SUNAT y QR de mesa — Resto Fadey',
+    title: 'Ventas digitales',
+    caption: 'Resto-FADEY — QR y reportes',
+    alt: 'Informes de ventas y pedido por QR en mesa — Resto Fadey',
     description:
-      'Emisión electrónica, comprobantes legales y pedidos digitales por QR.',
-    gradient: 'from-brand-gold/25 via-brand-charcoal/35 to-brand-darker/55',
-    ambient: 'from-brand-gold/35 via-brand-cyan/10 to-transparent',
-    accentLine: 'gold',
+      'Reportes financieros integrados con carta digital y pedido por QR en mesa.',
+    gradient: 'from-brand-deep/90 via-brand-navy/70 to-brand-deep/90',
+    accentLine: 'cyan',
     layers: [
       {
-        src: `${HERO_SOURCE}/s03-indicadores-dark.png`,
-        clip: 'polygon(0 0, 100% 0, 100% 62%, 42% 100%, 0 88%)',
-        className: 'absolute inset-0 z-[1] scale-[1.1] origin-top-right',
-        objectPosition: 'top right',
+        src: `${HERO_SOURCE}/s03-informes-azul.png`,
+        clip: 'polygon(0 0, 68% 0, 62% 100%, 0 100%)',
+        className: 'absolute inset-0 z-[1] scale-[1.02] origin-top-left',
+        objectPosition: 'top left',
         priority: true,
       },
       {
-        src: `${HERO_SOURCE}/s06-qr-mesa.png`,
-        clip: 'polygon(58% 12%, 100% 0, 100% 88%, 70% 100%, 48% 55%)',
-        className: 'absolute inset-0 z-[3] scale-[0.92] origin-center',
+        src: `${HERO_SOURCE}/s02-qr-mesa.png`,
+        clip: 'polygon(58% 8%, 100% 0, 100% 92%, 52% 100%)',
+        className: 'absolute inset-0 z-[2] scale-[0.98] origin-center shadow-[-8px_0_28px_rgba(0,0,0,0.35)]',
         objectPosition: 'center',
       },
     ],
     metrics: [
       {
-        label: 'SUNAT',
-        value: 'Conectado',
-        sub: 'Emisión OK',
-        className: 'left-[5%] top-[8%] border-emerald-400/45 bg-emerald-500/15 text-emerald-200',
-        delay: 0,
+        label: 'Caja',
+        value: 'Abierta',
+        className: 'left-[5%] top-[8%] border-emerald-400/35 bg-emerald-950/50 text-emerald-200',
       },
       {
-        label: 'Comprobantes',
-        value: '24 hoy',
-        className: 'right-[5%] bottom-[16%] border-brand-gold/45 bg-brand-gold/15 text-brand-gold-light',
-        delay: 0.3,
-      },
-      {
-        label: 'IGV',
-        value: 'S/ 2,246',
-        className: 'left-[8%] bottom-[10%] border-white/20 bg-black/50 text-white',
-        delay: 0.5,
+        label: 'QR mesas',
+        value: 'Activas',
+        className: 'right-[5%] bottom-[10%] border-brand-cyan/30 bg-white/95 text-emerald-800',
       },
     ],
   },
   {
     id: 'dashboard-general',
     title: 'Control total',
-    caption: 'Resto-FADEY — Panel premium',
-    alt: 'Dashboard integral con KPIs, ventas, cocina, delivery e indicadores — Resto Fadey',
+    caption: 'Resto-FADEY — Panel completo',
+    alt: 'Panel en vivo e indicadores del restaurante — Resto Fadey',
     description:
-      'El centro de mando: ventas, operaciones, inventario y analítica en una vista.',
-    gradient: 'from-brand-cyan/25 via-brand-gold/15 to-brand-blue/25',
-    ambient: 'from-brand-cyan/30 via-orange-500/20 to-brand-gold/25',
+      'Centro de mando con KPIs en vivo, ventas, cocina, delivery e inventario.',
+    gradient: 'from-brand-darker/95 via-brand-navy/50 to-brand-darker/95',
     accentLine: 'mixed',
     layers: [
       {
-        src: `${HERO_SOURCE}/s01-dashboard-operativo.png`,
-        clip: 'polygon(0 0, 100% 0, 100% 55%, 0 72%)',
-        className: 'absolute inset-0 z-[1] scale-[1.05] origin-top',
+        src: `${HERO_SOURCE}/s01-panel-vivo.png`,
+        clip: 'polygon(0 0, 58% 0, 52% 100%, 0 100%)',
+        className: 'absolute inset-0 z-[1] scale-[1.02] origin-top',
         objectPosition: 'top center',
         priority: true,
       },
       {
-        src: `${HERO_SOURCE}/s03-indicadores-dark.png`,
-        clip: 'polygon(52% 32%, 100% 22%, 100% 100%, 28% 100%)',
-        className: 'absolute inset-0 z-[2] scale-[1.08] origin-bottom-right',
+        src: `${HERO_SOURCE}/s05-indicadores.png`,
+        clip: 'polygon(44% 0, 100% 0, 100% 100%, 38% 100%)',
+        className: 'absolute inset-0 z-[2] scale-[1.02] origin-top-right shadow-[-12px_0_40px_rgba(0,0,0,0.5)]',
         objectPosition: 'top right',
-      },
-      {
-        src: `${HERO_SOURCE}/s07-cocina.png`,
-        clip: 'polygon(0 58%, 42% 48%, 38% 100%, 0 100%)',
-        className: 'absolute inset-0 z-[3] scale-[1.15] origin-bottom-left opacity-95',
-        objectPosition: 'left center',
-      },
-      {
-        src: `${HERO_SOURCE}/s02-mesas-orange.png`,
-        clip: 'polygon(68% 0, 100% 12%, 100% 48%, 78% 42%)',
-        className: 'absolute inset-0 z-[4] scale-[0.88] origin-top-right',
-        objectPosition: 'right top',
       },
     ],
     metrics: [
       {
         label: 'Ventas período',
-        value: 'S/ 186K',
-        sub: '+12%',
-        className: 'left-[3%] top-[5%] border-brand-cyan/45 bg-brand-deep/85 text-brand-cyan',
-        delay: 0,
-      },
-      {
-        label: 'Pedidos activos',
-        value: '23',
-        className: 'right-[4%] top-[6%] border-orange-400/45 bg-orange-500/15 text-orange-100',
-        delay: 0.15,
+        value: 'S/ 124K',
+        sub: '+11%',
+        className: 'left-[4%] top-[6%] border-brand-cyan/40 bg-brand-deep/90 text-brand-cyan',
       },
       {
         label: 'Caja',
         value: 'Abierta',
-        className: 'left-[6%] bottom-[8%] border-emerald-400/40 bg-emerald-500/10 text-emerald-200',
-        delay: 0.3,
-      },
-      {
-        label: 'Personal',
-        value: '8 en turno',
-        className: 'right-[6%] bottom-[6%] border-brand-gold/40 bg-brand-gold/15 text-brand-gold-light',
-        delay: 0.45,
+        className: 'right-[4%] bottom-[8%] border-brand-gold/35 bg-black/55 text-brand-gold-light',
       },
     ],
   },
