@@ -5,6 +5,7 @@
  */
 const platformUrl = process.env.NEXT_PUBLIC_PLATFORM_URL ?? 'http://localhost:3000';
 const apiSecret = process.env.API_SECRET_KEY ?? process.env.POS_API_KEY;
+/** Mismo ID que lib/demo.ts y seed Supabase */
 const clientId = process.env.DEMO_CLIENT_ID ?? 'b0000001-0000-4000-8000-000000000001';
 
 if (!apiSecret) {

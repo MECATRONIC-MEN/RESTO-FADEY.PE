@@ -47,9 +47,9 @@ export async function getFinancialStats(): Promise<FinancialStats> {
       const d = new Date(c.createdAt);
       return d.getMonth() === now.getMonth();
     }).length,
-    churnRate: 4.2,
-    renewalRate: 91.5,
-    activeUsers: clients.length * 3,
+    churnRate: 0,
+    renewalRate: clients.length ? 100 : 0,
+    activeUsers: clients.length,
     revenueByMonth,
     planDistribution: Array.from(planCounts.entries()).map(([plan, count]) => ({ plan, count })),
   };

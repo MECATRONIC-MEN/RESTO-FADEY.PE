@@ -4,9 +4,23 @@ import {
   getPaymentById as mockGetById,
   updatePaymentStatus as mockUpdate,
 } from '@/lib/domain/mock-store';
+import { DEMO_CLIENT_ID } from '@/lib/demo';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { PaymentRecord, PaymentStatus, PosPaymentPayload } from '@/lib/domain/types';
+
+async function resolveClientIdForPayment(requestedId: string): Promise<string> {
+  const db = getSupabaseAdmin()!;
+  const { data: match } = await db.from('clients').select('id').eq('id', requestedId).maybeSingle();
+  if (match?.id) return match.id as string;
+
+  const { data: demo } = await db.from('clients').select('id').eq('id', DEMO_CLIENT_ID).maybeSingle();
+  if (demo?.id) return DEMO_CLIENT_ID;
+
+  throw new Error(
+    `clientId no registrado (${requestedId}). Use ${DEMO_CLIENT_ID} para el cliente demo.`
+  );
+}
 
 function mapPayment(row: Record<string, unknown>): PaymentRecord {
   return {
@@ -66,19 +80,20 @@ export async function createPaymentFromPos(payload: PosPaymentPayload): Promise<
   }
 
   const db = getSupabaseAdmin()!;
+  const clientId = await resolveClientIdForPayment(payload.clientId);
 
   let clientName = restaurantName ?? 'Cliente';
   const { data: client } = await db
     .from('clients')
     .select('business_name')
-    .eq('id', payload.clientId)
+    .eq('id', clientId)
     .maybeSingle();
   if (client?.business_name) clientName = client.business_name;
 
   const { data, error } = await db
     .from('payments')
     .insert({
-      client_id: payload.clientId,
+      client_id: clientId,
       client_name: clientName,
       restaurant_name: restaurantName ?? clientName,
       amount: payload.amount,

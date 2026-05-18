@@ -1,8 +1,8 @@
 import type { AppUser } from './types';
+import { DEMO_CLIENT_ID, DEMO_BUSINESS_NAME, DEMO_CLIENT_EMAIL } from '@/lib/demo';
 
 /**
- * Usuarios creados manualmente por el administrador maestro.
- * En producción: migrar a base de datos / API interna.
+ * Usuarios demo — en producción con Supabase usar seed 002.
  */
 export const USERS: AppUser[] = [
   {
@@ -11,19 +11,20 @@ export const USERS: AppUser[] = [
     passwordHash: '$2b$10$ZDhAIVgqbjWZ5ln2b5t9ze7/u5x8ywGWtopz7SqiJctUO/ckJA1hK',
     name: 'Administrador Maestro',
     role: 'master_admin',
+    clientId: null,
     restaurant: null,
     plan: null,
   },
   {
     id: 'usr_cliente_001',
-    email: 'cliente@restofadey.pe',
+    email: DEMO_CLIENT_EMAIL,
     passwordHash: '$2b$10$FBhxRxnX.k/O0nAlwKh3I.2apfZU4yoBPb0PFx2GLjp9m1PnJxBhe',
     name: 'Restaurante Demo',
     role: 'cliente',
-    restaurant: 'La Cevichería Fadey',
+    clientId: DEMO_CLIENT_ID,
+    restaurant: DEMO_BUSINESS_NAME,
     plan: 'Premium',
   },
-  
 ];
 
 export function findUserByEmail(email: string): AppUser | undefined {

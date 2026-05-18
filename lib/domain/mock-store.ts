@@ -7,67 +7,10 @@ import type {
   PaymentStatus,
   PosPaymentPayload,
 } from './types';
+import { DEMO_CLIENT_ID, DEMO_BUSINESS_NAME, DEMO_CLIENT_EMAIL } from '@/lib/demo';
 
-/** Store en memoria — reemplazar por Supabase/PostgreSQL */
-let payments: PaymentRecord[] = [
-  {
-    id: 'pay_001',
-    clientId: 'cli_001',
-    clientName: 'La Cevichería Fadey',
-    amount: 299,
-    currency: 'PEN',
-    method: 'yape',
-    status: 'pending',
-    voucherUrl: '/images/dashboard-panel.png',
-    reference: 'YAPE-88421',
-    period: 'May 2026',
-    submittedAt: '2026-05-17T14:30:00Z',
-    source: 'pos',
-  },
-  {
-    id: 'pay_002',
-    clientId: 'cli_002',
-    clientName: 'Pollería El Dorado',
-    amount: 200,
-    currency: 'PEN',
-    method: 'transferencia',
-    status: 'approved',
-    voucherUrl: '/images/dashboard-ventas.png',
-    reference: 'BCP-992011',
-    period: 'May 2026',
-    submittedAt: '2026-05-15T10:00:00Z',
-    reviewedAt: '2026-05-15T11:20:00Z',
-    reviewedBy: 'admin@restofadey.pe',
-    source: 'pos',
-  },
-  {
-    id: 'pay_003',
-    clientId: 'cli_003',
-    clientName: 'Café Lima Centro',
-    amount: 150,
-    currency: 'PEN',
-    method: 'plin',
-    status: 'pending',
-    reference: 'PLIN-44102',
-    period: 'May 2026',
-    submittedAt: '2026-05-16T18:45:00Z',
-    source: 'pos',
-  },
-  {
-    id: 'pay_004',
-    clientId: 'cli_004',
-    clientName: 'Pizza Nova Miraflores',
-    amount: 299,
-    currency: 'PEN',
-    method: 'transferencia',
-    status: 'rejected',
-    period: 'Abr 2026',
-    submittedAt: '2026-04-28T09:00:00Z',
-    reviewedAt: '2026-04-28T15:00:00Z',
-    notes: 'Voucher ilegible',
-    source: 'manual',
-  },
-];
+/** Pagos en memoria (solo desarrollo sin Supabase; en Vercel usar Supabase) */
+let payments: PaymentRecord[] = [];
 
 export const MOCK_PLANS: SaasPlan[] = [
   {
@@ -97,71 +40,41 @@ export const MOCK_PLANS: SaasPlan[] = [
   },
 ];
 
+/** Un solo cliente demo vinculado a cliente@restofadey.pe */
 export const MOCK_CLIENTS: SaasClient[] = [
   {
-    id: 'cli_001',
-    businessName: 'La Cevichería Fadey',
+    id: DEMO_CLIENT_ID,
+    businessName: DEMO_BUSINESS_NAME,
     ruc: '20123456789',
-    contactName: 'Carlos Mendoza',
-    email: 'cliente@restofadey.pe',
+    contactName: 'Restaurante Demo',
+    email: DEMO_CLIENT_EMAIL,
     phone: '+51 935 968 198',
     planId: 'plan_premium',
-    licenseId: 'lic_001',
+    licenseId: 'lic_demo_001',
     licenseStatus: 'activo',
-    createdAt: '2025-11-01T00:00:00Z',
-    lastActivityAt: '2026-05-17T12:00:00Z',
-    posDeviceId: 'POS-FADEY-001',
-  },
-  {
-    id: 'cli_002',
-    businessName: 'Pollería El Dorado',
-    contactName: 'María Ríos',
-    email: 'maria@eldorado.pe',
-    phone: '+51 999 111 222',
-    planId: 'plan_pro',
-    licenseId: 'lic_002',
-    licenseStatus: 'activo',
-    createdAt: '2026-01-15T00:00:00Z',
-    lastActivityAt: '2026-05-16T08:00:00Z',
-  },
-  {
-    id: 'cli_003',
-    businessName: 'Café Lima Centro',
-    contactName: 'Roberto Vargas',
-    email: 'roberto@cafelima.pe',
-    phone: '+51 988 333 444',
-    planId: 'plan_basico',
-    licenseId: 'lic_003',
-    licenseStatus: 'prueba',
-    createdAt: '2026-04-01T00:00:00Z',
-    lastActivityAt: '2026-05-14T20:00:00Z',
-  },
-  {
-    id: 'cli_004',
-    businessName: 'Pizza Nova Miraflores',
-    contactName: 'Ana Torres',
-    email: 'ana@pizzanova.pe',
-    phone: '+51 977 555 666',
-    planId: 'plan_premium',
-    licenseId: 'lic_004',
-    licenseStatus: 'vencido',
-    createdAt: '2025-06-01T00:00:00Z',
-    lastActivityAt: '2026-04-20T10:00:00Z',
+    createdAt: new Date().toISOString(),
+    lastActivityAt: new Date().toISOString(),
+    posDeviceId: 'POS-FADEY-DEMO',
   },
 ];
 
-export const MOCK_LICENSES: License[] = MOCK_CLIENTS.map((c) => ({
-  id: c.licenseId,
-  clientId: c.id,
-  planId: c.planId,
-  status: c.licenseStatus,
-  licenseKey: `RF-${c.id.toUpperCase().slice(-6)}-2026`,
-  expiresAt:
-    c.licenseStatus === 'vencido' ? '2026-04-01T00:00:00Z' : '2026-12-31T23:59:59Z',
-  modulesEnabled:
-    MOCK_PLANS.find((p) => p.id === c.planId)?.modules ?? [],
-  createdAt: c.createdAt,
-}));
+export const MOCK_LICENSES: License[] = [
+  {
+    id: 'lic_demo_001',
+    clientId: DEMO_CLIENT_ID,
+    planId: 'plan_premium',
+    status: 'activo',
+    licenseKey: 'RF-DEMO-2026',
+    expiresAt: '2026-12-31T23:59:59Z',
+    modulesEnabled: ['all'],
+    createdAt: new Date().toISOString(),
+  },
+];
+
+function resolveMockClientId(clientId: string): string {
+  const exists = MOCK_CLIENTS.some((c) => c.id === clientId);
+  return exists ? clientId : DEMO_CLIENT_ID;
+}
 
 export function getPayments(filters?: {
   status?: PaymentStatus;
@@ -206,24 +119,29 @@ export function updatePaymentStatus(
 }
 
 export function createPaymentFromPos(payload: PosPaymentPayload): PaymentRecord {
-  const client =
-    MOCK_CLIENTS.find((c) => c.id === payload.clientId) ??
-    MOCK_CLIENTS[0];
+  const clientId = resolveMockClientId(payload.clientId);
+  const client = MOCK_CLIENTS.find((c) => c.id === clientId)!;
+  const displayName =
+    payload.restaurantName ?? payload.businessName ?? client.businessName;
+
   const record: PaymentRecord = {
     id: `pay_${Date.now()}`,
-    clientId: payload.clientId,
-    clientName: payload.businessName ?? client.businessName,
+    clientId,
+    clientName: displayName,
     amount: payload.amount,
     currency: 'PEN',
     method: payload.method,
-    status: 'pending',
+    status: payload.paymentStatus ?? 'pending',
     voucherUrl: payload.voucherUrl,
     reference: payload.reference,
-    period: payload.period ?? new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' }),
-    submittedAt: payload.submittedAt ?? new Date().toISOString(),
+    period:
+      payload.period ??
+      new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' }),
+    submittedAt: payload.submittedAt ?? payload.createdAt ?? new Date().toISOString(),
     source: 'pos',
   };
   payments = [record, ...payments];
+  client.lastActivityAt = new Date().toISOString();
   return record;
 }
 
@@ -240,30 +158,36 @@ export function getFinancialStats(): FinancialStats {
     })
     .reduce((s, p) => s + p.amount, 0);
 
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
   const revenueByMonth = months.map((month, i) => ({
     month,
-    amount: Math.round(800 + i * 420 + Math.random() * 200),
+    amount: approved
+      .filter((p) => {
+        const d = new Date(p.submittedAt);
+        return d.getMonth() === i && d.getFullYear() === thisYear;
+      })
+      .reduce((s, p) => s + p.amount, 0),
   }));
 
+  const activeClients = MOCK_CLIENTS.filter((c) => c.licenseStatus === 'activo').length;
+  const premiumClients = MOCK_CLIENTS.filter((c) => c.planId === 'plan_premium').length;
+
   return {
-    totalRevenue: totalRevenue + 12450,
-    monthlyRevenue: monthlyRevenue || 2499,
-    yearlyRevenue: totalRevenue + 48200,
-    activeClients: MOCK_CLIENTS.filter((c) => c.licenseStatus === 'activo').length,
-    premiumClients: MOCK_CLIENTS.filter((c) => c.planId === 'plan_premium').length,
+    totalRevenue,
+    monthlyRevenue,
+    yearlyRevenue: totalRevenue,
+    activeClients,
+    premiumClients,
     pendingPayments: payments.filter((p) => p.status === 'pending').length,
     overdueClients: MOCK_CLIENTS.filter((c) => c.licenseStatus === 'vencido').length,
-    newClientsThisMonth: 2,
-    churnRate: 4.2,
-    renewalRate: 91.5,
-    activeUsers: 47,
+    newClientsThisMonth: 0,
+    churnRate: 0,
+    renewalRate: 0,
+    activeUsers: MOCK_CLIENTS.length,
     revenueByMonth,
-    planDistribution: [
-      { plan: 'Básico', count: 5 },
-      { plan: 'Pro', count: 8 },
-      { plan: 'Premium', count: 4 },
-    ],
+    planDistribution: premiumClients
+      ? [{ plan: 'Premium', count: premiumClients }]
+      : [],
   };
 }
 

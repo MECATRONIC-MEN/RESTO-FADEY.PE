@@ -8,7 +8,7 @@ INSERT INTO plans (id, slug, name, price_monthly, modules, limits, highlighted) 
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO clients (id, business_name, ruc, contact_name, email, phone, plan_id, pos_device_id) VALUES
-  ('b0000001-0000-4000-8000-000000000001', 'La Cevichería Fadey', '20123456789', 'Carlos Mendoza', 'cliente@restofadey.pe', '+51935968198',
+  ('b0000001-0000-4000-8000-000000000001', 'Restaurante Demo', '20123456789', 'Restaurante Demo', 'cliente@restofadey.pe', '+51935968198',
    'a0000001-0000-4000-8000-000000000003', 'POS-FADEY-001')
 ON CONFLICT (id) DO NOTHING;
 

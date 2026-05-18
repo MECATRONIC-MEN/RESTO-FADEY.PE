@@ -1,14 +1,18 @@
 'use client';
 
 import { useAdminApi } from '@/hooks/useAdminApi';
-import type { License } from '@/lib/domain/types';
-import { MOCK_CLIENTS, MOCK_PLANS } from '@/lib/domain/mock-store';
+import type { License, SaasClient, SaasPlan } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 
 export default function AdminLicenciasPage() {
   const { data: licenses, loading } = useAdminApi<License[]>('/api/licenses');
+  const { data: clients } = useAdminApi<SaasClient[]>('/api/users');
+  const { data: plans } = useAdminApi<SaasPlan[]>('/api/plans');
+
+  const clientById = new Map((clients ?? []).map((c) => [c.id, c]));
+  const planById = new Map((plans ?? []).map((p) => [p.id, p]));
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -35,10 +39,23 @@ export default function AdminLicenciasPage() {
                   Cargando…
                 </td>
               </tr>
+            ) : (licenses ?? []).length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-brand-mist">
+                  Sin licencias. Vincula el cliente demo en Supabase o aprueba un pago.
+                </td>
+              </tr>
             ) : (
               (licenses ?? []).map((lic) => {
-                const client = MOCK_CLIENTS.find((c) => c.id === lic.clientId);
-                const plan = MOCK_PLANS.find((p) => p.id === lic.planId);
+                const client = clientById.get(lic.clientId);
+                const plan = planById.get(lic.planId);
+                const planLabel =
+                  plan?.name ??
+                  (lic.planId.includes('premium')
+                    ? 'Premium'
+                    : lic.planId.includes('pro')
+                      ? 'Pro'
+                      : 'Básico');
                 return (
                   <tr key={lic.id} className="border-b border-white/5 hover:bg-white/5">
                     <td className="px-4 py-3 font-medium text-brand-soft">
@@ -49,7 +66,7 @@ export default function AdminLicenciasPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={plan?.highlighted ? 'badge-premium' : 'badge-tech'}>
-                        {plan?.name}
+                        {planLabel}
                       </span>
                     </td>
                     <td className="px-4 py-3">

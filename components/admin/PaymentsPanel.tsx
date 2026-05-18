@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { VoucherPreview } from './VoucherPreview';
 import { Check, X, Eye, RefreshCw } from 'lucide-react';
 import { useAdminApi, patchPayment } from '@/hooks/useAdminApi';
 import type { PaymentRecord } from '@/lib/domain/types';
@@ -168,15 +168,10 @@ export function PaymentsPanel() {
               {selected.reference && (
                 <p className="text-sm text-brand-mist">Ref: {selected.reference}</p>
               )}
-              {selected.voucherUrl && (
-                <div className="relative aspect-video overflow-hidden rounded-lg border border-white/10">
-                  <Image
-                    src={selected.voucherUrl}
-                    alt="Voucher"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+              {selected.voucherUrl ? (
+                <VoucherPreview url={selected.voucherUrl} />
+              ) : (
+                <p className="text-sm text-brand-slate">Sin comprobante adjunto</p>
               )}
               <StatusBadge status={selected.status} />
               {selected.status === 'pending' && (

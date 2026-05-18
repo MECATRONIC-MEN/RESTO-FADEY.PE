@@ -7,6 +7,7 @@ export interface AppUser {
   passwordHash: string;
   name: string;
   role: UserRole;
+  clientId?: string | null;
   restaurant?: string | null;
   plan?: string | null;
   /** Preparado: stripeCustomerId, licenseKey, companyId */

@@ -30,7 +30,7 @@ export default function AdminEntornoPage() {
         </DashboardCard>
         <DashboardCard title="Variables">
           <p className="text-sm text-brand-mist">
-            NEXT_PUBLIC_SUPABASE_URL, API_SECRET_KEY, JWT_SECRET — ver .env.example
+            Producción: Vercel → restofadey.pe. POS en Render: integración futura (API_SECRET_KEY).
           </p>
         </DashboardCard>
       </div>
