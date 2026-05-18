@@ -74,7 +74,7 @@ export function Features() {
           transition={{ delay: 0.5 }}
           className="mx-auto mt-12 max-w-2xl text-center text-sm text-brand-slate"
         >
-          <span className="text-brand-gold">+21 módulos</span> integrados · Actualizaciones
+          <span className="text-brand-gold">+20 módulos</span> integrados · Actualizaciones
           continuas · Diseñado para restaurantes que exigen más que un sistema básico
         </motion.p>
       </div>

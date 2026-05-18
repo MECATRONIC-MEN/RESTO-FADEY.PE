@@ -267,11 +267,11 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
         POS en vivo
       </motion.div>
       <motion.div
-        className="badge-premium pointer-events-none absolute bottom-[12%] right-[2%] z-20 hidden text-[10px] sm:inline-flex"
+        className="badge-tech pointer-events-none absolute bottom-[12%] right-[2%] z-20 hidden text-[10px] sm:inline-flex"
         animate={reducedMotion ? undefined : { y: [0, 5, 0] }}
         transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
       >
-        SUNAT
+        En la nube
       </motion.div>
     </div>
   );

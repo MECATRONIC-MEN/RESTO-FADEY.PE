@@ -1,6 +1,5 @@
 import {
   ShoppingCart,
-  FileText,
   ChefHat,
   Truck,
   BarChart3,
@@ -95,15 +94,10 @@ export const FEATURES: Feature[] = [
   {
     icon: FileCheck,
     title: 'Facturación electrónica',
-    description: 'Emisión SUNAT, comprobantes y historial tributario en un solo módulo.',
-    highlights: ['Emisión SUNAT', 'Comprobantes electrónicos', 'Historial tributario'],
+    description:
+      'Boletas, facturas y comprobantes legales con emisión tributaria e historial en un solo módulo.',
+    highlights: ['Boletas y facturas', 'Emisión electrónica', 'Historial tributario'],
     accent: 'gold',
-  },
-  {
-    icon: FileText,
-    title: 'Boletas electrónicas',
-    description: 'Comprobantes legales listos para enviar al cliente al instante.',
-    highlights: ['Boletas y facturas', 'Cumplimiento normativo', 'Envío automático'],
   },
   {
     icon: ChefHat,
@@ -235,11 +229,6 @@ export const BENEFITS: Benefit[] = [
     icon: Monitor,
     title: 'Fácil de usar',
     description: 'Interfaz intuitiva que tu equipo aprende en minutos, no en días.',
-  },
-  {
-    icon: Printer,
-    title: 'Impresoras térmicas',
-    description: 'Compatible con las principales marcas de impresoras del mercado.',
   },
   {
     icon: Smartphone,
