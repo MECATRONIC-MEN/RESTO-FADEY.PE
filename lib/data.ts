@@ -379,8 +379,8 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
   },
   {
-    name: 'Ana Lucía Torres',
-    restaurant: 'Café del Parque',
+    name: 'Zoila Bardales',
+    restaurant: 'Zoilas Suite E',
     comment:
       'Los reportes me permiten tomar decisiones inteligentes. Sé exactamente qué platos venden más y cuándo reponer inventario.',
     rating: 5,
