@@ -7,8 +7,6 @@ import { CONTACT } from '@/lib/constants';
 import { getWhatsAppUrl } from '@/lib/utils';
 import { Logo } from '@/components/Logo';
 import { LeadSurveyForm } from '@/components/register/LeadSurveyForm';
-import { PwaInstallTracker } from '@/components/PwaInstallTracker';
-
 export const metadata: Metadata = {
   title: 'Obtén Resto Fadey — Solicita acceso',
   description:
@@ -22,7 +20,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-app">
-      <PwaInstallTracker />
       <header className="glass-nav border-b border-brand-cyan/15">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
           <Logo href="/" />

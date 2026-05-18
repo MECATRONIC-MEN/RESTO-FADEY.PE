@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/layouts/AdminSidebar';
 import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
+import { PwaInstallTracker } from '@/components/PwaInstallTracker';
 
 export const metadata = {
   title: 'Administración',
@@ -41,6 +42,7 @@ export default async function AdminLayout({
         </header>
         <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
       </div>
+      <PwaInstallTracker />
     </div>
   );
 }

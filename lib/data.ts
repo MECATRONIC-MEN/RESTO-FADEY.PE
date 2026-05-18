@@ -324,7 +324,6 @@ export const PLANS: Plan[] = [
     ],
     benefits: [
       'Todos los módulos operativos del ecosistema Resto Fadey',
-      'API e integraciones con sistemas externos',
       'Gerente de cuenta y capacitación personalizada',
       'Soporte prioritario 24/7',
     ],

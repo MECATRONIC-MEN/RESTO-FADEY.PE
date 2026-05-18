@@ -19,10 +19,10 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   ...siteMetadata,
+  /** Sin modo app en iOS — el sitio se abre como página web normal */
   appleWebApp: {
-    capable: true,
+    capable: false,
     title: 'Resto Fadey',
-    statusBarStyle: 'black-translucent',
   },
 };
 

@@ -114,7 +114,7 @@ export function NotificationsPanel() {
     <div className="mx-auto max-w-7xl space-y-8">
       <AdminPageHeader
         title="Notificaciones y solicitudes"
-        description="Leads del formulario de acceso e instalaciones de la app en teléfono o PC."
+        description="Leads del formulario de acceso, demos y avisos internos (p. ej. si instalas el panel admin como app)."
         actions={
           unread > 0 ? (
             <button
