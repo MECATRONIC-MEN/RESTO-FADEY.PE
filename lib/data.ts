@@ -69,6 +69,8 @@ export interface Plan {
   benefits: string[];
   highlighted?: boolean;
   badge?: string;
+  /** Precio alternativo (ej. facturación semestral) */
+  semestralNote?: string;
 }
 
 export interface Testimonial {
@@ -350,6 +352,7 @@ export const PLANS: Plan[] = [
     ],
     highlighted: true,
     badge: 'Más solicitado',
+    semestralNote: 'S/ 1.500 semestral',
   },
 ];
 

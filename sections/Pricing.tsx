@@ -62,16 +62,30 @@ export function Pricing() {
                 )}
               </div>
 
-              <div className="mt-4 flex items-baseline gap-1">
-                <span
-                  className={cn(
-                    'font-display text-4xl font-bold',
-                    plan.highlighted ? 'kpi-gold' : 'gradient-text'
-                  )}
-                >
-                  {plan.price}
-                </span>
-                <span className="text-brand-mist">{plan.period}</span>
+              <div className="mt-4">
+                <div className="flex flex-wrap items-baseline gap-1">
+                  <span
+                    className={cn(
+                      'font-display text-4xl font-bold',
+                      plan.highlighted ? 'kpi-gold' : 'gradient-text'
+                    )}
+                  >
+                    {plan.price}
+                  </span>
+                  <span className="text-brand-mist">{plan.period}</span>
+                </div>
+                {plan.semestralNote && (
+                  <p
+                    className={cn(
+                      'mt-2 inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium',
+                      plan.highlighted
+                        ? 'border-brand-gold/35 bg-brand-gold/10 text-brand-gold-light'
+                        : 'border-white/15 bg-white/5 text-brand-mist'
+                    )}
+                  >
+                    {plan.semestralNote}
+                  </p>
+                )}
               </div>
 
               <p
