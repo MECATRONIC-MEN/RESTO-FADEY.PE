@@ -21,11 +21,12 @@ export function Hero() {
             transition={{ duration: 0.8 }}
             className="max-w-xl lg:max-w-none"
           >
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold-light sm:text-base">
+              ¡ELEVA EL NIVEL DE TU NEGOCIO!
+            </p>
             <h1 className="font-display text-4xl font-bold leading-[1.12] tracking-tight text-white text-balance sm:text-5xl lg:text-[3.15rem] xl:text-6xl">
-              <span className="block">EL SISTEMA NÚMERO 1</span>
-              <span className="mt-1 block">
-                PARA&nbsp;RESTAURANTES
-              </span>
+              <span className="block">EL SISTEMA NÚMERO UNO</span>
+              <span className="mt-1 block">PARA&nbsp;RESTAURANTES</span>
             </h1>
 
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-brand-mist sm:text-xl lg:max-w-xl">
