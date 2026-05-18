@@ -20,6 +20,7 @@ import { StatusBadge } from './StatusBadge';
 import { KpiCard } from './KpiCard';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { cn } from '@/lib/utils';
+import { IntegrationDiagnostics } from './IntegrationDiagnostics';
 
 type FilterTab = 'pending' | 'all' | 'approved' | 'rejected';
 
@@ -139,6 +140,8 @@ export function PaymentApprovalCenter() {
           </button>
         }
       />
+
+      <IntegrationDiagnostics />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard

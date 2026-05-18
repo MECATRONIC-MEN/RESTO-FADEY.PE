@@ -1,7 +1,11 @@
 import { jsonOk, jsonError, requireAdminSession } from '@/lib/api/server-auth';
 import { requirePlatformAuth } from '@/lib/api/auth-middleware';
 import { createPaymentFromPos, getPayments } from '@/lib/services/payments';
-import type { PosPaymentPayload } from '@/lib/domain/types';
+import {
+  normalizePosPaymentPayload,
+  validatePosPaymentPayload,
+} from '@/lib/payments/normalize-pos-payload';
+import { getSupabaseConfigDiagnostics, isSupabaseConfigured } from '@/lib/supabase/config';
 
 export async function GET(request: Request) {
   const admin = await requireAdminSession();
@@ -29,21 +33,42 @@ export async function POST(request: Request) {
   const authResult = await requirePlatformAuth(request);
   if (authResult.type === 'error') return authResult.response;
 
-  let body: PosPaymentPayload;
+  let raw: Record<string, unknown>;
   try {
-    body = await request.json();
+    raw = await request.json();
   } catch {
     return jsonError('JSON inválido');
   }
 
-  if (!body.clientId || body.amount == null || !body.method) {
-    return jsonError('clientId, amount y method son requeridos');
+  const body = normalizePosPaymentPayload(raw);
+  const validationError = validatePosPaymentPayload(body);
+  if (validationError) {
+    return jsonError(validationError);
+  }
+
+  const diag = getSupabaseConfigDiagnostics();
+  if (diag.warning) {
+    console.warn('[payments] POST:', diag.warning);
   }
 
   try {
     const payment = await createPaymentFromPos(body);
-    return jsonOk(payment, 201);
+    return jsonOk(
+      {
+        ...payment,
+        _meta: {
+          persisted: isSupabaseConfigured(),
+          hasVoucher: Boolean(payment.voucherUrl),
+          hint: !payment.voucherUrl
+            ? 'Pago guardado sin voucherUrl — el POS debe enviar voucherUrl con la URL pública de la imagen.'
+            : undefined,
+        },
+      },
+      201
+    );
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : 'Error al registrar pago', 500);
+    const msg = e instanceof Error ? e.message : 'Error al registrar pago';
+    console.error('[payments] POST failed:', msg, raw);
+    return jsonError(msg, 500);
   }
 }

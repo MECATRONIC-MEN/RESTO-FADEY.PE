@@ -13,6 +13,17 @@ import {
   ShieldCheck,
   Smartphone,
   Monitor,
+  Warehouse,
+  ClipboardList,
+  FileBarChart,
+  ShoppingBag,
+  TrendingUp,
+  Wallet,
+  FileCheck,
+  Boxes,
+  Target,
+  Sparkles,
+  Brain,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -20,6 +31,8 @@ export interface Feature {
   icon: LucideIcon;
   title: string;
   description: string;
+  highlights: string[];
+  accent?: 'cyan' | 'gold';
 }
 
 export interface Benefit {
@@ -68,52 +81,135 @@ export const FEATURES: Feature[] = [
   {
     icon: ShoppingCart,
     title: 'Ventas',
-    description: 'Registra pedidos en segundos con una interfaz intuitiva y rápida.',
+    description: 'Punto de venta ultrarrápido con flujo optimizado para alto volumen.',
+    highlights: ['Pedidos en segundos', 'Caja integrada', 'Venta rápida y mesas'],
+    accent: 'gold',
+  },
+  {
+    icon: FileCheck,
+    title: 'Facturación electrónica',
+    description: 'Emisión SUNAT, comprobantes y historial tributario en un solo módulo.',
+    highlights: ['Emisión SUNAT', 'Comprobantes electrónicos', 'Historial tributario'],
+    accent: 'gold',
   },
   {
     icon: FileText,
     title: 'Boletas electrónicas',
-    description: 'Emite comprobantes electrónicos compatibles con SUNAT al instante.',
+    description: 'Comprobantes legales listos para enviar al cliente al instante.',
+    highlights: ['Boletas y facturas', 'Cumplimiento normativo', 'Envío automático'],
   },
   {
     icon: ChefHat,
     title: 'Cocina',
-    description: 'Envía pedidos a cocina en tiempo real y reduce tiempos de espera.',
+    description: 'Comandas digitales en tiempo real entre salón, barra y cocina.',
+    highlights: ['Pedidos en vivo', 'Tiempos de preparación', 'Menos errores'],
   },
   {
     icon: Truck,
     title: 'Delivery',
-    description: 'Gestiona entregas, repartidores y pedidos a domicilio sin complicaciones.',
+    description: 'Gestión completa de repartos, pedidos y seguimiento de entregas.',
+    highlights: ['Repartidores', 'Pedidos a domicilio', 'Estado en tiempo real'],
   },
   {
     icon: BarChart3,
     title: 'Reportes',
-    description: 'Analiza ventas, productos más vendidos y rendimiento de tu negocio.',
+    description: 'Visión clara del negocio con métricas actualizadas al minuto.',
+    highlights: ['Ventas del día', 'Productos top', 'Rendimiento general'],
   },
   {
     icon: Package,
     title: 'Inventario',
-    description: 'Controla stock, alertas de productos bajos y movimientos de almacén.',
+    description: 'Control de stock, movimientos y alertas operativas esenciales.',
+    highlights: ['Stock en tiempo real', 'Alertas de mínimo', 'Movimientos'],
+  },
+  {
+    icon: Brain,
+    title: 'Inventario inteligente',
+    description: 'Automatización avanzada con alertas y análisis predictivo de stock.',
+    highlights: ['Control automático', 'Alertas inteligentes', 'Análisis de inventario'],
+    accent: 'gold',
+  },
+  {
+    icon: Warehouse,
+    title: 'Almacenes e inventario',
+    description: 'Múltiples almacenes con entradas, salidas y gestión centralizada.',
+    highlights: ['Múltiples almacenes', 'Entradas y salidas', 'Gestión centralizada'],
+  },
+  {
+    icon: ClipboardList,
+    title: 'Requerimientos y recepción',
+    description: 'Órdenes internas, recepción de productos y validación de compras.',
+    highlights: ['Órdenes internas', 'Recepción de productos', 'Validación de compras'],
+  },
+  {
+    icon: FileBarChart,
+    title: 'Informes detallados',
+    description: 'Reportes avanzados con análisis completo para decisiones estratégicas.',
+    highlights: ['Reportes avanzados', 'Análisis completo', 'Estadísticas inteligentes'],
+    accent: 'gold',
+  },
+  {
+    icon: ShoppingBag,
+    title: 'Informe de compras',
+    description: 'Compras mensuales, proveedores y costos operativos bajo control.',
+    highlights: ['Compras mensuales', 'Proveedores', 'Costos operativos'],
+  },
+  {
+    icon: TrendingUp,
+    title: 'Informe de productos',
+    description: 'Productos más vendidos, rendimiento y rotación del menú.',
+    highlights: ['Más vendidos', 'Rendimiento por plato', 'Rotación de productos'],
+  },
+  {
+    icon: Wallet,
+    title: 'Finanzas',
+    description: 'Ingresos, egresos y análisis financiero integrado al POS.',
+    highlights: ['Ingresos y egresos', 'Análisis financiero', 'Flujo de caja'],
+    accent: 'gold',
+  },
+  {
+    icon: Boxes,
+    title: 'Informes de inventario',
+    description: 'Movimientos, stock crítico y pérdidas visibles en un panel.',
+    highlights: ['Movimientos', 'Stock crítico', 'Control de pérdidas'],
+  },
+  {
+    icon: Target,
+    title: 'Indicadores estratégicos',
+    description: 'KPIs y métricas clave para la dirección del restaurante.',
+    highlights: ['KPIs del negocio', 'Métricas clave', 'Análisis empresarial'],
+    accent: 'gold',
+  },
+  {
+    icon: Sparkles,
+    title: 'Indicadores inteligentes',
+    description: 'Tendencias automáticas, visualización avanzada e insights accionables.',
+    highlights: ['Tendencias automáticas', 'Análisis visual', 'Insights inteligentes'],
+    accent: 'gold',
   },
   {
     icon: Printer,
     title: 'Impresión automática',
-    description: 'Imprime tickets y comandas automáticamente en impresoras térmicas.',
+    description: 'Tickets y comandas en impresoras térmicas sin intervención manual.',
+    highlights: ['Impresión térmica', 'Comandas automáticas', 'Multi impresora'],
   },
   {
     icon: Users,
     title: 'Multiusuario',
-    description: 'Asigna roles y permisos para cajeros, meseros y administradores.',
+    description: 'Roles y permisos para cada área: caja, meseros y administración.',
+    highlights: ['Roles personalizados', 'Permisos por módulo', 'Auditoría de accesos'],
   },
   {
     icon: LayoutGrid,
     title: 'Control de mesas',
-    description: 'Visualiza mesas ocupadas, libres y tiempos de atención en un mapa.',
+    description: 'Mapa visual de mesas, tiempos y estados de atención en vivo.',
+    highlights: ['Mapa de mesas', 'Estados en vivo', 'Tiempos de atención'],
   },
   {
     icon: Cloud,
     title: 'Acceso en la nube',
-    description: 'Accede desde cualquier lugar con datos seguros en la nube.',
+    description: 'Opera desde cualquier lugar con datos seguros y siempre sincronizados.',
+    highlights: ['Acceso remoto', 'Backups automáticos', 'Alta disponibilidad'],
   },
 ];
 

@@ -1,0 +1,2 @@
+-- Los pagos del POS deben insertarse con SUPABASE_SERVICE_ROLE_KEY en Vercel.
+-- El service role omite RLS automáticamente. No uses solo ANON_KEY en el servidor.

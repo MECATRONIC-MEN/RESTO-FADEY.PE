@@ -1,34 +1,82 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { FEATURES } from '@/lib/data';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { AnimatedCard } from '@/components/ui/AnimatedCard';
+import {
+  FeaturePremiumCard,
+  containerVariants,
+} from '@/components/landing/FeaturePremiumCard';
 
 export function Features() {
   return (
-    <section id="funciones" className="section-padding relative">
-      <div className="mx-auto max-w-7xl">
+    <section id="funciones" className="section-padding relative overflow-hidden">
+      {/* Fondo tecnológico — solo en esta sección */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <motion.div
+          className="absolute left-1/2 top-0 h-[480px] w-[min(100%,900px)] -translate-x-1/2 rounded-full bg-brand-cyan/10 blur-[120px]"
+          animate={{ opacity: [0.35, 0.55, 0.35], scale: [1, 1.05, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(59,201,244,0.12),transparent_65%)]" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(59,201,244,0.8) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(59,201,244,0.8) 1px, transparent 1px)`,
+            backgroundSize: '48px 48px',
+          }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl">
         <SectionHeader
-          badge="Funciones"
+          badge="Ecosistema completo"
           title="Todo lo que tu restaurante necesita"
           highlightLast="necesita"
-          subtitle="Herramientas potentes diseñadas para optimizar cada aspecto de tu operación."
+          subtitle="Más que un POS básico: operación, inventario, finanzas e inteligencia en una plataforma premium diseñada para escalar tu restaurante."
         />
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {FEATURES.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <AnimatedCard key={feature.title} delay={index * 0.05} className="group">
-                <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-brand-cyan/20 to-brand-blue/15 p-3 transition-all group-hover:shadow-glow-cyan">
-                  <Icon className="h-6 w-6 text-brand-cyan" />
-                </div>
-                <h3 className="font-display text-lg font-semibold text-white">{feature.title}</h3>
-                <p className="mt-2 text-sm text-brand-mist">{feature.description}</p>
-              </AnimatedCard>
-            );
-          })}
-        </div>
+        <motion.div
+          className="mt-6 flex flex-wrap items-center justify-center gap-3"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          {['Operación', 'Inventario', 'Finanzas', 'Análisis'].map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-brand-cyan/20 bg-brand-cyan/5 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brand-cyan"
+            >
+              {tag}
+            </span>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+        >
+          {FEATURES.map((feature, index) => (
+            <FeaturePremiumCard key={feature.title} feature={feature} index={index} />
+          ))}
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="mx-auto mt-12 max-w-2xl text-center text-sm text-brand-slate"
+        >
+          <span className="text-brand-gold">+21 módulos</span> integrados · Actualizaciones
+          continuas · Diseñado para restaurantes que exigen más que un sistema básico
+        </motion.p>
       </div>
     </section>
   );
