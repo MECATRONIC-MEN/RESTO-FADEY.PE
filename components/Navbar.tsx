@@ -34,8 +34,8 @@ export function Navbar() {
         scrolled ? 'glass-nav py-3' : 'bg-brand-navy/40 py-4 backdrop-blur-md'
       )}
     >
-      <nav className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-14">
-        <Logo size="md" />
+      <nav className="mx-auto flex w-full min-w-0 max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-10 xl:px-14">
+        <Logo size="md" className="min-w-0 shrink" />
 
         <motion.div className="hidden items-center gap-8 lg:flex">
           {NAV_LINKS.map((link) => (

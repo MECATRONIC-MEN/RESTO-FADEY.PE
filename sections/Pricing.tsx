@@ -45,7 +45,7 @@ export function Pricing() {
               className={cn(
                 'relative flex flex-col rounded-2xl border p-8 transition-all duration-300',
                 plan.highlighted
-                  ? 'z-10 scale-[1.02] border-brand-gold/45 bg-premium-gradient shadow-glow-gold lg:scale-105'
+                  ? 'z-10 border-brand-gold/45 bg-premium-gradient shadow-glow-gold lg:scale-[1.02]'
                   : 'glass-card border-white/15 hover:border-brand-cyan/25 hover:shadow-glow-cyan'
               )}
             >

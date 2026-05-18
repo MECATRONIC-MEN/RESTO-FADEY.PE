@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import '@/styles/globals.css';
 import { siteMetadata } from '@/lib/seo';
@@ -18,6 +18,12 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = siteMetadata;
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 const jsonLd = {
   '@context': 'https://schema.org',

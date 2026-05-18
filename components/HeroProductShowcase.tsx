@@ -124,73 +124,74 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       className={cn(
-        'relative mx-auto w-full max-w-[720px] lg:max-w-none',
-        'aspect-[4/3] min-h-[320px] sm:min-h-[380px] lg:min-h-[440px] xl:min-h-[500px]',
+        'relative mx-auto w-full max-w-full overflow-hidden lg:max-w-none',
+        'aspect-[4/3] min-h-[240px] max-h-[min(72vw,420px)] sm:max-h-none sm:min-h-[380px] lg:min-h-[440px] xl:min-h-[500px]',
         className
       )}
     >
       <motion.div
         style={{ x: reducedMotion ? 0 : glowX, y: reducedMotion ? 0 : glowY }}
-        className="pointer-events-none absolute inset-[6%] rounded-[2rem] bg-gradient-to-br from-brand-cyan/30 via-brand-blue/15 to-brand-gold/12 blur-3xl"
+        className="pointer-events-none absolute inset-[8%] rounded-[2rem] bg-gradient-to-br from-brand-cyan/30 via-brand-blue/15 to-brand-gold/12 blur-3xl sm:inset-[6%]"
       />
 
-      <RotatingFrame inset="inset-[2%]" duration={88} reducedMotion={!!reducedMotion} />
-      <RotatingFrame
-        inset="inset-[6%]"
-        duration={64}
-        reverse
-        dashed
-        reducedMotion={!!reducedMotion}
-      />
+      <motion.div className="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block">
+        <RotatingFrame inset="inset-[2%]" duration={88} reducedMotion={!!reducedMotion} />
+        <RotatingFrame
+          inset="inset-[6%]"
+          duration={64}
+          reverse
+          dashed
+          reducedMotion={!!reducedMotion}
+        />
 
-      <RotatingFrame inset="inset-[10%]" duration={48} reducedMotion={!!reducedMotion}>
-        {CORNER_MARKERS.map((m, i) => (
-          <CornerSquare
-            key={i}
-            className={m.className}
-            gold={m.gold}
-            size="h-3.5 w-3.5 sm:h-4 sm:w-4"
-            reducedMotion={!!reducedMotion}
-            duration={48}
-            reverse
-          />
-        ))}
-      </RotatingFrame>
+        <RotatingFrame inset="inset-[10%]" duration={48} reducedMotion={!!reducedMotion}>
+          {CORNER_MARKERS.map((m, i) => (
+            <CornerSquare
+              key={i}
+              className={m.className}
+              gold={m.gold}
+              size="h-3.5 w-3.5 sm:h-4 sm:w-4"
+              reducedMotion={!!reducedMotion}
+              duration={48}
+              reverse
+            />
+          ))}
+        </RotatingFrame>
 
-      <RotatingFrame inset="inset-[4%]" duration={36} reverse reducedMotion={!!reducedMotion}>
-        {[
-          { className: 'left-[20%] top-[8%]', gold: false },
-          { className: 'right-[15%] top-[18%]', gold: true },
-          { className: 'right-[8%] bottom-[22%]', gold: false },
-          { className: 'left-[12%] bottom-[15%]', gold: false },
-          { className: 'left-[45%] top-[2%]', gold: false },
-          { className: 'right-[42%] bottom-[4%]', gold: true },
-        ].map((m, i) => (
-          <CornerSquare
-            key={i}
-            className={cn('absolute', m.className)}
-            gold={m.gold}
-            size="h-2.5 w-2.5 sm:h-3 sm:w-3"
-            reducedMotion={!!reducedMotion}
-            duration={36}
-          />
-        ))}
-      </RotatingFrame>
+        <RotatingFrame inset="inset-[4%]" duration={36} reverse reducedMotion={!!reducedMotion}>
+          {[
+            { className: 'left-[20%] top-[8%]', gold: false },
+            { className: 'right-[15%] top-[18%]', gold: true },
+            { className: 'right-[8%] bottom-[22%]', gold: false },
+            { className: 'left-[12%] bottom-[15%]', gold: false },
+            { className: 'left-[45%] top-[2%]', gold: false },
+            { className: 'right-[42%] bottom-[4%]', gold: true },
+          ].map((m, i) => (
+            <CornerSquare
+              key={i}
+              className={cn('absolute', m.className)}
+              gold={m.gold}
+              size="h-2.5 w-2.5 sm:h-3 sm:w-3"
+              reducedMotion={!!reducedMotion}
+              duration={36}
+            />
+          ))}
+        </RotatingFrame>
 
-      <motion.div
-        className="pointer-events-none absolute inset-[12%] rounded-3xl border border-white/10 bg-gradient-to-br from-brand-cyan/8 via-transparent to-brand-gold/5 backdrop-blur-[1px]"
-        animate={
-          reducedMotion
-            ? undefined
-            : { rotate: [0, 0.8, 0, -0.8, 0], scale: [1, 1.008, 1] }
-        }
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-      />
+        <motion.div
+          className="pointer-events-none absolute inset-[12%] rounded-3xl border border-white/10 bg-gradient-to-br from-brand-cyan/8 via-transparent to-brand-gold/5 backdrop-blur-[1px]"
+          animate={
+            reducedMotion
+              ? undefined
+              : { rotate: [0, 0.8, 0, -0.8, 0], scale: [1, 1.008, 1] }
+          }
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
-      <svg
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-35"
-        aria-hidden
-      >
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full opacity-35"
+          aria-hidden
+        >
         <defs>
           <linearGradient id="hero-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#3BC9F4" stopOpacity="0" />
@@ -218,32 +219,33 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
           animate={reducedMotion ? undefined : { opacity: [0.1, 0.45, 0.1] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
         />
-      </svg>
+        </svg>
 
-      {!reducedMotion &&
-        [
-          { top: '16%', left: '20%', delay: 0 },
-          { top: '70%', left: '14%', delay: 0.9 },
-          { top: '24%', left: '80%', delay: 1.3 },
-          { top: '65%', left: '84%', delay: 0.5 },
-        ].map((p, i) => (
-          <motion.span
-            key={i}
-            className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-brand-cyan shadow-glow-cyan"
-            style={{ top: p.top, left: p.left }}
-            animate={{ opacity: [0.25, 0.85, 0.25], scale: [0.85, 1.15, 0.85] }}
-            transition={{
-              duration: 3.2 + i * 0.35,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: p.delay,
-            }}
-          />
-        ))}
+        {!reducedMotion &&
+          [
+            { top: '16%', left: '20%', delay: 0 },
+            { top: '70%', left: '14%', delay: 0.9 },
+            { top: '24%', left: '80%', delay: 1.3 },
+            { top: '65%', left: '84%', delay: 0.5 },
+          ].map((p, i) => (
+            <motion.span
+              key={i}
+              className="pointer-events-none absolute h-1.5 w-1.5 rounded-full bg-brand-cyan shadow-glow-cyan"
+              style={{ top: p.top, left: p.left }}
+              animate={{ opacity: [0.25, 0.85, 0.25], scale: [0.85, 1.15, 0.85] }}
+              transition={{
+                duration: 3.2 + i * 0.35,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: p.delay,
+              }}
+            />
+          ))}
+      </motion.div>
 
       <motion.div
         style={{ x: reducedMotion ? 0 : parallaxX, y: reducedMotion ? 0 : parallaxY }}
-        className="absolute inset-[14%] z-10 flex items-center justify-center sm:inset-[16%] lg:inset-[15%]"
+        className="absolute inset-[10%] z-10 flex items-center justify-center sm:inset-[16%] lg:inset-[15%]"
         whileHover={reducedMotion ? undefined : { scale: 1.015 }}
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
       >
@@ -252,7 +254,7 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
           transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
           className="relative w-full"
         >
-          <div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-brand-cyan/45 via-brand-blue/30 to-brand-gold/25 blur-2xl" />
+          <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-brand-cyan/45 via-brand-blue/30 to-brand-gold/25 blur-2xl sm:-inset-4" />
           <div className="relative rounded-xl ring-1 ring-brand-cyan/35 ring-offset-1 ring-offset-brand-navy/50">
             <ProductScreenshotCarousel slides={slides} embedded />
           </div>

@@ -29,7 +29,7 @@ export function Logo({ className, showText = true, size = 'md', href = '/' }: Lo
         priority={size === 'md'}
       />
       {showText && (
-        <span className={cn('font-display font-bold tracking-tight', s.text)}>
+        <span className={cn('truncate font-display font-bold tracking-tight', s.text)}>
           Resto<span className="text-brand-gold">-FADEY</span>
         </span>
       )}
@@ -37,7 +37,7 @@ export function Logo({ className, showText = true, size = 'md', href = '/' }: Lo
   );
 
   return (
-    <Link href={href} className={cn('flex items-center gap-2.5 group', className)}>
+    <Link href={href} className={cn('flex min-w-0 items-center gap-2 sm:gap-2.5 group', className)}>
       {content}
     </Link>
   );

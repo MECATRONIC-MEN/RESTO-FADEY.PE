@@ -107,7 +107,7 @@ function FAQAccordionItem({
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="relative border-t border-brand-cyan/15 px-5 pb-5 pl-[4.25rem] sm:px-6 sm:pb-6 sm:pl-[5.25rem]">
+            <div className="relative border-t border-brand-cyan/15 px-5 pb-5 sm:px-6 sm:pb-6">
               <p className="text-sm leading-relaxed text-brand-mist sm:text-base">{answer}</p>
             </div>
           </motion.div>

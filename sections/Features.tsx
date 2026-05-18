@@ -30,7 +30,7 @@ export function Features() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto w-full min-w-0 max-w-7xl">
         <SectionHeader
           badge="Ecosistema completo"
           title="Todo lo que tu restaurante necesita"

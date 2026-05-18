@@ -15,7 +15,7 @@ export default function PublicLayout({
       <PageBackground />
       <Loader />
       <Navbar />
-      <main className="relative z-0">{children}</main>
+      <main className="relative z-0 w-full max-w-full overflow-x-hidden">{children}</main>
       <Footer />
       <WhatsAppFloat />
     </>

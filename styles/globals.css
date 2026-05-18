@@ -13,6 +13,8 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
@@ -20,6 +22,8 @@
     background: linear-gradient(165deg, #0a2340 0%, #0f3058 42%, #0c2848 100%);
     background-attachment: fixed;
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   ::selection {
