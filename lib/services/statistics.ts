@@ -35,10 +35,15 @@ export async function getFinancialStats(): Promise<FinancialStats> {
     planCounts.set(planName, (planCounts.get(planName) ?? 0) + 1);
   }
 
+  const thisMonthPayments = payments.filter((p) => {
+    const d = new Date(p.submittedAt);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
   return {
     totalRevenue,
     monthlyRevenue,
-    yearlyRevenue: totalRevenue * 4.2,
+    yearlyRevenue: totalRevenue,
     activeClients: clients.filter((c) => c.licenseStatus === 'activo').length,
     premiumClients: clients.filter((c) => c.planId.includes('premium')).length,
     pendingPayments: payments.filter((p) => p.status === 'pending').length,
@@ -48,9 +53,14 @@ export async function getFinancialStats(): Promise<FinancialStats> {
       return d.getMonth() === now.getMonth();
     }).length,
     churnRate: 0,
-    renewalRate: clients.length ? 100 : 0,
+    renewalRate:
+      approved.length > 0
+        ? Math.round((approved.length / Math.max(payments.length, 1)) * 100)
+        : 0,
     activeUsers: clients.length,
     revenueByMonth,
     planDistribution: Array.from(planCounts.entries()).map(([plan, count]) => ({ plan, count })),
+    approvedPaymentsThisMonth: thisMonthPayments.filter((p) => p.status === 'approved').length,
+    rejectedPaymentsThisMonth: thisMonthPayments.filter((p) => p.status === 'rejected').length,
   };
 }

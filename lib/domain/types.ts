@@ -47,6 +47,7 @@ export interface PaymentRecord {
   id: string;
   clientId: string;
   clientName: string;
+  restaurantName: string;
   amount: number;
   currency: 'PEN';
   method: PaymentMethod;
@@ -54,11 +55,37 @@ export interface PaymentRecord {
   voucherUrl?: string;
   reference?: string;
   period: string;
+  planName?: string;
+  /** Fecha de envío desde POS */
+  createdAt: string;
   submittedAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  /** Alias legacy */
   reviewedAt?: string;
   reviewedBy?: string;
   notes?: string;
   source: 'pos' | 'manual' | 'webhook';
+  posNotifiedAt?: string;
+}
+
+/** Respuesta enviada al POS tras aprobar/rechazar */
+export interface PaymentConfirmPayload {
+  paymentId: string;
+  clientId: string;
+  status: PaymentStatus;
+  approvedAt: string | null;
+  planStatus: LicenseStatus;
+  planName?: string;
+  amount: number;
+  restaurantName: string;
+}
+
+export interface PaymentApprovalResult {
+  payment: PaymentRecord;
+  planStatus: LicenseStatus;
+  posNotified: boolean;
+  posNotifyError?: string;
 }
 
 export interface FinancialStats {
@@ -75,6 +102,8 @@ export interface FinancialStats {
   activeUsers: number;
   revenueByMonth: { month: string; amount: number }[];
   planDistribution: { plan: string; count: number }[];
+  approvedPaymentsThisMonth?: number;
+  rejectedPaymentsThisMonth?: number;
 }
 
 export interface PosPaymentPayload {

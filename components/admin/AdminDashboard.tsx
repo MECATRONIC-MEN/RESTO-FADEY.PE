@@ -78,7 +78,7 @@ export function AdminDashboard() {
             </ul>
           )}
           <Link
-            href="/admin/pagos"
+            href="/admin/payments"
             className="mt-4 inline-flex items-center gap-1 text-sm text-brand-cyan hover:underline"
           >
             Ver todos los pagos <ArrowRight className="h-4 w-4" />
@@ -88,7 +88,7 @@ export function AdminDashboard() {
         <DashboardCard title="Accesos rápidos">
           <div className="space-y-2">
             {[
-              { href: '/admin/pagos', label: 'Pagos y vouchers', icon: Wallet },
+              { href: '/admin/payments', label: 'Pagos y vouchers', icon: Wallet },
               { href: '/admin/users', label: 'Clientes', icon: Users },
               { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
               { href: '/admin/cursos', label: 'Academia', icon: BookOpen },
@@ -116,8 +116,10 @@ export function AdminDashboard() {
           <div className="text-sm text-brand-mist">
             <p className="font-medium text-brand-soft">API REST activa</p>
             <p className="mt-1">
-              El POS envía pagos a <code className="text-brand-cyan">POST /api/v1/payments</code>{' '}
-              con JWT/API Key. Los vouchers aparecen aquí para aprobación automática de licencias.
+              El POS envía pagos a <code className="text-brand-cyan">POST /api/payments</code>. Al
+              aprobar, la plataforma notifica al POS vía{' '}
+              <code className="text-brand-cyan">POST /api/payments/confirm</code> y activa la
+              licencia del cliente.
             </p>
           </div>
         </div>

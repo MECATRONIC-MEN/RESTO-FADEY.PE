@@ -1,5 +1,6 @@
 import { requireAdminSession, jsonOk, jsonError } from '@/lib/api/server-auth';
-import { getPaymentById, updatePaymentStatus } from '@/lib/services/payments';
+import { getPaymentById } from '@/lib/services/payments';
+import { processPaymentDecision } from '@/lib/services/payment-approval';
 import type { PaymentStatus } from '@/lib/domain/types';
 
 export async function GET(
@@ -28,19 +29,18 @@ export async function PATCH(
   const body = await request.json();
   const status = body.status as PaymentStatus;
 
-  if (!['approved', 'rejected', 'pending'].includes(status)) {
-    return jsonError('status inválido');
+  if (status !== 'approved' && status !== 'rejected') {
+    return jsonError('Solo se permite aprobar o rechazar pagos pendientes');
   }
 
   try {
-    const updated = await updatePaymentStatus(
+    const result = await processPaymentDecision(
       id,
       status,
       admin.session.user.email ?? 'admin',
       body.notes
     );
-    if (!updated) return jsonError('Pago no encontrado', 404);
-    return jsonOk(updated);
+    return jsonOk(result);
   } catch (e) {
     return jsonError(e instanceof Error ? e.message : 'Error', 500);
   }

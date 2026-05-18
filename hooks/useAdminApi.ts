@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { PaymentApprovalResult } from '@/lib/domain/types';
 
 interface ApiState<T> {
   data: T | null;
@@ -38,11 +39,11 @@ export function useAdminApi<T>(path: string): ApiState<T> {
   return { data, loading, error, refetch: fetchData };
 }
 
-export async function patchPayment(
+export async function decidePayment(
   id: string,
   status: 'approved' | 'rejected',
   notes?: string
-) {
+): Promise<PaymentApprovalResult> {
   const res = await fetch(`/api/payments/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -50,5 +51,19 @@ export async function patchPayment(
   });
   const json = await res.json();
   if (!res.ok || !json.success) throw new Error(json.error ?? 'Error al actualizar');
+  return json.data as PaymentApprovalResult;
+}
+
+export async function retryPosSync(paymentId: string) {
+  const res = await fetch('/api/payments/confirm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paymentId }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.success) throw new Error(json.error ?? 'Error al sincronizar con POS');
   return json.data;
 }
+
+/** @deprecated Use decidePayment */
+export const patchPayment = decidePayment;

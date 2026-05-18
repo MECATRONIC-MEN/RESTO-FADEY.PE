@@ -23,10 +23,15 @@ async function resolveClientIdForPayment(requestedId: string): Promise<string> {
 }
 
 function mapPayment(row: Record<string, unknown>): PaymentRecord {
+  const submittedAt = row.submitted_at as string;
+  const approvedAt = (row.reviewed_at as string) ?? undefined;
+  const approvedBy = (row.reviewed_by as string) ?? undefined;
+
   return {
     id: row.id as string,
     clientId: row.client_id as string,
     clientName: row.client_name as string,
+    restaurantName: (row.restaurant_name as string) ?? (row.client_name as string),
     amount: Number(row.amount),
     currency: 'PEN',
     method: row.method as PaymentRecord['method'],
@@ -34,18 +39,26 @@ function mapPayment(row: Record<string, unknown>): PaymentRecord {
     voucherUrl: (row.voucher_url as string) ?? undefined,
     reference: (row.reference as string) ?? undefined,
     period: (row.period as string) ?? '',
-    submittedAt: row.submitted_at as string,
-    reviewedAt: (row.reviewed_at as string) ?? undefined,
-    reviewedBy: (row.reviewed_by as string) ?? undefined,
+    planName: (row.plan_name as string) ?? undefined,
+    createdAt: submittedAt,
+    submittedAt,
+    approvedAt,
+    approvedBy,
+    reviewedAt: approvedAt,
+    reviewedBy: approvedBy,
     notes: (row.notes as string) ?? undefined,
     source: (row.source as PaymentRecord['source']) ?? 'pos',
+    posNotifiedAt: (row.pos_notified_at as string) ?? undefined,
   };
 }
 
-export async function getPayments(filters?: {
+export type PaymentFilters = {
   status?: PaymentStatus;
   clientId?: string;
-}): Promise<PaymentRecord[]> {
+  q?: string;
+};
+
+export async function getPayments(filters?: PaymentFilters): Promise<PaymentRecord[]> {
   if (!isSupabaseConfigured()) {
     return mockGet(filters);
   }
@@ -58,7 +71,22 @@ export async function getPayments(filters?: {
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
-  return (data ?? []).map(mapPayment);
+
+  let list = (data ?? []).map(mapPayment);
+
+  if (filters?.q?.trim()) {
+    const q = filters.q.trim().toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.clientName.toLowerCase().includes(q) ||
+        p.restaurantName.toLowerCase().includes(q) ||
+        p.reference?.toLowerCase().includes(q) ||
+        p.id.toLowerCase().includes(q) ||
+        p.clientId.toLowerCase().includes(q)
+    );
+  }
+
+  return list;
 }
 
 export async function getPaymentById(id: string): Promise<PaymentRecord | null> {
@@ -113,6 +141,7 @@ export async function createPaymentFromPos(payload: PosPaymentPayload): Promise<
   return mapPayment(data);
 }
 
+/** Actualiza estado — licencia y POS se gestionan en payment-approval.ts */
 export async function updatePaymentStatus(
   id: string,
   status: PaymentStatus,
@@ -124,11 +153,12 @@ export async function updatePaymentStatus(
   }
 
   const db = getSupabaseAdmin()!;
+  const reviewedAt = new Date().toISOString();
   const { data, error } = await db
     .from('payments')
     .update({
       status,
-      reviewed_at: new Date().toISOString(),
+      reviewed_at: reviewedAt,
       reviewed_by: reviewedBy,
       notes: notes ?? null,
     })
@@ -137,15 +167,5 @@ export async function updatePaymentStatus(
     .single();
 
   if (error || !data) return null;
-
-  if (status === 'approved') {
-    const payment = mapPayment(data);
-    await db
-      .from('licenses')
-      .update({ status: 'activo' })
-      .eq('client_id', payment.clientId);
-    await db.from('clients').update({ last_activity_at: new Date().toISOString() }).eq('id', payment.clientId);
-  }
-
   return mapPayment(data);
 }

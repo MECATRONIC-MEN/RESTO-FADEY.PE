@@ -4,7 +4,8 @@
  *
  * Flujo recomendado tras subir voucher:
  * 1. Subir imagen a storage del POS (opcional)
- * 2. syncPaymentToPlatform() → aparece en /admin/pagos
+ * 2. syncPaymentToPlatform() → aparece en /admin/payments (pendiente)
+ * 3. Tras aprobación central, el POS recibe POST /api/payments/confirm
  */
 
 export interface PosPaymentSyncInput {
@@ -77,6 +78,19 @@ export class RestoFadeyPlatformClient {
     const json = await res.json();
     if (!res.ok || !json.success) {
       throw new Error(json.error ?? 'Error al sincronizar pago');
+    }
+    return json.data;
+  }
+
+  /** Consultar decisión del admin (polling desde POS) */
+  async pollPaymentConfirm(paymentId: string) {
+    const res = await fetch(
+      `${this.baseUrl}/api/payments/confirm?paymentId=${encodeURIComponent(paymentId)}`,
+      { headers: this.headers() }
+    );
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error ?? 'Error al consultar confirmación');
     }
     return json.data;
   }

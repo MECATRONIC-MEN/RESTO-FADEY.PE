@@ -79,10 +79,21 @@ function resolveMockClientId(clientId: string): string {
 export function getPayments(filters?: {
   status?: PaymentStatus;
   clientId?: string;
+  q?: string;
 }): PaymentRecord[] {
   let list = [...payments];
   if (filters?.status) list = list.filter((p) => p.status === filters.status);
   if (filters?.clientId) list = list.filter((p) => p.clientId === filters.clientId);
+  if (filters?.q?.trim()) {
+    const q = filters.q.trim().toLowerCase();
+    list = list.filter(
+      (p) =>
+        p.clientName.toLowerCase().includes(q) ||
+        p.restaurantName.toLowerCase().includes(q) ||
+        p.reference?.toLowerCase().includes(q) ||
+        p.id.toLowerCase().includes(q)
+    );
+  }
   return list.sort(
     (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
   );
@@ -100,10 +111,13 @@ export function updatePaymentStatus(
 ): PaymentRecord | null {
   const idx = payments.findIndex((p) => p.id === id);
   if (idx === -1) return null;
+  const at = new Date().toISOString();
   payments[idx] = {
     ...payments[idx],
     status,
-    reviewedAt: new Date().toISOString(),
+    approvedAt: at,
+    approvedBy: reviewedBy,
+    reviewedAt: at,
     reviewedBy,
     notes,
   };
@@ -124,20 +138,24 @@ export function createPaymentFromPos(payload: PosPaymentPayload): PaymentRecord 
   const displayName =
     payload.restaurantName ?? payload.businessName ?? client.businessName;
 
+  const createdAt = payload.submittedAt ?? payload.createdAt ?? new Date().toISOString();
   const record: PaymentRecord = {
     id: `pay_${Date.now()}`,
     clientId,
     clientName: displayName,
+    restaurantName: displayName,
     amount: payload.amount,
     currency: 'PEN',
     method: payload.method,
     status: payload.paymentStatus ?? 'pending',
     voucherUrl: payload.voucherUrl,
     reference: payload.reference,
+    planName: payload.plan,
     period:
       payload.period ??
       new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' }),
-    submittedAt: payload.submittedAt ?? payload.createdAt ?? new Date().toISOString(),
+    createdAt,
+    submittedAt: createdAt,
     source: 'pos',
   };
   payments = [record, ...payments];
@@ -188,6 +206,22 @@ export function getFinancialStats(): FinancialStats {
     planDistribution: premiumClients
       ? [{ plan: 'Premium', count: premiumClients }]
       : [],
+    approvedPaymentsThisMonth: payments.filter((p) => {
+      const d = new Date(p.submittedAt);
+      return (
+        p.status === 'approved' &&
+        d.getMonth() === thisMonth &&
+        d.getFullYear() === thisYear
+      );
+    }).length,
+    rejectedPaymentsThisMonth: payments.filter((p) => {
+      const d = new Date(p.submittedAt);
+      return (
+        p.status === 'rejected' &&
+        d.getMonth() === thisMonth &&
+        d.getFullYear() === thisYear
+      );
+    }).length,
   };
 }
 

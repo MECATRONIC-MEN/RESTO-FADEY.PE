@@ -10,11 +10,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get('status') as 'pending' | 'approved' | 'rejected' | null;
   const clientId = searchParams.get('clientId');
+  const q = searchParams.get('q');
 
   try {
     const data = await getPayments({
       status: status ?? undefined,
       clientId: clientId ?? undefined,
+      q: q ?? undefined,
     });
     return jsonOk(data);
   } catch (e) {

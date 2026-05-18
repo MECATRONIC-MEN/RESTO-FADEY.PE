@@ -1,9 +1,6 @@
-import { PaymentsPanel } from '@/components/admin/PaymentsPanel';
+import { redirect } from 'next/navigation';
 
-export const metadata = {
-  title: 'Pagos',
-};
-
-export default function AdminPagosPage() {
-  return <PaymentsPanel />;
+/** Alias en español → ruta canónica */
+export default function AdminPagosRedirect() {
+  redirect('/admin/payments');
 }

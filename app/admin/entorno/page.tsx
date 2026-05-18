@@ -21,6 +21,8 @@ export default function AdminEntornoPage() {
           <ul className="space-y-2 font-mono text-xs text-brand-cyan">
             <li>POST /api/auth/login</li>
             <li>POST /api/payments</li>
+            <li>PATCH /api/payments/[id]</li>
+            <li>GET/POST /api/payments/confirm</li>
             <li>GET /api/users</li>
             <li>GET /api/licenses</li>
             <li>GET /api/plans</li>
