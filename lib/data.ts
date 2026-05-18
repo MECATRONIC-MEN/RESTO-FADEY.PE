@@ -389,28 +389,28 @@ export const TESTIMONIALS: Testimonial[] = [
 
 export const FAQS: FAQItem[] = [
   {
-    question: '¿Funciona con SUNAT?',
+    question: '¿Necesito internet para usar el sistema?',
     answer:
-      'Sí, Resto Fadey está preparado para la emisión de comprobantes electrónicos compatibles con SUNAT. Emitimos boletas y facturas electrónicas cumpliendo con la normativa vigente en Perú.',
+      'Sí. Actualmente Resto Fadey funciona mediante conexión a internet, permitiendo sincronización en tiempo real, acceso en la nube, emisión electrónica, reportes y administración centralizada desde cualquier lugar.',
   },
   {
-    question: '¿Se puede usar en celular?',
+    question: '¿Resto Fadey es compatible con SUNAT?',
     answer:
-      'Absolutamente. Resto Fadey funciona en PC, tablet y celular. Puedes tomar pedidos desde cualquier dispositivo con conexión a internet.',
+      'Sí. El sistema permite emisión de boletas y facturas electrónicas compatibles con SUNAT, facilitando la gestión tributaria de tu restaurante.',
   },
   {
-    question: '¿Tiene soporte?',
+    question: '¿Puedo controlar varias áreas de mi restaurante desde un solo sistema?',
     answer:
-      'Ofrecemos soporte técnico por WhatsApp, email y teléfono. Los planes Pro y Premium incluyen soporte prioritario 24/7.',
+      'Sí. Resto Fadey integra ventas, cocina, delivery, inventario, almacenes, reportes y control de mesas en una sola plataforma.',
   },
   {
-    question: '¿Necesito internet?',
+    question: '¿Qué tipo de restaurantes pueden usar Resto Fadey?',
     answer:
-      'Sí, se requiere conexión a internet para sincronizar datos en la nube. Estamos desarrollando modo offline para operaciones sin conexión.',
+      'El sistema está diseñado para pollerías, restaurantes, cafeterías, cevicherías, fast food y negocios gastronómicos de distintos tamaños.',
   },
   {
-    question: '¿Qué impresoras son compatibles?',
+    question: '¿El sistema incluye soporte y capacitación?',
     answer:
-      'Compatible con impresoras térmicas de 58mm y 80mm de marcas como Epson, Star, Bixolon, Zebra y otras con conexión USB, red o Bluetooth.',
+      'Sí. Los clientes tienen acceso a soporte, academia virtual, tutoriales y futuras actualizaciones del sistema.',
   },
 ];
