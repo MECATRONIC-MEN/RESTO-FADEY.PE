@@ -59,8 +59,15 @@ export interface Plan {
   name: string;
   price: string;
   period: string;
+  /** Beneficio principal del plan (una línea) */
+  tagline: string;
   description: string;
-  features: string[];
+  /** Plan anterior cuyos módulos ya están incluidos */
+  includesFrom?: 'Básico' | 'Pro';
+  /** Módulos incluidos en este plan (o añadidos si hay includesFrom) */
+  modules: string[];
+  /** Ventajas adicionales: soporte, límites, servicios */
+  benefits: string[];
   highlighted?: boolean;
   badge?: string;
 }
@@ -293,41 +300,64 @@ export const PLANS: Plan[] = [
     name: 'Básico',
     price: 'S/ 150',
     period: '/mes',
-    description: 'Ideal para restaurantes pequeños que inician su digitalización.',
-    features: [
-      'Ventas, mesas y caja',
-      'Boletas electrónicas SUNAT',
-      'Control de mesas',
-      'Reportes básicos',
-      'Soporte por email',
+    tagline: 'Opera tu local con lo esencial, sin complicaciones.',
+    description:
+      'Pensado para restaurantes que empiezan a digitalizar ventas, mesas y caja con un control claro del día a día.',
+    modules: [
+      'Módulo de ventas — registro rápido de pedidos y comandas',
+      'Módulo de mesas — mapa visual, estados y tiempos de atención',
+      'Caja — apertura, cierre, arqueo y control del turno',
+      'Informe básico de ventas — resumen diario y cierre operativo',
+    ],
+    benefits: [
+      'Interfaz simple para cajeros y meseros',
+      'Acceso en la nube desde PC o tablet',
+      'Soporte por email en horario laboral',
     ],
   },
   {
     name: 'Pro',
     price: 'S/ 200',
     period: '/mes',
-    description: 'Para restaurantes en crecimiento que necesitan más módulos y usuarios.',
-    features: [
-      'Cocina, bar y delivery',
-      'Inventario completo',
-      'Reservas y pedido por QR',
-      'Multiusuario (hasta 10)',
-      'Reportes avanzados',
-      'Soporte prioritario 24/7',
+    tagline: 'Control operativo completo: stock, pedidos, reservas y facturación.',
+    description:
+      'El plan intermedio ideal para restaurantes en crecimiento que necesitan inventario, más reportes y cumplimiento tributario.',
+    includesFrom: 'Básico',
+    modules: [
+      'Inventario — stock, alertas y movimientos de almacén',
+      'Pedidos — salón, delivery y seguimiento en tiempo real',
+      'Reservas — agenda, confirmaciones y control de aforo',
+      'Reportes de ventas detallados — análisis por periodo y canal',
+      'Informe de productos — más vendidos, rotación y rendimiento',
+      'Facturación electrónica — emisión SUNAT y comprobantes legales',
+    ],
+    benefits: [
+      'Multiusuario con roles (hasta 10 usuarios)',
+      'Cocina y bar integrados al flujo de pedidos',
+      'Soporte prioritario por WhatsApp y email',
     ],
   },
   {
     name: 'Premium',
     price: 'S/ 299',
     period: '/mes',
-    description: 'El plan más solicitado. Solución completa para restaurantes de alto volumen.',
-    features: [
-      'Todos los módulos incluidos',
-      'Todas las funciones Pro',
-      'API e integraciones',
-      'Indicadores e IA analítica',
-      'Gerente de cuenta dedicado',
-      'Capacitación personalizada',
+    tagline: 'Inteligencia de negocio, personal y decisiones estratégicas.',
+    description:
+      'La solución más completa para restaurantes de alto volumen que exigen indicadores avanzados, finanzas y gestión de equipo.',
+    includesFrom: 'Pro',
+    modules: [
+      'Indicadores inteligentes — tendencias automáticas e insights visuales',
+      'Asistente de negocio — recomendaciones para mejorar resultados',
+      'Gestión de personal — horarios, turnos y control de pagos',
+      'Informes avanzados de finanzas — ingresos, egresos y flujo de caja',
+      'Informes avanzados de inventario — movimientos, mermas y stock crítico',
+      'Indicadores estratégicos — KPIs, métricas clave y análisis empresarial',
+    ],
+    benefits: [
+      'Todos los módulos operativos del ecosistema Resto Fadey',
+      'API e integraciones con sistemas externos',
+      'Gerente de cuenta y capacitación personalizada',
+      'Soporte prioritario 24/7',
     ],
     highlighted: true,
     badge: 'Más solicitado',
