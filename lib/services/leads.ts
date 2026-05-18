@@ -16,21 +16,28 @@ function formatLeadBody(lead: CommercialLead): string {
 }
 
 async function notifyLead(lead: CommercialLeadRecord) {
-  await createAdminNotification({
-    type: 'lead',
-    title: `Nueva solicitud: ${lead.businessName || lead.name}`,
-    body: formatLeadBody(lead),
-    payload: {
-      leadId: lead.id,
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      businessName: lead.businessName,
-      planInterest: lead.planInterest,
-      message: lead.message,
-      survey: lead.survey,
-    },
-  });
+  try {
+    await createAdminNotification({
+      type: 'lead',
+      title: `Nueva solicitud: ${lead.businessName || lead.name}`,
+      body: formatLeadBody(lead),
+      payload: {
+        leadId: lead.id,
+        name: lead.name,
+        email: lead.email,
+        phone: lead.phone,
+        businessName: lead.businessName,
+        planInterest: lead.planInterest,
+        message: lead.message,
+        survey: lead.survey,
+      },
+    });
+  } catch (err) {
+    console.error(
+      '[leads] No se pudo crear notificación admin (¿ejecutaste 005_admin_notifications.sql?):',
+      err instanceof Error ? err.message : err
+    );
+  }
 }
 
 export async function createLead(lead: CommercialLead): Promise<{ id: string }> {
@@ -79,6 +86,21 @@ export async function createLead(lead: CommercialLead): Promise<{ id: string }> 
 
   await notifyLead(record);
   return { id: record.id };
+}
+
+export async function deleteLead(id: string): Promise<void> {
+  const { deleteNotificationsForLead } = await import('@/lib/services/notifications');
+  await deleteNotificationsForLead(id);
+
+  if (!isSupabaseConfigured()) {
+    const idx = memoryLeads.findIndex((l) => l.id === id);
+    if (idx >= 0) memoryLeads.splice(idx, 1);
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { error } = await db.from('leads').delete().eq('id', id);
+  if (error) throw new Error(error.message);
 }
 
 export async function listLeads(limit = 100): Promise<CommercialLeadRecord[]> {

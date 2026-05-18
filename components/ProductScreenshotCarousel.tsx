@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HeroSlide } from '@/lib/data';
+import { HeroPremiumComposition } from '@/components/HeroPremiumComposition';
 
 interface ProductScreenshotCarouselProps {
   slides: HeroSlide[];
@@ -38,11 +38,11 @@ export function ProductScreenshotCarousel({
   const content = (
     <div
       className={cn(
-        'relative w-full overflow-hidden rounded-xl border border-white/25 bg-white shadow-2xl',
-        embedded ? 'shadow-brand-cyan/20' : 'shadow-black/50 rounded-2xl'
+        'relative w-full overflow-hidden rounded-xl border border-white/20 bg-[#060d18] shadow-2xl',
+        embedded ? 'shadow-brand-cyan/25' : 'shadow-black/50 rounded-2xl'
       )}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50 px-3 py-2 sm:px-4 sm:py-2.5">
+      <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-gradient-to-r from-brand-deep/90 to-brand-navy/90 px-3 py-2 sm:px-4 sm:py-2.5">
         <div className="flex min-w-0 items-center gap-2">
           <span className="h-2 w-2 shrink-0 rounded-full bg-red-400" />
           <span className="h-2 w-2 shrink-0 rounded-full bg-yellow-400" />
@@ -54,43 +54,41 @@ export function ProductScreenshotCarousel({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.25 }}
-              className="ml-1 truncate text-[10px] font-medium text-gray-500 sm:ml-2 sm:text-xs"
+              className="ml-1 truncate text-[10px] font-medium text-brand-mist sm:ml-2 sm:text-xs"
             >
               {current.caption}
             </motion.span>
           </AnimatePresence>
         </div>
-        <span className="shrink-0 text-[9px] font-medium text-gray-400 sm:text-[10px]">
+        <span className="shrink-0 text-[9px] font-medium text-brand-slate sm:text-[10px]">
           {index + 1}/{slides.length}
         </span>
       </div>
 
-      <div className="relative aspect-[16/10] min-h-[200px] bg-slate-100 sm:min-h-[240px] lg:min-h-[280px]">
+      <div className="relative aspect-[16/10] min-h-[200px] bg-[#060d18] sm:min-h-[240px] lg:min-h-[280px]">
         <AnimatePresence mode="wait">
           <motion.div
-            key={current.src}
+            key={current.compositionId}
             initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.45, ease: 'easeInOut' }}
             className="absolute inset-0"
+            role="img"
+            aria-label={current.alt}
           >
-            <Image
-              src={current.src}
-              alt={current.alt}
-              fill
-              priority={index === 0}
-              className="object-cover object-top"
-              sizes={embedded ? '(max-width: 1024px) 90vw, 50vw' : '(max-width: 1024px) 100vw, 58vw'}
+            <HeroPremiumComposition
+              compositionId={current.compositionId}
+              animate
             />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 border-t border-gray-100 bg-gray-50 px-3 py-2 sm:gap-2 sm:px-4 sm:py-2.5">
+      <div className="flex items-center justify-center gap-1.5 border-t border-white/10 bg-brand-deep/80 px-3 py-2 sm:gap-2 sm:px-4 sm:py-2.5">
         {slides.map((slide, i) => (
           <button
-            key={slide.src}
+            key={slide.compositionId}
             type="button"
             onClick={() => goTo(i)}
             aria-label={`Ver ${slide.caption}`}
@@ -98,7 +96,7 @@ export function ProductScreenshotCarousel({
               'h-1.5 rounded-full transition-all duration-300 sm:h-2',
               i === index
                 ? 'w-6 bg-gradient-to-r from-brand-cyan to-brand-blue sm:w-8'
-                : 'w-1.5 bg-gray-300 hover:bg-brand-cyan/50 sm:w-2'
+                : 'w-1.5 bg-white/20 hover:bg-brand-cyan/50 sm:w-2'
             )}
           />
         ))}

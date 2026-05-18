@@ -1,3 +1,4 @@
+import { HERO_COMPOSITIONS, type HeroCompositionId } from '@/lib/hero-compositions';
 import {
   ShoppingCart,
   ChefHat,
@@ -49,7 +50,7 @@ export interface GalleryItem {
 }
 
 export interface HeroSlide {
-  src: string;
+  compositionId: HeroCompositionId;
   alt: string;
   caption: string;
 }
@@ -249,41 +250,18 @@ export const BENEFITS: Benefit[] = [
   },
 ];
 
-export const GALLERY: GalleryItem[] = [
-  {
-    id: 'panel',
-    title: 'Panel en vivo',
-    description: 'Monitorea ventas, mesas, delivery, cocina e inventario en tiempo real.',
-    image: '/images/dashboard-panel.png',
-    gradient: 'from-blue-500/20 to-purple-500/20',
-  },
-  {
-    id: 'ventas',
-    title: 'Ventas y reportes',
-    description: 'Gráficos, caja, Yape/Plin y métricas financieras del día.',
-    image: '/images/dashboard-ventas.png',
-    gradient: 'from-brand-gold/20 to-blue-500/20',
-  },
-  {
-    id: 'mesas',
-    title: 'Mapa de mesas',
-    description: 'Control visual de mesas, venta rápida y cierre de caja integrado.',
-    image: '/images/mapa-mesas.png',
-    gradient: 'from-green-500/20 to-blue-500/20',
-  },
-  {
-    id: 'indicadores',
-    title: 'Indicadores e IA analítica',
-    description: 'KPIs, alertas de stock, productividad y análisis inteligente.',
-    image: '/images/indicadores.png',
-    gradient: 'from-purple-500/20 to-brand-gold/20',
-  },
-];
+export const GALLERY: GalleryItem[] = HERO_COMPOSITIONS.map((c) => ({
+  id: c.id,
+  title: c.title,
+  description: c.description,
+  image: c.id,
+  gradient: c.gradient,
+}));
 
-export const HERO_SLIDES: HeroSlide[] = GALLERY.map((item) => ({
-  src: item.image,
-  alt: `${item.title} — Resto Fadey`,
-  caption: `Resto-FADEY — ${item.title}`,
+export const HERO_SLIDES: HeroSlide[] = HERO_COMPOSITIONS.map((c) => ({
+  compositionId: c.id,
+  alt: c.alt,
+  caption: c.caption,
 }));
 
 export const PLANS: Plan[] = [

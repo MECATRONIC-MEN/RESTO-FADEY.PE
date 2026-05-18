@@ -131,10 +131,16 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
     >
       <motion.div
         style={{ x: reducedMotion ? 0 : glowX, y: reducedMotion ? 0 : glowY }}
-        className="pointer-events-none absolute inset-[8%] rounded-[2rem] bg-gradient-to-br from-brand-cyan/30 via-brand-blue/15 to-brand-gold/12 blur-3xl sm:inset-[6%]"
+        animate={
+          reducedMotion
+            ? undefined
+            : { opacity: [0.45, 0.75, 0.45], scale: [1, 1.04, 1] }
+        }
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute inset-[6%] rounded-[2rem] bg-gradient-to-br from-brand-cyan/35 via-brand-blue/20 to-brand-gold/15 blur-3xl sm:inset-[6%]"
       />
 
-      <motion.div className="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <RotatingFrame inset="inset-[2%]" duration={88} reducedMotion={!!reducedMotion} />
         <RotatingFrame
           inset="inset-[6%]"
@@ -241,7 +247,15 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
               }}
             />
           ))}
-      </motion.div>
+      </div>
+
+      {/* Marco animado ligero — visible también en móvil */}
+      <RotatingFrame
+        inset="inset-[3%] max-sm:inset-[2%]"
+        duration={72}
+        dashed
+        reducedMotion={!!reducedMotion}
+      />
 
       <motion.div
         style={{ x: reducedMotion ? 0 : parallaxX, y: reducedMotion ? 0 : parallaxY }}
@@ -262,14 +276,14 @@ export function HeroProductShowcase({ slides, className }: HeroProductShowcasePr
       </motion.div>
 
       <motion.div
-        className="badge-tech pointer-events-none absolute left-[4%] top-[10%] z-20 hidden text-[10px] sm:inline-flex"
+        className="badge-tech pointer-events-none absolute left-[4%] top-[8%] z-20 inline-flex text-[9px] sm:top-[10%] sm:text-[10px]"
         animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
       >
         POS en vivo
       </motion.div>
       <motion.div
-        className="badge-tech pointer-events-none absolute bottom-[12%] right-[2%] z-20 hidden text-[10px] sm:inline-flex"
+        className="badge-tech pointer-events-none absolute bottom-[10%] right-[2%] z-20 inline-flex text-[9px] sm:bottom-[12%] sm:text-[10px]"
         animate={reducedMotion ? undefined : { y: [0, 5, 0] }}
         transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
       >

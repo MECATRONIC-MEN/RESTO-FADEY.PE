@@ -149,7 +149,19 @@ export interface CommercialLeadRecord extends CommercialLead {
   createdAt: string;
 }
 
-export type AdminNotificationType = 'lead' | 'pwa_install';
+export interface DemoRequest {
+  name: string;
+  email: string;
+  phone?: string;
+  businessName: string;
+}
+
+export interface DemoRequestRecord extends DemoRequest {
+  id: string;
+  createdAt: string;
+}
+
+export type AdminNotificationType = 'lead' | 'demo_request' | 'pwa_install';
 
 export interface AdminNotification {
   id: string;

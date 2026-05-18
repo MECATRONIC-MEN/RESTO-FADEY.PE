@@ -28,6 +28,7 @@ export default function AdminEntornoPage() {
             <li>GET /api/plans</li>
             <li>GET /api/statistics</li>
             <li>POST /api/leads · GET (admin)</li>
+            <li>POST /api/demos · GET (admin)</li>
             <li>GET /api/notifications · PATCH</li>
             <li>POST /api/notifications/pwa</li>
           </ul>

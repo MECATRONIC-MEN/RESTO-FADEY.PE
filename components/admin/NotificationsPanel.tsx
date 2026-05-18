@@ -1,9 +1,14 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Bell, CheckCheck, Smartphone, UserPlus } from 'lucide-react';
+import { Bell, CheckCheck, PlayCircle, Smartphone, Trash2, UserPlus } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
-import type { AdminNotification, CommercialLeadRecord } from '@/lib/domain/types';
+import type { AdminNotification, CommercialLeadRecord, DemoRequestRecord } from '@/lib/domain/types';
+import {
+  deleteDemoById,
+  deleteLeadById,
+  deleteNotification,
+} from '@/lib/admin/notification-actions';
 import { AdminPageHeader } from './AdminPageHeader';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { cn } from '@/lib/utils';
@@ -17,20 +22,37 @@ function TypeBadge({ type }: { type: AdminNotification['type'] }) {
       </span>
     );
   }
+  if (type === 'demo_request') {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-brand-blue/30 bg-brand-blue/10 px-2 py-0.5 text-[10px] font-medium uppercase text-brand-cyan">
+        <PlayCircle className="h-3 w-3" />
+        Demo
+      </span>
+    );
+  }
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-brand-gold/30 bg-brand-gold/10 px-2 py-0.5 text-[10px] font-medium uppercase text-brand-gold-light">
       <UserPlus className="h-3 w-3" />
-      Solicitud
+      Acceso
     </span>
   );
 }
 
 export function NotificationsPanel() {
-  const { data: notifications, loading, refetch } = useAdminApi<AdminNotification[]>(
-    '/api/notifications?limit=100'
-  );
-  const { data: leads, loading: leadsLoading } = useAdminApi<CommercialLeadRecord[]>('/api/leads');
+  const { data: notifications, loading, refetch: refetchNotifications } =
+    useAdminApi<AdminNotification[]>('/api/notifications?limit=100');
+  const { data: leads, loading: leadsLoading, refetch: refetchLeads } =
+    useAdminApi<CommercialLeadRecord[]>('/api/leads');
+  const { data: demos, loading: demosLoading, refetch: refetchDemos } =
+    useAdminApi<DemoRequestRecord[]>('/api/demos');
+
+  const refetchAll = useCallback(() => {
+    refetchNotifications();
+    refetchLeads();
+    refetchDemos();
+  }, [refetchNotifications, refetchLeads, refetchDemos]);
   const [marking, setMarking] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const unread = (notifications ?? []).filter((n) => !n.readAt).length;
 
@@ -38,15 +60,54 @@ export function NotificationsPanel() {
     setMarking(true);
     try {
       await fetch('/api/notifications', { method: 'PATCH' });
-      refetch();
+      refetchAll();
     } finally {
       setMarking(false);
     }
-  }, [refetch]);
+  }, [refetchAll]);
 
   async function markOne(id: string) {
-    await fetch(`/api/notifications/${id}`, { method: 'PATCH' });
-    refetch();
+    await fetch(`/api/notifications/${encodeURIComponent(id)}`, { method: 'PATCH' });
+    refetchAll();
+  }
+
+  async function removeNotification(id: string) {
+    if (!confirm('¿Eliminar esta notificación y la solicitud vinculada (si existe)?')) return;
+    setDeleting(id);
+    try {
+      await deleteNotification(id);
+      refetchAll();
+    } catch {
+      alert('No se pudo eliminar.');
+    } finally {
+      setDeleting(null);
+    }
+  }
+
+  async function removeLead(id: string) {
+    if (!confirm('¿Eliminar esta solicitud de acceso y su notificación?')) return;
+    setDeleting(`lead-${id}`);
+    try {
+      await deleteLeadById(id);
+      refetchAll();
+    } catch {
+      alert('No se pudo eliminar.');
+    } finally {
+      setDeleting(null);
+    }
+  }
+
+  async function removeDemo(id: string) {
+    if (!confirm('¿Eliminar esta solicitud de demo y su notificación?')) return;
+    setDeleting(`demo-${id}`);
+    try {
+      await deleteDemoById(id);
+      refetchAll();
+    } catch {
+      alert('No se pudo eliminar.');
+    } finally {
+      setDeleting(null);
+    }
   }
 
   return (
@@ -100,19 +161,78 @@ export function NotificationsPanel() {
                     <p className="font-medium text-brand-soft">{n.title}</p>
                     <p className="mt-1 text-sm text-brand-mist">{n.body}</p>
                   </div>
-                  {!n.readAt && (
+                  <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
+                    {!n.readAt && (
+                      <button
+                        type="button"
+                        onClick={() => markOne(n.id)}
+                        className="text-xs text-brand-cyan hover:underline"
+                      >
+                        Marcar leída
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => markOne(n.id)}
-                      className="shrink-0 text-xs text-brand-cyan hover:underline"
+                      onClick={() => removeNotification(n.id)}
+                      disabled={deleting === n.id}
+                      className="inline-flex items-center gap-1 text-xs text-red-400/90 hover:text-red-300 disabled:opacity-50"
                     >
-                      Marcar leída
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Eliminar
                     </button>
-                  )}
+                  </div>
                 </div>
               </li>
             ))}
           </ul>
+        )}
+      </DashboardCard>
+
+      <DashboardCard title="Solicitudes de demo (/demo)">
+        {demosLoading ? (
+          <p className="text-sm text-brand-mist">Cargando…</p>
+        ) : !demos?.length ? (
+          <p className="text-sm text-brand-mist">No hay solicitudes de demo.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-xs uppercase text-brand-slate">
+                  <th className="pb-3 pr-4">Fecha</th>
+                  <th className="pb-3 pr-4">Nombre</th>
+                  <th className="pb-3 pr-4">Restaurante</th>
+                  <th className="pb-3 pr-4">Contacto</th>
+                  <th className="pb-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {demos.map((demo) => (
+                  <tr key={demo.id} className="border-b border-white/5">
+                    <td className="py-3 pr-4 text-brand-slate">
+                      {new Date(demo.createdAt).toLocaleDateString('es-PE')}
+                    </td>
+                    <td className="py-3 pr-4 font-medium text-brand-soft">{demo.name}</td>
+                    <td className="py-3 pr-4 text-brand-mist">{demo.businessName}</td>
+                    <td className="py-3 pr-4 text-brand-mist">
+                      <div>{demo.email}</div>
+                      {demo.phone && <div className="text-xs">{demo.phone}</div>}
+                    </td>
+                    <td className="py-3">
+                      <button
+                        type="button"
+                        onClick={() => removeDemo(demo.id)}
+                        disabled={deleting === `demo-${demo.id}`}
+                        className="inline-flex items-center gap-1 text-xs text-red-400/90 hover:text-red-300 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </DashboardCard>
 
@@ -131,6 +251,7 @@ export function NotificationsPanel() {
                   <th className="pb-3 pr-4">Restaurante</th>
                   <th className="pb-3 pr-4">Contacto</th>
                   <th className="pb-3 pr-4">Plan</th>
+                  <th className="pb-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,6 +267,17 @@ export function NotificationsPanel() {
                       {lead.phone && <div className="text-xs">{lead.phone}</div>}
                     </td>
                     <td className="py-3 pr-4 text-brand-cyan">{lead.planInterest ?? '—'}</td>
+                    <td className="py-3">
+                      <button
+                        type="button"
+                        onClick={() => removeLead(lead.id)}
+                        disabled={deleting === `lead-${lead.id}`}
+                        className="inline-flex items-center gap-1 text-xs text-red-400/90 hover:text-red-300 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Eliminar
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

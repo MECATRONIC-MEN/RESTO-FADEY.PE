@@ -115,3 +115,152 @@ export async function countUnreadNotifications(): Promise<number> {
   const list = await listAdminNotifications({ unreadOnly: true, limit: 200 });
   return list.length;
 }
+
+function parseNotificationTargetId(id: string): {
+  notificationId?: string;
+  leadId?: string;
+  demoId?: string;
+} {
+  if (id.startsWith('lead_fb_')) return { leadId: id.slice('lead_fb_'.length) };
+  if (id.startsWith('demo_fb_')) return { demoId: id.slice('demo_fb_'.length) };
+  return { notificationId: id };
+}
+
+export async function deleteNotificationsForLead(leadId: string): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    for (let j = memoryNotifications.length - 1; j >= 0; j--) {
+      if (memoryNotifications[j]?.payload.leadId === leadId) {
+        memoryNotifications.splice(j, 1);
+      }
+    }
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { error } = await db
+    .from('admin_notifications')
+    .delete()
+    .contains('payload', { leadId });
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteNotificationsForDemo(demoId: string): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    for (let j = memoryNotifications.length - 1; j >= 0; j--) {
+      if (memoryNotifications[j]?.payload.demoId === demoId) {
+        memoryNotifications.splice(j, 1);
+      }
+    }
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { error } = await db
+    .from('admin_notifications')
+    .delete()
+    .contains('payload', { demoId });
+  if (error) throw new Error(error.message);
+}
+
+/** Elimina notificación y, si aplica, la solicitud (lead/demo) vinculada */
+export async function deleteAdminNotification(id: string): Promise<void> {
+  const target = parseNotificationTargetId(id);
+
+  if (target.leadId) {
+    const { deleteLead } = await import('@/lib/services/leads');
+    await deleteLead(target.leadId);
+    return;
+  }
+
+  if (target.demoId) {
+    const { deleteDemoRequest } = await import('@/lib/services/demo-requests');
+    await deleteDemoRequest(target.demoId);
+    return;
+  }
+
+  if (!isSupabaseConfigured()) {
+    const idx = memoryNotifications.findIndex((n) => n.id === id);
+    if (idx >= 0) memoryNotifications.splice(idx, 1);
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { data: row } = await db
+    .from('admin_notifications')
+    .select('payload')
+    .eq('id', target.notificationId!)
+    .maybeSingle();
+
+  const payload = (row?.payload as Record<string, unknown>) ?? {};
+  const leadId = typeof payload.leadId === 'string' ? payload.leadId : undefined;
+  const demoId = typeof payload.demoId === 'string' ? payload.demoId : undefined;
+
+  if (leadId) {
+    const { deleteLead } = await import('@/lib/services/leads');
+    await deleteLead(leadId);
+    return;
+  }
+
+  if (demoId) {
+    const { deleteDemoRequest } = await import('@/lib/services/demo-requests');
+    await deleteDemoRequest(demoId);
+    return;
+  }
+
+  const { error } = await db.from('admin_notifications').delete().eq('id', target.notificationId!);
+  if (error) throw new Error(error.message);
+}
+
+/** Crea filas en admin_notifications para leads/demos que aún no tienen notificación */
+export async function backfillNotificationsFromSources(): Promise<number> {
+  if (!isSupabaseConfigured()) return 0;
+
+  const { listLeads } = await import('@/lib/services/leads');
+  const { listDemoRequests } = await import('@/lib/services/demo-requests');
+  const { leadToNotification, demoToNotification } = await import(
+    '@/lib/services/notification-fallback'
+  );
+
+  const db = getSupabaseAdmin()!;
+  const { data: existing, error: readErr } = await db.from('admin_notifications').select('payload');
+  if (readErr) throw new Error(readErr.message);
+  const leadIds = new Set(
+    (existing ?? [])
+      .map((r) => (r.payload as Record<string, unknown>)?.leadId)
+      .filter((id): id is string => typeof id === 'string')
+  );
+  const demoIds = new Set(
+    (existing ?? [])
+      .map((r) => (r.payload as Record<string, unknown>)?.demoId)
+      .filter((id): id is string => typeof id === 'string')
+  );
+
+  let created = 0;
+  const leads = await listLeads(100);
+  for (const lead of leads) {
+    if (leadIds.has(lead.id)) continue;
+    const n = leadToNotification(lead);
+    const { error } = await db.from('admin_notifications').insert({
+      type: n.type,
+      title: n.title,
+      body: n.body,
+      payload: n.payload,
+    });
+    if (!error) created += 1;
+  }
+
+  const demos = await listDemoRequests(100);
+  for (const demo of demos) {
+    if (demoIds.has(demo.id)) continue;
+    const n = demoToNotification(demo);
+    const { error } = await db.from('admin_notifications').insert({
+      type: n.type,
+      title: n.title,
+      body: n.body,
+      payload: n.payload,
+    });
+    if (!error) created += 1;
+  }
+
+  return created;
+}
