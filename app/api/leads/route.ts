@@ -1,6 +1,19 @@
-import { jsonOk, jsonError } from '@/lib/api/server-auth';
-import { createLead } from '@/lib/services/leads';
+import { jsonOk, jsonError, requireAdminSession } from '@/lib/api/server-auth';
+import { createLead, listLeads } from '@/lib/services/leads';
 import type { CommercialLead } from '@/lib/domain/types';
+
+/** GET — solicitudes comerciales (solo admin) */
+export async function GET() {
+  const auth = await requireAdminSession();
+  if (auth.error) return auth.error;
+
+  try {
+    const data = await listLeads();
+    return jsonOk(data);
+  } catch (e) {
+    return jsonError(e instanceof Error ? e.message : 'Error', 500);
+  }
+}
 
 /** POST — lead comercial desde /register (sin crear cuenta) */
 export async function POST(request: Request) {

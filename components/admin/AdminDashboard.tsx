@@ -7,6 +7,7 @@ import {
   BarChart3,
   AlertCircle,
   ArrowRight,
+  Bell,
   BookOpen,
   Tag,
 } from 'lucide-react';
@@ -88,6 +89,7 @@ export function AdminDashboard() {
         <DashboardCard title="Accesos rápidos">
           <div className="space-y-2">
             {[
+              { href: '/admin/notificaciones', label: 'Notificaciones y leads', icon: Bell },
               { href: '/admin/payments', label: 'Pagos y vouchers', icon: Wallet },
               { href: '/admin/users', label: 'Clientes', icon: Users },
               { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },

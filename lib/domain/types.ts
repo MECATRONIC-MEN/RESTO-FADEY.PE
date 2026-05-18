@@ -142,3 +142,21 @@ export interface CommercialLead {
   message?: string;
   survey?: Record<string, string | boolean>;
 }
+
+export interface CommercialLeadRecord extends CommercialLead {
+  id: string;
+  status?: string;
+  createdAt: string;
+}
+
+export type AdminNotificationType = 'lead' | 'pwa_install';
+
+export interface AdminNotification {
+  id: string;
+  type: AdminNotificationType;
+  title: string;
+  body: string;
+  payload: Record<string, unknown>;
+  readAt: string | null;
+  createdAt: string;
+}

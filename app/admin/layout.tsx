@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/layouts/AdminSidebar';
+import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
 
 export const metadata = {
   title: 'Administración',
@@ -32,7 +33,10 @@ export default async function AdminLayout({
               </h1>
               <p className="text-xs text-brand-mist">Gestión completa de Resto Fadey</p>
             </div>
-            <p className="text-sm text-brand-mist">{session.user.email}</p>
+            <div className="flex items-center gap-3">
+              <AdminNotificationBell />
+              <p className="hidden text-sm text-brand-mist sm:block">{session.user.email}</p>
+            </div>
           </div>
         </header>
         <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>

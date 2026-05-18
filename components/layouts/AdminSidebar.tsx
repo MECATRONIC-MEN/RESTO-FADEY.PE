@@ -13,6 +13,7 @@ import {
   CreditCard,
   Megaphone,
   BarChart3,
+  Bell,
   Settings,
   LogOut,
   Menu,
@@ -25,6 +26,7 @@ import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/admin', label: 'Panel', icon: LayoutDashboard, exact: true },
+  { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
   { href: '/admin/payments', label: 'Pagos', icon: Wallet },
   { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
   { href: '/admin/users', label: 'Clientes', icon: Users },

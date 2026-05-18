@@ -1,6 +1,7 @@
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { WhatsAppFloat } from '@/components/WhatsAppFloat';
+import { PwaInstallTracker } from '@/components/PwaInstallTracker';
 import { Loader } from '@/components/Loader';
 import { PageBackground } from '@/components/PageBackground';
 
@@ -18,6 +19,7 @@ export default function PublicLayout({
       <main className="relative z-0 w-full max-w-full overflow-x-hidden">{children}</main>
       <Footer />
       <WhatsAppFloat />
+      <PwaInstallTracker />
     </>
   );
 }

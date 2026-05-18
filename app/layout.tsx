@@ -17,7 +17,14 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
 });
 
-export const metadata: Metadata = siteMetadata;
+export const metadata: Metadata = {
+  ...siteMetadata,
+  appleWebApp: {
+    capable: true,
+    title: 'Resto Fadey',
+    statusBarStyle: 'black-translucent',
+  },
+};
 
 export const viewport: Viewport = {
   width: 'device-width',
