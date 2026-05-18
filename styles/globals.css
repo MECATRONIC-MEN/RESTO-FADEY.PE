@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-app: #0a2340;
+    --bg-app-mid: #0f3058;
+    --bg-sidebar: #071a32;
+    --color-cyan: #3bc9f4;
+    --color-gold: #d4af37;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-brand-soft antialiased;
+    background: linear-gradient(165deg, #0a2340 0%, #0f3058 42%, #0c2848 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-brand-cyan/35 text-white;
+  }
+}
+
+@layer components {
+  .bg-app {
+    background: linear-gradient(165deg, #0a2340 0%, #0f3058 45%, #0c2848 100%);
+  }
+
+  .bg-sidebar {
+    background: linear-gradient(180deg, #061528 0%, #0b2342 55%, #0a1f3a 100%);
+  }
+
+  .glass {
+    @apply border border-white/15 bg-white/10 backdrop-blur-xl;
+  }
+
+  .glass-nav {
+    @apply border border-white/15 bg-brand-navy/75 shadow-card backdrop-blur-xl;
+  }
+
+  .glass-card {
+    @apply glass rounded-2xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply border-brand-cyan/25 bg-white/[0.14] shadow-glow-cyan;
+  }
+
+  .card-dashboard {
+    @apply rounded-xl border border-white/15 bg-white/10 p-5 shadow-card backdrop-blur-md transition-all duration-300 hover:border-brand-cyan/30 hover:shadow-glow-cyan;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-cyan via-brand-sky to-brand-gold-light bg-clip-text text-transparent;
+  }
+
+  .text-muted {
+    @apply text-brand-mist;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-cyan to-brand-blue px-6 py-3 font-semibold text-brand-deep shadow-glow-cyan transition-all duration-300 hover:scale-[1.02] hover:from-brand-sky hover:to-brand-electric hover:shadow-glow-blue;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-brand-cyan/25 bg-white/10 px-6 py-3 font-semibold text-brand-soft backdrop-blur-sm transition-all duration-300 hover:border-brand-cyan/45 hover:bg-brand-cyan/10 hover:shadow-glow-cyan;
+  }
+
+  .btn-premium {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-brand-gold/40 bg-gradient-to-r from-brand-gold/25 to-brand-gold/10 px-6 py-3 font-semibold text-brand-gold-light shadow-glow-gold backdrop-blur-sm transition-all duration-300 hover:border-brand-gold/60 hover:from-brand-gold/35 hover:to-brand-gold/15;
+  }
+
+  .btn-green {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-brand-green px-6 py-3 font-semibold text-white shadow-glow-green transition-all duration-300 hover:scale-[1.02];
+  }
+
+  .badge-premium {
+    @apply inline-flex items-center rounded-full border border-brand-gold/45 bg-gradient-to-r from-brand-gold/30 to-brand-gold/10 px-4 py-1 text-xs font-semibold text-brand-gold-light shadow-glow-gold;
+  }
+
+  .badge-tech {
+    @apply inline-flex items-center rounded-full border border-brand-cyan/35 bg-brand-cyan/15 px-4 py-1 text-xs font-medium text-brand-cyan;
+  }
+
+  .kpi-gold {
+    @apply font-display font-bold text-brand-gold-light;
+  }
+
+  .section-padding {
+    @apply px-4 py-20 sm:px-6 lg:px-8 lg:py-28;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-bold tracking-tight text-brand-soft sm:text-4xl lg:text-5xl;
+  }
+
+  .section-subtitle {
+    @apply mt-4 max-w-2xl text-lg text-brand-mist;
+  }
+
+  .glow-border {
+    position: relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(59, 201, 244, 0.55),
+      rgba(27, 140, 255, 0.45),
+      rgba(212, 175, 55, 0.4)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.96);
+  }
+}

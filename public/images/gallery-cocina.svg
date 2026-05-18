@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none">
+  <rect width="800" height="450" fill="#0A0A0F"/>
+  <rect x="40" y="40" width="220" height="370" rx="12" fill="#111118" stroke="rgba(139,92,246,0.3)"/>
+  <rect x="290" y="40" width="220" height="370" rx="12" fill="#111118" stroke="rgba(239,68,68,0.3)"/>
+  <rect x="540" y="40" width="220" height="370" rx="12" fill="#111118" stroke="rgba(16,185,129,0.3)"/>
+  <text x="150" y="80" text-anchor="middle" fill="#EF4444" font-family="system-ui" font-size="12" font-weight="bold">PENDIENTE</text>
+  <text x="400" y="80" text-anchor="middle" fill="#F59E0B" font-family="system-ui" font-size="12" font-weight="bold">EN PROCESO</text>
+  <text x="650" y="80" text-anchor="middle" fill="#10B981" font-family="system-ui" font-size="12" font-weight="bold">LISTO</text>
+  <rect x="60" y="100" width="180" height="50" rx="6" fill="#1a1a24"/>
+  <rect x="310" y="100" width="180" height="50" rx="6" fill="#1a1a24"/>
+  <rect x="560" y="100" width="180" height="50" rx="6" fill="#1a1a24"/>
+  <text x="400" y="420" text-anchor="middle" fill="#6B7280" font-family="system-ui" font-size="14">Panel de Cocina — Resto Fadey</text>
+</svg>
