@@ -19,6 +19,7 @@ import {
   X,
   GraduationCap,
   ChevronDown,
+  FolderOpen,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
@@ -60,6 +61,7 @@ const NAV: NavEntry[] = [
     children: [
       { href: '/admin/cursos', label: 'Cursos', icon: BookOpen },
       { href: '/admin/videos', label: 'Videos', icon: PlayCircle },
+      { href: '/admin/recursos', label: 'Recursos', icon: FolderOpen },
     ],
   },
   { type: 'link', href: '/admin/entorno', label: 'Entorno', icon: Settings },
@@ -76,7 +78,10 @@ function SidebarInner({
   pathname: string;
   onNavigate?: () => void;
 }) {
-  const academiaOpenDefault = pathname.startsWith('/admin/cursos') || pathname.startsWith('/admin/videos');
+  const academiaOpenDefault =
+    pathname.startsWith('/admin/cursos') ||
+    pathname.startsWith('/admin/videos') ||
+    pathname.startsWith('/admin/recursos');
   const [academiaOpen, setAcademiaOpen] = useState(academiaOpenDefault);
 
   useEffect(() => {

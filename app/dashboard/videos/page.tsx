@@ -1,10 +1,19 @@
-import { ModulePlaceholder } from '@/components/dashboard/ModulePlaceholder';
+import { ModuleVideoGrid } from '@/components/dashboard/ModuleVideoGrid';
+import { listModuleVideos } from '@/lib/services/academy-content';
 
-export default function VideosPage() {
+export default async function VideosPage() {
+  const modules = await listModuleVideos(false);
+
   return (
-    <ModulePlaceholder
-      title="Videos"
-      description="Tutoriales en video del sistema y buenas prácticas para restaurantes."
-    />
+    <div className="mx-auto max-w-6xl space-y-6">
+      <div>
+        <h1 className="font-display text-3xl font-bold text-brand-soft">Videos</h1>
+        <p className="mt-2 text-brand-mist">
+          Tutoriales por módulo del sistema (9 módulos). El contenido lo publica el equipo desde
+          administración.
+        </p>
+      </div>
+      <ModuleVideoGrid modules={modules} />
+    </div>
   );
 }

@@ -1,10 +1,19 @@
-import { ModulePlaceholder } from '@/components/dashboard/ModulePlaceholder';
+import { ClientCourseList } from '@/components/dashboard/ClientCourseList';
+import { listCourses } from '@/lib/services/academy-content';
 
-export default function CursosPage() {
+export default async function CursosPage() {
+  const courses = await listCourses(true);
+
   return (
-    <ModulePlaceholder
-      title="Cursos"
-      description="Rutas de aprendizaje estructuradas con progreso y certificados (próximamente)."
-    />
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div>
+        <h1 className="font-display text-3xl font-bold text-brand-soft">Cursos</h1>
+        <p className="mt-2 text-brand-mist">
+          Rutas de aprendizaje publicadas para tu restaurante. Los nuevos cursos aparecen aquí al
+          publicarlos en administración.
+        </p>
+      </div>
+      <ClientCourseList courses={courses} />
+    </div>
   );
 }

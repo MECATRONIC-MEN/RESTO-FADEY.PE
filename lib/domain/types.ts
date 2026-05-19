@@ -221,6 +221,63 @@ export interface DemoRequestRecord extends DemoRequest {
 
 export type AdminNotificationType = 'lead' | 'demo_request' | 'pwa_install';
 
+export interface AcademyCourse {
+  id: string;
+  title: string;
+  description?: string;
+  category?: string;
+  thumbnailUrl?: string;
+  contentUrl?: string;
+  duration?: string;
+  isPublished: boolean;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export type AcademyResourceType = 'manual' | 'plantilla' | 'documento' | 'enlace';
+
+export interface AcademyResource {
+  id: string;
+  title: string;
+  description?: string;
+  category?: string;
+  resourceType: AcademyResourceType;
+  fileUrl: string;
+  thumbnailUrl?: string;
+  isPublished: boolean;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface AcademyModuleVideo {
+  slug: string;
+  title: string;
+  description: string;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  isPublished: boolean;
+  hasVideo: boolean;
+}
+
+export interface ClientPromotion {
+  id: string;
+  title: string;
+  description?: string;
+  bannerUrl?: string;
+  discountPercent?: number;
+  endsAt?: string;
+}
+
+export interface ClientDashboardSummary {
+  planName: string | null;
+  licenseStatus: string | null;
+  licenseExpiresAt: string | null;
+  publishedCoursesCount: number;
+  publishedVideosCount: number;
+  publishedResourcesCount: number;
+  activePromotionsCount: number;
+}
+
 export interface AdminNotification {
   id: string;
   type: AdminNotificationType;

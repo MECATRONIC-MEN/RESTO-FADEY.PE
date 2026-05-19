@@ -52,7 +52,7 @@ const NAV: NavEntry[] = [
     children: [
       { href: '/dashboard/videos', label: 'Videos', icon: PlayCircle },
       { href: '/dashboard/cursos', label: 'Cursos', icon: BookOpen },
-      { href: '/dashboard/recursos', label: 'Recursos', icon: FolderOpen, soon: true },
+      { href: '/dashboard/recursos', label: 'Recursos', icon: FolderOpen },
     ],
   },
   { type: 'link', href: '/dashboard/promociones', label: 'Promociones', icon: Tag },

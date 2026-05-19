@@ -7,6 +7,7 @@ import type { UserRole } from '@/lib/auth/types';
 declare module 'next-auth' {
   interface User {
     role: UserRole;
+    clientId?: string | null;
     restaurant?: string | null;
     plan?: string | null;
   }
@@ -17,6 +18,7 @@ declare module 'next-auth' {
       email: string;
       name: string;
       role: UserRole;
+      clientId?: string | null;
       restaurant?: string | null;
       plan?: string | null;
     };
@@ -26,6 +28,7 @@ declare module 'next-auth' {
 declare module '@auth/core/jwt' {
   interface JWT {
     role?: UserRole;
+    clientId?: string | null;
     restaurant?: string | null;
     plan?: string | null;
   }
@@ -53,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          clientId: user.clientId ?? null,
           restaurant: user.restaurant ?? null,
           plan: user.plan ?? null,
         };

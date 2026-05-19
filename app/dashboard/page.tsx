@@ -1,34 +1,58 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import { BookOpen, PlayCircle, Tag, LifeBuoy, ArrowRight } from 'lucide-react';
+import { ArrowRight, BookOpen, PlayCircle, Tag, LifeBuoy, FolderOpen } from 'lucide-react';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { getClientDashboardSummary } from '@/lib/services/client-dashboard';
 import {
-  RECENT_COURSES,
-  FEATURED_VIDEOS,
-  ACTIVE_PROMOTIONS,
-  QUICK_LINKS,
-} from '@/lib/dashboard-data';
+  listCourses,
+  listModuleVideos,
+  listResources,
+  listActivePromotions,
+} from '@/lib/services/academy-content';
+import { QUICK_LINKS } from '@/lib/dashboard-data';
 
 const ICONS = {
   tag: Tag,
   book: BookOpen,
   play: PlayCircle,
+  folder: FolderOpen,
   support: LifeBuoy,
 } as const;
+
+function formatLicenseStatus(status: string | null) {
+  if (!status) return 'Sin información';
+  const map: Record<string, string> = {
+    activo: 'Activa',
+    suspendido: 'Suspendida',
+    vencido: 'Vencida',
+    prueba: 'Prueba',
+  };
+  return map[status] ?? status;
+}
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect('/login');
 
+  const clientId = session.user.clientId ?? null;
+  const [summary, courses, videoData, resources, promotions] = await Promise.all([
+    getClientDashboardSummary(clientId),
+    listCourses(true),
+    listModuleVideos(true),
+    listResources(true),
+    listActivePromotions(),
+  ]);
+
+  const publishedVideos = videoData.filter((v) => v.isPublished);
   const firstName = session.user.name?.split(' ')[0] ?? 'Cliente';
+  const planLabel =
+    summary.planName ?? session.user.plan ?? (clientId ? 'Consulte con soporte' : null);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold sm:text-4xl">
-          Hola, {firstName} 👋
-        </h1>
+        <h1 className="font-display text-3xl font-bold sm:text-4xl">Hola, {firstName} 👋</h1>
         <p className="mt-2 text-brand-mist">
           Bienvenido a tu espacio Resto Fadey
           {session.user.restaurant ? ` · ${session.user.restaurant}` : ''}.
@@ -40,22 +64,30 @@ export default async function DashboardPage() {
           <p className="text-xs font-medium uppercase tracking-wider text-brand-cyan-light/80">
             Estado del plan
           </p>
-          <p className="kpi-gold mt-2 text-2xl">
-            {session.user.plan ?? 'Sin plan asignado'}
-          </p>
+          <p className="kpi-gold mt-2 text-2xl">{planLabel ?? '—'}</p>
           <p className="mt-2 text-sm text-brand-mist">
-            Licencia activa · Soporte incluido
+            Licencia {formatLicenseStatus(summary.licenseStatus)}
+            {summary.licenseExpiresAt && (
+              <>
+                {' '}
+                · vence{' '}
+                {new Date(summary.licenseExpiresAt).toLocaleDateString('es-PE', {
+                  dateStyle: 'medium',
+                })}
+              </>
+            )}
           </p>
         </DashboardCard>
+
         <DashboardCard title="Accesos rápidos" className="sm:col-span-2">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {QUICK_LINKS.map((link) => {
               const Icon = ICONS[link.icon] ?? BookOpen;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-2 rounded-lg border border-brand-cyan/10 bg-white/5 px-3 py-2.5 text-sm text-brand-mist transition-all hover:border-brand-cyan/30 hover:text-brand-soft hover:shadow-glow-cyan"
+                  className="flex items-center gap-2 rounded-lg border border-brand-cyan/10 bg-white/5 px-3 py-2.5 text-sm text-brand-mist transition-all hover:border-brand-cyan/30 hover:text-brand-soft"
                 >
                   <Icon className="h-4 w-4 shrink-0 text-brand-cyan" />
                   {link.label}
@@ -66,81 +98,100 @@ export default async function DashboardPage() {
         </DashboardCard>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         <DashboardCard
-          title="Cursos recientes"
+          title="Academia — cursos"
           action={
             <Link href="/dashboard/cursos" className="text-xs text-brand-cyan hover:underline">
               Ver todos
             </Link>
           }
         >
-          <ul className="space-y-4">
-            {RECENT_COURSES.map((course) => (
-              <li key={course.id}>
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-medium text-white">{course.title}</p>
-                    <p className="text-xs text-gray-500">{course.duration}</p>
-                  </div>
-                  <span className="text-xs font-medium text-brand-mist">{course.progress}%</span>
-                </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-brand-cyan to-brand-gold transition-all"
-                    style={{ width: `${course.progress}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+          {courses.length === 0 ? (
+            <p className="text-sm text-brand-mist">No hay cursos publicados aún.</p>
+          ) : (
+            <ul className="space-y-3">
+              {courses.slice(0, 3).map((course) => (
+                <li key={course.id} className="rounded-lg border border-white/5 px-3 py-2">
+                  <p className="text-sm font-medium text-brand-soft">{course.title}</p>
+                  {course.duration && (
+                    <p className="text-xs text-brand-slate">{course.duration}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </DashboardCard>
 
         <DashboardCard
-          title="Videos destacados"
+          title="Academia — videos"
           action={
             <Link href="/dashboard/videos" className="text-xs text-brand-cyan hover:underline">
-              Biblioteca
+              Ver módulos
             </Link>
           }
         >
-          <ul className="space-y-3">
-            {FEATURED_VIDEOS.map((video) => (
-              <li
-                key={video.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-white/5 px-3 py-2.5"
-              >
-                <div className="flex items-center gap-3">
-                  <PlayCircle className="h-5 w-5 shrink-0 text-brand-cyan/80" />
-                  <span className="text-sm text-gray-200">{video.title}</span>
-                </div>
-                {video.tag && (
-                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] uppercase text-brand-mist">
-                    {video.tag}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          {publishedVideos.length === 0 ? (
+            <p className="text-sm text-brand-mist">
+              Los tutoriales por módulo se publicarán desde administración.
+            </p>
+          ) : (
+            <p className="text-sm text-brand-mist">
+              {publishedVideos.filter((v) => v.hasVideo).length} de {publishedVideos.length}{' '}
+              módulos con video disponible.
+            </p>
+          )}
+        </DashboardCard>
+
+        <DashboardCard
+          title="Academia — recursos"
+          action={
+            <Link href="/dashboard/recursos" className="text-xs text-brand-cyan hover:underline">
+              Ver todos
+            </Link>
+          }
+        >
+          {resources.length === 0 ? (
+            <p className="text-sm text-brand-mist">No hay manuales ni plantillas publicados aún.</p>
+          ) : (
+            <ul className="space-y-3">
+              {resources.slice(0, 3).map((resource) => (
+                <li key={resource.id} className="rounded-lg border border-white/5 px-3 py-2">
+                  <p className="text-sm font-medium text-brand-soft">{resource.title}</p>
+                  {resource.category && (
+                    <p className="text-xs text-brand-slate">{resource.category}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </DashboardCard>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <DashboardCard title="Promociones activas">
-          <ul className="space-y-3">
-            {ACTIVE_PROMOTIONS.map((promo) => (
-              <li
-                key={promo.id}
-                className="flex items-center justify-between gap-2 rounded-lg bg-brand-gold/5 px-3 py-3"
-              >
-                <div className="flex items-center gap-2">
-                  <Tag className="h-4 w-4 text-brand-gold-light" />
-                  <span className="text-sm font-medium">{promo.title}</span>
-                </div>
-                <span className="text-xs text-gray-500">Hasta {promo.endsAt}</span>
-              </li>
-            ))}
-          </ul>
+          {promotions.length === 0 ? (
+            <p className="text-sm text-brand-mist">No hay promociones activas en este momento.</p>
+          ) : (
+            <ul className="space-y-3">
+              {promotions.slice(0, 4).map((promo) => (
+                <li
+                  key={promo.id}
+                  className="flex items-center justify-between gap-2 rounded-lg bg-brand-gold/5 px-3 py-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-brand-gold-light" />
+                    <span className="text-sm font-medium">{promo.title}</span>
+                  </div>
+                  {promo.endsAt && (
+                    <span className="text-xs text-brand-slate">
+                      Hasta {new Date(promo.endsAt).toLocaleDateString('es-PE')}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
           <Link
             href="/dashboard/promociones"
             className="mt-4 inline-flex items-center gap-1 text-sm text-brand-cyan hover:underline"
