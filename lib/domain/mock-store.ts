@@ -171,6 +171,31 @@ export function getFinancialStats(): FinancialStats {
   return computeFinancialStats(payments, MOCK_CLIENTS, buildPlanMapFromSaasPlans(MOCK_PLANS));
 }
 
+/** Vacía pagos y datos operativos de prueba (modo sin Supabase). */
+export function clearMockOperationalData(options?: { removeTestClients?: boolean }) {
+  const count = payments.length;
+  payments = [];
+
+  for (const c of MOCK_CLIENTS) {
+    c.paymentStatus = null;
+    c.posConnectionStatus = 'unknown';
+  }
+
+  let clientsRemoved = 0;
+  if (options?.removeTestClients) {
+    const before = MOCK_CLIENTS.length;
+    const kept = MOCK_CLIENTS.filter((c) => c.id === DEMO_CLIENT_ID);
+    MOCK_CLIENTS.length = 0;
+    MOCK_CLIENTS.push(...kept);
+    clientsRemoved = before - kept.length;
+    const keptLic = MOCK_LICENSES.filter((l) => l.clientId === DEMO_CLIENT_ID);
+    MOCK_LICENSES.length = 0;
+    MOCK_LICENSES.push(...keptLic);
+  }
+
+  return { payments: count, clients: clientsRemoved };
+}
+
 export function getClients() {
   return [...MOCK_CLIENTS];
 }

@@ -1,11 +1,12 @@
 import { ModuleShell } from '@/components/admin/ModuleShell';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { EntornoDataReset } from '@/components/admin/EntornoDataReset';
 
 export default function AdminEntornoPage() {
   return (
     <ModuleShell
       title="Entorno e integraciones"
-      description="Branding, API keys, WhatsApp, SMTP, SUNAT y seguridad."
+      description="Branding, API keys, WhatsApp, SMTP, SUNAT y herramientas de prueba."
       features={[
         'Branding y colores',
         'SEO y dominio',
@@ -13,9 +14,12 @@ export default function AdminEntornoPage() {
         'WhatsApp Business',
         'Correo SMTP',
         'Seguridad y JWT',
+        'Reinicio de datos de prueba',
       ]}
       actions={['Guardar', 'Probar conexión', 'Rotar keys']}
     >
+      <EntornoDataReset />
+
       <div className="grid gap-4 md:grid-cols-2">
         <DashboardCard title="API REST">
           <ul className="space-y-2 font-mono text-xs text-brand-cyan">
@@ -31,7 +35,7 @@ export default function AdminEntornoPage() {
             <li>POST /api/leads · GET (admin)</li>
             <li>POST /api/demos · GET (admin)</li>
             <li>GET /api/notifications · PATCH</li>
-            <li>POST /api/notifications/pwa</li>
+            <li>POST /api/admin/reset-data</li>
           </ul>
         </DashboardCard>
         <DashboardCard title="Variables">
