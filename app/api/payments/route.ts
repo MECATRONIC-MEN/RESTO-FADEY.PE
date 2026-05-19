@@ -16,12 +16,15 @@ export async function GET(request: Request) {
   const status = searchParams.get('status') as 'pending' | 'approved' | 'rejected' | null;
   const clientId = searchParams.get('clientId');
   const q = searchParams.get('q');
+  const limitRaw = searchParams.get('limit');
+  const limit = limitRaw ? Math.min(50, Math.max(1, parseInt(limitRaw, 10) || 0)) : undefined;
 
   try {
     const data = await getPayments({
       status: status ?? undefined,
       clientId: clientId ?? undefined,
       q: q ?? undefined,
+      limit,
     });
     return jsonOk(data);
   } catch (e) {

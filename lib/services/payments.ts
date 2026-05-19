@@ -84,6 +84,7 @@ export type PaymentFilters = {
   status?: PaymentStatus;
   clientId?: string;
   q?: string;
+  limit?: number;
 };
 
 export async function getPayments(filters?: PaymentFilters): Promise<PaymentRecord[]> {
@@ -96,6 +97,7 @@ export async function getPayments(filters?: PaymentFilters): Promise<PaymentReco
 
   if (filters?.status) query = query.eq('status', filters.status);
   if (filters?.clientId) query = query.eq('client_id', filters.clientId);
+  if (filters?.limit && filters.limit > 0) query = query.limit(filters.limit);
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);

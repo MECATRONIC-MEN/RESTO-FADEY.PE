@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import {
   Wallet,
@@ -10,6 +11,8 @@ import {
   Bell,
   BookOpen,
   Tag,
+  ExternalLink,
+  ImageIcon,
 } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { FinancialStats, PaymentRecord } from '@/lib/domain/types';
@@ -18,11 +21,28 @@ import { KpiCard } from './KpiCard';
 import { StatusBadge } from './StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 
-export function AdminDashboard() {
-  const { data: stats } = useAdminApi<FinancialStats>('/api/statistics');
-  const { data: payments } = useAdminApi<PaymentRecord[]>('/api/payments?status=pending');
+const REFRESH_MS = 30_000;
 
-  const recent = (payments ?? []).slice(0, 5);
+function formatMethod(method: string) {
+  return method.charAt(0).toUpperCase() + method.slice(1);
+}
+
+export function AdminDashboard() {
+  const { data: stats, refetch: refetchStats } = useAdminApi<FinancialStats>('/api/statistics');
+  const { data: payments, loading: loadingPayments, refetch: refetchPayments } =
+    useAdminApi<PaymentRecord[]>('/api/payments?limit=5');
+
+  const recent = payments ?? [];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchStats();
+      refetchPayments();
+    }, REFRESH_MS);
+    return () => clearInterval(interval);
+  }, [refetchStats, refetchPayments]);
+
+  const monthLabel = new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' });
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -37,7 +57,7 @@ export function AdminDashboard() {
           value={stats ? `S/ ${stats.monthlyRevenue.toLocaleString('es-PE')}` : '—'}
           premium
           trend="up"
-          change="Dashboard financiero"
+          change={monthLabel}
         />
         <KpiCard label="Clientes activos" value={stats ? String(stats.activeClients) : '—'} />
         <KpiCard
@@ -54,25 +74,56 @@ export function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <DashboardCard title="Pagos recientes (pendientes)" className="lg:col-span-2">
-          {recent.length === 0 ? (
-            <p className="text-sm text-brand-mist">No hay pagos pendientes.</p>
+        <DashboardCard title="Pagos recientes" className="lg:col-span-2">
+          {loadingPayments ? (
+            <p className="text-sm text-brand-mist">Cargando pagos…</p>
+          ) : recent.length === 0 ? (
+            <p className="text-sm text-brand-mist">No hay pagos registrados.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="max-h-80 space-y-3 overflow-y-auto pr-1">
               {recent.map((p) => (
                 <li
                   key={p.id}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3"
                 >
-                  <div>
-                    <p className="font-medium text-brand-soft">{p.clientName}</p>
-                    <p className="text-xs text-brand-slate">
-                      {p.method} · {new Date(p.submittedAt).toLocaleDateString('es-PE')}
-                    </p>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-brand-soft">
+                        {p.restaurantName || p.clientName}
+                      </p>
+                      <p className="mt-0.5 text-xs text-brand-slate">
+                        {formatMethod(p.method)} ·{' '}
+                        {new Date(p.submittedAt).toLocaleString('es-PE', {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="kpi-gold text-sm font-semibold">
+                        S/ {p.amount.toLocaleString('es-PE')}
+                      </span>
+                      <StatusBadge status={p.status} />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="kpi-gold text-sm font-semibold">S/ {p.amount}</span>
-                    <StatusBadge status={p.status} />
+                  <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-white/5 pt-2">
+                    {p.voucherUrl ? (
+                      <a
+                        href={p.voucherUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-brand-cyan hover:underline"
+                      >
+                        <ImageIcon className="h-3.5 w-3.5" />
+                        Ver voucher
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      <span className="text-xs text-brand-slate">Sin voucher</span>
+                    )}
+                    {p.reference && (
+                      <span className="text-xs text-brand-slate">Ref. {p.reference}</span>
+                    )}
                   </div>
                 </li>
               ))}
@@ -89,12 +140,12 @@ export function AdminDashboard() {
         <DashboardCard title="Accesos rápidos">
           <div className="space-y-2">
             {[
-              { href: '/admin/notificaciones', label: 'Notificaciones y leads', icon: Bell },
+              { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
               { href: '/admin/payments', label: 'Pagos y vouchers', icon: Wallet },
               { href: '/admin/users', label: 'Clientes', icon: Users },
-              { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
               { href: '/admin/cursos', label: 'Academia', icon: BookOpen },
               { href: '/admin/promociones', label: 'Promociones', icon: Tag },
+              { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -120,7 +171,7 @@ export function AdminDashboard() {
             <p className="mt-1">
               El POS envía pagos a <code className="text-brand-cyan">POST /api/payments</code>. Al
               aprobar, la plataforma notifica al POS vía{' '}
-              <code className="text-brand-cyan">POST /api/payments/confirm</code> y activa la
+              <code className="text-brand-cyan">POST /api/license/confirm</code> y activa la
               licencia del cliente.
             </p>
           </div>

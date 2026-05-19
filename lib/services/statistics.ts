@@ -1,66 +1,40 @@
 import { getFinancialStats as mockStats } from '@/lib/domain/mock-store';
+import {
+  buildPlanMapFromRows,
+  buildPlanMapFromSaasPlans,
+  computeFinancialStats,
+} from '@/lib/analytics/financial-metrics';
 import { getPayments } from './payments';
-import { getClients } from './clients';
+import { getClients, getPlans } from './clients';
+import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { FinancialStats } from '@/lib/domain/types';
+
+async function loadPlanMap() {
+  if (!isSupabaseConfigured()) {
+    return buildPlanMapFromSaasPlans(await getPlans());
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { data, error } = await db.from('plans').select('id, slug, name');
+  if (error) throw new Error(error.message);
+  return buildPlanMapFromRows(
+    (data ?? []).map((p) => ({
+      id: p.id as string,
+      slug: p.slug as string,
+      name: p.name as string,
+    }))
+  );
+}
 
 export async function getFinancialStats(): Promise<FinancialStats> {
   if (!isSupabaseConfigured()) return mockStats();
 
-  const [payments, clients] = await Promise.all([getPayments(), getClients()]);
+  const [payments, clients, planById] = await Promise.all([
+    getPayments(),
+    getClients(),
+    loadPlanMap(),
+  ]);
 
-  const approved = payments.filter((p) => p.status === 'approved');
-  const totalRevenue = approved.reduce((s, p) => s + p.amount, 0);
-  const now = new Date();
-  const monthlyRevenue = approved
-    .filter((p) => {
-      const d = new Date(p.submittedAt);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    })
-    .reduce((s, p) => s + p.amount, 0);
-
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-  const revenueByMonth = months.map((month, i) => {
-    const monthPayments = approved.filter((p) => {
-      const d = new Date(p.submittedAt);
-      return d.getMonth() === i && d.getFullYear() === now.getFullYear();
-    });
-    return { month, amount: monthPayments.reduce((s, p) => s + p.amount, 0) };
-  });
-
-  const planCounts = new Map<string, number>();
-  for (const c of clients) {
-    const planName =
-      c.planId.includes('premium') ? 'Premium' : c.planId.includes('pro') ? 'Pro' : 'Básico';
-    planCounts.set(planName, (planCounts.get(planName) ?? 0) + 1);
-  }
-
-  const thisMonthPayments = payments.filter((p) => {
-    const d = new Date(p.submittedAt);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  });
-
-  return {
-    totalRevenue,
-    monthlyRevenue,
-    yearlyRevenue: totalRevenue,
-    activeClients: clients.filter((c) => c.licenseStatus === 'activo').length,
-    premiumClients: clients.filter((c) => c.planId.includes('premium')).length,
-    pendingPayments: payments.filter((p) => p.status === 'pending').length,
-    overdueClients: clients.filter((c) => c.licenseStatus === 'vencido').length,
-    newClientsThisMonth: clients.filter((c) => {
-      const d = new Date(c.createdAt);
-      return d.getMonth() === now.getMonth();
-    }).length,
-    churnRate: 0,
-    renewalRate:
-      approved.length > 0
-        ? Math.round((approved.length / Math.max(payments.length, 1)) * 100)
-        : 0,
-    activeUsers: clients.length,
-    revenueByMonth,
-    planDistribution: Array.from(planCounts.entries()).map(([plan, count]) => ({ plan, count })),
-    approvedPaymentsThisMonth: thisMonthPayments.filter((p) => p.status === 'approved').length,
-    rejectedPaymentsThisMonth: thisMonthPayments.filter((p) => p.status === 'rejected').length,
-  };
+  return computeFinancialStats(payments, clients, planById);
 }

@@ -8,6 +8,7 @@ import type {
   PosPaymentPayload,
 } from './types';
 import { DEMO_CLIENT_ID, DEMO_BUSINESS_NAME, DEMO_CLIENT_EMAIL } from '@/lib/demo';
+import { buildPlanMapFromSaasPlans, computeFinancialStats } from '@/lib/analytics/financial-metrics';
 
 /** Pagos en memoria (solo desarrollo sin Supabase; en Vercel usar Supabase) */
 let payments: PaymentRecord[] = [];
@@ -80,6 +81,7 @@ export function getPayments(filters?: {
   status?: PaymentStatus;
   clientId?: string;
   q?: string;
+  limit?: number;
 }): PaymentRecord[] {
   let list = [...payments];
   if (filters?.status) list = list.filter((p) => p.status === filters.status);
@@ -94,9 +96,11 @@ export function getPayments(filters?: {
         p.id.toLowerCase().includes(q)
     );
   }
-  return list.sort(
+  list = list.sort(
     (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
   );
+  if (filters?.limit && filters.limit > 0) return list.slice(0, filters.limit);
+  return list;
 }
 
 export function getPaymentById(id: string): PaymentRecord | undefined {
@@ -164,65 +168,7 @@ export function createPaymentFromPos(payload: PosPaymentPayload): PaymentRecord 
 }
 
 export function getFinancialStats(): FinancialStats {
-  const approved = payments.filter((p) => p.status === 'approved');
-  const totalRevenue = approved.reduce((s, p) => s + p.amount, 0);
-  const now = new Date();
-  const thisMonth = now.getMonth();
-  const thisYear = now.getFullYear();
-  const monthlyRevenue = approved
-    .filter((p) => {
-      const d = new Date(p.submittedAt);
-      return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
-    })
-    .reduce((s, p) => s + p.amount, 0);
-
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  const revenueByMonth = months.map((month, i) => ({
-    month,
-    amount: approved
-      .filter((p) => {
-        const d = new Date(p.submittedAt);
-        return d.getMonth() === i && d.getFullYear() === thisYear;
-      })
-      .reduce((s, p) => s + p.amount, 0),
-  }));
-
-  const activeClients = MOCK_CLIENTS.filter((c) => c.licenseStatus === 'activo').length;
-  const premiumClients = MOCK_CLIENTS.filter((c) => c.planId === 'plan_premium').length;
-
-  return {
-    totalRevenue,
-    monthlyRevenue,
-    yearlyRevenue: totalRevenue,
-    activeClients,
-    premiumClients,
-    pendingPayments: payments.filter((p) => p.status === 'pending').length,
-    overdueClients: MOCK_CLIENTS.filter((c) => c.licenseStatus === 'vencido').length,
-    newClientsThisMonth: 0,
-    churnRate: 0,
-    renewalRate: 0,
-    activeUsers: MOCK_CLIENTS.length,
-    revenueByMonth,
-    planDistribution: premiumClients
-      ? [{ plan: 'Premium', count: premiumClients }]
-      : [],
-    approvedPaymentsThisMonth: payments.filter((p) => {
-      const d = new Date(p.submittedAt);
-      return (
-        p.status === 'approved' &&
-        d.getMonth() === thisMonth &&
-        d.getFullYear() === thisYear
-      );
-    }).length,
-    rejectedPaymentsThisMonth: payments.filter((p) => {
-      const d = new Date(p.submittedAt);
-      return (
-        p.status === 'rejected' &&
-        d.getMonth() === thisMonth &&
-        d.getFullYear() === thisYear
-      );
-    }).length,
-  };
+  return computeFinancialStats(payments, MOCK_CLIENTS, buildPlanMapFromSaasPlans(MOCK_PLANS));
 }
 
 export function getClients() {
