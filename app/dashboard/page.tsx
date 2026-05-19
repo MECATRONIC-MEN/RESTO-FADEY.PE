@@ -1,30 +1,20 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import {
-  BookOpen,
-  Gift,
-  PlayCircle,
-  Tag,
-  Newspaper,
-  ArrowRight,
-} from 'lucide-react';
+import { BookOpen, PlayCircle, Tag, LifeBuoy, ArrowRight } from 'lucide-react';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import {
   RECENT_COURSES,
   FEATURED_VIDEOS,
   ACTIVE_PROMOTIONS,
-  SYSTEM_NEWS,
   QUICK_LINKS,
 } from '@/lib/dashboard-data';
 
 const ICONS = {
-  gift: Gift,
   tag: Tag,
   book: BookOpen,
   play: PlayCircle,
-  graduation: BookOpen,
-  folder: BookOpen,
+  support: LifeBuoy,
 } as const;
 
 export default async function DashboardPage() {
@@ -159,23 +149,15 @@ export default async function DashboardPage() {
           </Link>
         </DashboardCard>
 
-        <DashboardCard title="Noticias del sistema">
-          <ul className="space-y-3">
-            {SYSTEM_NEWS.map((news) => (
-              <li key={news.id} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
-                <p className="text-sm text-gray-200">{news.title}</p>
-                <p className="mt-1 flex items-center gap-1 text-xs text-gray-500">
-                  <Newspaper className="h-3 w-3" />
-                  {news.date}
-                </p>
-              </li>
-            ))}
-          </ul>
+        <DashboardCard title="Soporte">
+          <p className="text-sm text-brand-mist">
+            ¿Necesitas ayuda con tu licencia, POS o capacitación? Contáctanos por WhatsApp o correo.
+          </p>
           <Link
-            href="/dashboard/noticias"
+            href="/dashboard/soporte"
             className="mt-4 inline-flex items-center gap-1 text-sm text-brand-cyan hover:underline"
           >
-            Más noticias <ArrowRight className="h-4 w-4" />
+            Ir a soporte <ArrowRight className="h-4 w-4" />
           </Link>
         </DashboardCard>
       </div>

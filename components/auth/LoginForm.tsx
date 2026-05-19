@@ -31,7 +31,7 @@ export function LoginForm() {
     setLoading(false);
 
     if (result?.error) {
-      setError('Credenciales incorrectas. Verifica tu email y contraseña.');
+      setError('Credenciales incorrectas. Verifica tu usuario y contraseña.');
       return;
     }
 
@@ -55,17 +55,17 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-brand-mist">
-          Correo electrónico
+          Usuario o correo
         </label>
         <input
           id="email"
-          type="email"
-          autoComplete="email"
+          type="text"
+          autoComplete="username"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={inputClass}
-          placeholder="tu@restaurante.com"
+          placeholder="Nombre de su restaurante"
         />
       </div>
       <div>

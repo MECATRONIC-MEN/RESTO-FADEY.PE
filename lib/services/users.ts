@@ -69,11 +69,52 @@ export async function findUserByEmail(email: string): Promise<PlatformUser | nul
   };
 }
 
+/** Login por correo o por nombre de usuario (restaurante). */
+export async function findUserByLogin(login: string): Promise<PlatformUser | null> {
+  const trimmed = login.trim();
+  if (!trimmed) return null;
+
+  if (trimmed.includes('@')) {
+    return findUserByEmail(trimmed);
+  }
+
+  if (isSupabaseConfigured()) {
+    const db = getSupabaseAdmin()!;
+    const { data, error } = await db
+      .from('users')
+      .select('*, clients(business_name, plan_id)')
+      .eq('is_active', true)
+      .ilike('name', trimmed);
+
+    if (error || !data?.length) return null;
+    if (data.length > 1) {
+      const cliente = data.filter((r) => (r as DbUser).role === 'cliente');
+      if (cliente.length === 1) return mapDbUser(cliente[0] as DbUser);
+      return null;
+    }
+    return mapDbUser(data[0] as DbUser);
+  }
+
+  const mock = USERS.find((u) => u.name.toLowerCase() === trimmed.toLowerCase());
+  if (!mock) return null;
+  return {
+    id: mock.id,
+    email: mock.email,
+    passwordHash: mock.passwordHash,
+    name: mock.name,
+    role: mock.role,
+    clientId: mock.clientId ?? null,
+    restaurant: mock.restaurant ?? null,
+    plan: mock.plan ?? null,
+    isActive: true,
+  };
+}
+
 export async function verifyUserPassword(
-  email: string,
+  login: string,
   password: string
 ): Promise<PlatformUser | null> {
-  const user = await findUserByEmail(email);
+  const user = await findUserByLogin(login);
   if (!user) return null;
   const valid = await bcrypt.compare(password, user.passwordHash);
   return valid ? user : null;

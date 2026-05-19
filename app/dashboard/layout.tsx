@@ -1,6 +1,8 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { DashboardSidebar } from '@/components/layouts/DashboardSidebar';
+import { DASHBOARD_TOP_BAR_HEIGHT } from '@/components/layouts/dashboard-layout-constants';
+import { cn } from '@/lib/utils';
 
 export const metadata = {
   title: 'Mi panel',
@@ -23,8 +25,13 @@ export default async function DashboardLayout({
       </div>
       <DashboardSidebar />
       <div className="relative lg:pl-64">
-        <header className="sticky top-0 z-30 border-b border-brand-cyan/15 bg-brand-navy/80 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-8 lg:py-5">
-          <div className="flex items-center justify-between gap-4 pl-12 lg:pl-0">
+        <header
+          className={cn(
+            'sticky top-0 z-30 flex items-center border-b border-brand-cyan/15 bg-brand-navy/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8',
+            DASHBOARD_TOP_BAR_HEIGHT
+          )}
+        >
+          <div className="flex w-full items-center justify-between gap-4 pl-12 lg:pl-0">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-brand-cyan">
                 Resto Fadey

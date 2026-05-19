@@ -141,8 +141,6 @@ export function PaymentApprovalCenter() {
         }
       />
 
-      <IntegrationDiagnostics />
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard
           label="Pendientes"
@@ -413,6 +411,8 @@ export function PaymentApprovalCenter() {
           <code className="text-brand-cyan">GET /api/payments/confirm?paymentId=</code>.
         </p>
       </DashboardCard>
+
+      <IntegrationDiagnostics />
     </div>
   );
 }

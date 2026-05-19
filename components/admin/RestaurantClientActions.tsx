@@ -11,7 +11,10 @@ import {
   ExternalLink,
   Wifi,
   Trash2,
+  KeyRound,
 } from 'lucide-react';
+import { ClientPortalCredentialsCard } from './ClientPortalCredentialsCard';
+import type { ClientPortalCredentials } from '@/lib/domain/types';
 import type { SaasClient } from '@/lib/domain/types';
 
 interface RestaurantClientActionsProps {
@@ -22,6 +25,7 @@ interface RestaurantClientActionsProps {
 export function RestaurantClientActions({ client, onChanged }: RestaurantClientActionsProps) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [portalAccess, setPortalAccess] = useState<ClientPortalCredentials | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,6 +93,25 @@ export function RestaurantClientActions({ client, onChanged }: RestaurantClientA
     }
   }
 
+  async function generatePortalAccess() {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/clients/${client.id}/portal-access`, { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error ?? 'Error');
+      setPortalAccess({
+        username: json.data.username,
+        password: json.data.password,
+        email: json.data.email,
+      });
+      setOpen(false);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function showDetails() {
     setBusy(true);
     try {
@@ -134,6 +157,27 @@ export function RestaurantClientActions({ client, onChanged }: RestaurantClientA
     'flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-brand-mist hover:bg-white/10 disabled:opacity-50';
 
   return (
+    <>
+    {portalAccess && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/60"
+          onClick={() => setPortalAccess(null)}
+          aria-label="Cerrar"
+        />
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-brand-cyan/25 bg-brand-navy p-6">
+          <ClientPortalCredentialsCard credentials={portalAccess} />
+          <button
+            type="button"
+            className="btn-primary mt-4 w-full py-2 text-sm"
+            onClick={() => setPortalAccess(null)}
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    )}
     <div className="relative" ref={ref}>
       <button
         type="button"
@@ -146,6 +190,10 @@ export function RestaurantClientActions({ client, onChanged }: RestaurantClientA
       </button>
       {open && (
         <div className="absolute right-0 z-20 mt-1 min-w-[200px] rounded-xl border border-brand-cyan/20 bg-brand-navy py-1 shadow-lg">
+          <button type="button" className={itemClass} onClick={generatePortalAccess}>
+            <KeyRound className="h-4 w-4 shrink-0" />
+            Generar acceso panel
+          </button>
           <button type="button" className={itemClass} onClick={showDetails}>
             <Eye className="h-4 w-4 shrink-0" />
             Ver detalles
@@ -188,5 +236,6 @@ export function RestaurantClientActions({ client, onChanged }: RestaurantClientA
         </div>
       )}
     </div>
+    </>
   );
 }

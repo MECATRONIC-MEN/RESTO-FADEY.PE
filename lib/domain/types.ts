@@ -69,11 +69,18 @@ export interface PosRestaurantInfo {
   systemVersion?: string;
 }
 
+export interface ClientPortalCredentials {
+  username: string;
+  password: string;
+  email: string;
+}
+
 export interface ConnectRestaurantResult {
   client: SaasClient;
   created: boolean;
   posOnline: boolean;
   message: string;
+  portalAccess?: ClientPortalCredentials;
 }
 
 export interface PaymentRecord {

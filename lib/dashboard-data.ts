@@ -23,10 +23,8 @@ export const SYSTEM_NEWS = [
 ] as const;
 
 export const QUICK_LINKS = [
-  { href: '/dashboard/beneficios', label: 'Beneficios', icon: 'gift' as const },
   { href: '/dashboard/promociones', label: 'Promociones', icon: 'tag' as const },
-  { href: '/dashboard/cursos', label: 'Cursos', icon: 'book' as const },
   { href: '/dashboard/videos', label: 'Videos', icon: 'play' as const },
-  { href: '/dashboard/academia', label: 'Academia', icon: 'graduation' as const },
-  { href: '/dashboard/recursos', label: 'Recursos', icon: 'folder' as const },
+  { href: '/dashboard/cursos', label: 'Cursos', icon: 'book' as const },
+  { href: '/dashboard/soporte', label: 'Soporte', icon: 'support' as const },
 ] as const;

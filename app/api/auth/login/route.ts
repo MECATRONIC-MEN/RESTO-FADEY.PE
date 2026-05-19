@@ -15,10 +15,10 @@ export async function POST(request: Request) {
   }
 
   if (!body.email || !body.password) {
-    return jsonError('email y password son requeridos');
+    return jsonError('usuario (o email) y password son requeridos');
   }
 
-  const user = await verifyUserPassword(body.email, body.password);
+  const user = await verifyUserPassword(body.email.trim(), body.password);
   if (!user) {
     return jsonError('Credenciales inválidas', 401);
   }

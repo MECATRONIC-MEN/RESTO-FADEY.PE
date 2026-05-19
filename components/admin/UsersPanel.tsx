@@ -197,10 +197,10 @@ export function UsersPanel() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-white/10 bg-white/5 text-xs uppercase text-brand-slate">
-                  <th className="px-4 py-3">Nombre</th>
-                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Usuario (acceso)</th>
+                  <th className="px-4 py-3">Correo técnico</th>
                   <th className="px-4 py-3">Rol</th>
-                  <th className="px-4 py-3">Cliente vinculado</th>
+                  <th className="px-4 py-3">Restaurante vinculado</th>
                 </tr>
               </thead>
               <tbody>
@@ -213,8 +213,15 @@ export function UsersPanel() {
                 ) : (
                   filteredAccounts.map((a) => (
                     <tr key={a.id} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="px-4 py-3 font-medium text-brand-soft">{a.name}</td>
-                      <td className="px-4 py-3 text-brand-mist">{a.email}</td>
+                      <td className="px-4 py-3 font-medium text-brand-soft">
+                        {a.role === 'cliente' ? a.name : a.name}
+                        {a.role === 'cliente' && (
+                          <p className="mt-0.5 text-[10px] text-brand-slate">
+                            Ingreso: nombre del restaurante
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-brand-mist">{a.email}</td>
                       <td className="px-4 py-3 capitalize text-brand-slate">{a.role}</td>
                       <td className="px-4 py-3 text-xs text-brand-mist">
                         {a.clientId
