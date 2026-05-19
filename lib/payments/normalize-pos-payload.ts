@@ -17,22 +17,18 @@ function pickString(obj: Record<string, unknown>, keys: string[]): string | unde
   return undefined;
 }
 
-function normalizeMethod(raw: string | undefined): PaymentMethod | undefined {
-  if (!raw) return undefined;
+function normalizeMethod(raw: string | undefined): PaymentMethod {
+  if (!raw) return 'transferencia';
   const m = raw.toLowerCase().trim() as PaymentMethod;
   return METHODS.includes(m) ? m : 'otro';
 }
 
 /**
- * Acepta variantes de payload que envía el POS real.
+ * Payload mínimo POS → panel SaaS (solo pagos / licencia).
  */
 export function normalizePosPaymentPayload(body: Record<string, unknown>): PosPaymentPayload {
   const clientId =
     pickString(body, ['clientId', 'client_id', 'clienteId', 'restaurantId']) ?? '';
-
-  const method = normalizeMethod(
-    pickString(body, ['method', 'paymentMethod', 'payment_method', 'metodo'])
-  );
 
   const amountRaw = body.amount ?? body.monto;
   const amount =
@@ -60,21 +56,50 @@ export function normalizePosPaymentPayload(body: Record<string, unknown>): PosPa
   if (statusRaw === 'aprobado' || statusRaw === 'approved') paymentStatus = 'approved';
   if (statusRaw === 'rechazado' || statusRaw === 'rejected') paymentStatus = 'rejected';
 
+  const operationNumber = pickString(body, [
+    'operationNumber',
+    'operation_number',
+    'numeroOperacion',
+    'numero_operacion',
+    'nroOperacion',
+  ]);
+
+  const paymentDate = pickString(body, [
+    'paymentDate',
+    'payment_date',
+    'fechaPago',
+    'fecha_pago',
+  ]);
+
+  const submittedAt =
+    paymentDate ??
+    pickString(body, ['submittedAt', 'submitted_at', 'createdAt', 'created_at']);
+
   return {
     clientId,
     restaurantName:
       pickString(body, ['restaurantName', 'restaurant_name', 'businessName', 'business_name']) ??
       undefined,
     businessName: pickString(body, ['businessName', 'business_name']) ?? undefined,
+    adminName: pickString(body, ['adminName', 'admin_name', 'contactName', 'contact_name']) ??
+      undefined,
+    adminEmail: pickString(body, ['adminEmail', 'admin_email', 'email']) ?? undefined,
     amount,
-    method: method ?? 'otro',
+    method: normalizeMethod(
+      pickString(body, ['method', 'paymentMethod', 'payment_method', 'metodo'])
+    ),
     voucherUrl,
-    reference: pickString(body, ['reference', 'referencia', 'ref']),
+    reference:
+      operationNumber ??
+      pickString(body, ['reference', 'referencia', 'ref']),
+    operationNumber,
     period: pickString(body, ['period', 'periodo']),
     plan: pickString(body, ['plan', 'planName', 'plan_name']),
-    submittedAt: pickString(body, ['submittedAt', 'submitted_at', 'createdAt', 'created_at']),
+    submittedAt,
     createdAt: pickString(body, ['createdAt', 'created_at']),
+    paymentDate,
     paymentStatus: paymentStatus ?? 'pending',
+    renderUrl: pickString(body, ['renderUrl', 'render_url', 'posUrl', 'pos_url']) ?? undefined,
   };
 }
 
@@ -83,6 +108,8 @@ export function validatePosPaymentPayload(payload: PosPaymentPayload): string | 
   if (!Number.isFinite(payload.amount) || payload.amount <= 0) {
     return 'amount debe ser un número mayor a 0';
   }
-  if (!payload.method) return 'method / paymentMethod es requerido';
+  if (!payload.voucherUrl) {
+    return 'voucherUrl es requerido (URL pública del comprobante)';
+  }
   return null;
 }

@@ -6,11 +6,16 @@ import { isValidApiSecret } from '@/lib/jwt';
  * El POS debe exponer: POST {NEXT_PUBLIC_POS_URL}/api/payments/confirm
  */
 export async function notifyPosPaymentConfirm(
-  payload: PaymentConfirmPayload
+  payload: PaymentConfirmPayload,
+  posBaseUrl?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
-  const posBase = process.env.NEXT_PUBLIC_POS_URL?.replace(/\/$/, '');
+  const posBase =
+    posBaseUrl?.replace(/\/$/, '') ?? process.env.NEXT_PUBLIC_POS_URL?.replace(/\/$/, '');
   if (!posBase) {
-    return { ok: false, error: 'NEXT_PUBLIC_POS_URL no configurada' };
+    return {
+      ok: false,
+      error: 'URL del POS no configurada (render_url del cliente o NEXT_PUBLIC_POS_URL)',
+    };
   }
 
   const secret = process.env.API_SECRET_KEY ?? process.env.POS_API_KEY;

@@ -23,6 +23,7 @@ export default function AdminEntornoPage() {
             <li>POST /api/payments</li>
             <li>PATCH /api/payments/[id]</li>
             <li>GET/POST /api/payments/confirm</li>
+            <li>GET /api/license-status/[clientId]</li>
             <li>GET /api/users</li>
             <li>GET /api/licenses</li>
             <li>GET /api/plans</li>
@@ -35,7 +36,8 @@ export default function AdminEntornoPage() {
         </DashboardCard>
         <DashboardCard title="Variables">
           <p className="text-sm text-brand-mist">
-            Producción: Vercel → restofadey.pe. POS en Render: integración futura (API_SECRET_KEY).
+            POS Render: CLIENT_ID + CENTRAL_API_URL + API_SECRET_KEY + header X-Client-Id.
+            Cada cliente puede tener render_url en Supabase para notificar aprobaciones.
           </p>
         </DashboardCard>
       </div>

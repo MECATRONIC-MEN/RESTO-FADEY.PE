@@ -1,6 +1,7 @@
 import { getPaymentById, updatePaymentStatus } from './payments';
 import { activateLicenseForPayment, getLicenseStatusForClient } from './licenses';
 import { buildConfirmPayload, notifyPosPaymentConfirm } from '@/lib/integrations/pos-notify';
+import { getClientPosUrl } from '@/lib/services/client-license';
 import type { PaymentApprovalResult, PaymentStatus } from '@/lib/domain/types';
 
 export async function processPaymentDecision(
@@ -21,13 +22,15 @@ export async function processPaymentDecision(
     planStatus = await activateLicenseForPayment(existing.clientId);
   } else if (status === 'rejected') {
     planStatus = await getLicenseStatusForClient(existing.clientId);
+    await setClientPaymentStatus(existing.clientId, 'rejected');
   }
 
   const payment = await updatePaymentStatus(paymentId, status, approvedBy, notes);
   if (!payment) throw new Error('No se pudo actualizar el pago');
 
   const confirmPayload = buildConfirmPayload(payment, planStatus);
-  const notify = await notifyPosPaymentConfirm(confirmPayload);
+  const posUrl = await getClientPosUrl(payment.clientId);
+  const notify = await notifyPosPaymentConfirm(confirmPayload, posUrl);
 
   if (notify.ok) {
     await markPosNotified(paymentId);
@@ -39,6 +42,19 @@ export async function processPaymentDecision(
     posNotified: notify.ok,
     posNotifyError: notify.error,
   };
+}
+
+async function setClientPaymentStatus(
+  clientId: string,
+  paymentStatus: 'approved' | 'rejected' | 'pending'
+): Promise<void> {
+  const { isSupabaseConfigured } = await import('@/lib/supabase/config');
+  if (!isSupabaseConfigured()) return;
+  const { getSupabaseAdmin } = await import('@/lib/supabase/admin');
+  await getSupabaseAdmin()!
+    .from('clients')
+    .update({ payment_status: paymentStatus })
+    .eq('id', clientId);
 }
 
 async function markPosNotified(paymentId: string): Promise<void> {
@@ -59,7 +75,8 @@ export async function retryPosNotification(paymentId: string): Promise<PaymentAp
   if (payment.status === 'pending') throw new Error('El pago aún está pendiente');
 
   const planStatus = await getLicenseStatusForClient(payment.clientId);
-  const notify = await notifyPosPaymentConfirm(buildConfirmPayload(payment, planStatus));
+  const posUrl = await getClientPosUrl(payment.clientId);
+  const notify = await notifyPosPaymentConfirm(buildConfirmPayload(payment, planStatus), posUrl);
 
   if (notify.ok) await markPosNotified(paymentId);
 

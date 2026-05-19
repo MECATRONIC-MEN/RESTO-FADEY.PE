@@ -14,12 +14,40 @@ async function resolveClientIdForPayment(requestedId: string): Promise<string> {
   const { data: match } = await db.from('clients').select('id').eq('id', requestedId).maybeSingle();
   if (match?.id) return match.id as string;
 
-  const { data: demo } = await db.from('clients').select('id').eq('id', DEMO_CLIENT_ID).maybeSingle();
-  if (demo?.id) return DEMO_CLIENT_ID;
+  const allowDemo =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.ALLOW_DEMO_CLIENT_FALLBACK === 'true';
 
-  throw new Error(
-    `clientId no registrado (${requestedId}). Use ${DEMO_CLIENT_ID} para el cliente demo.`
-  );
+  if (allowDemo) {
+    const { data: demo } = await db
+      .from('clients')
+      .select('id')
+      .eq('id', DEMO_CLIENT_ID)
+      .maybeSingle();
+    if (demo?.id) return DEMO_CLIENT_ID;
+  }
+
+  throw new Error(`clientId no registrado en el panel SaaS (${requestedId})`);
+}
+
+async function syncClientFromPosPayload(
+  clientId: string,
+  payload: PosPaymentPayload
+): Promise<void> {
+  const db = getSupabaseAdmin()!;
+  const updates: Record<string, unknown> = {
+    last_activity_at: new Date().toISOString(),
+    payment_status: payload.paymentStatus ?? 'pending',
+  };
+
+  if (payload.adminName) updates.contact_name = payload.adminName;
+  if (payload.adminEmail) updates.email = payload.adminEmail;
+  if (payload.restaurantName || payload.businessName) {
+    updates.business_name = payload.restaurantName ?? payload.businessName;
+  }
+  if (payload.renderUrl) updates.render_url = payload.renderUrl;
+
+  await db.from('clients').update(updates).eq('id', clientId);
 }
 
 function mapPayment(row: Record<string, unknown>): PaymentRecord {
@@ -37,7 +65,7 @@ function mapPayment(row: Record<string, unknown>): PaymentRecord {
     method: row.method as PaymentRecord['method'],
     status: row.status as PaymentStatus,
     voucherUrl: (row.voucher_url as string) ?? undefined,
-    reference: (row.reference as string) ?? undefined,
+    reference: (row.reference as string) ?? (row.operation_number as string) ?? undefined,
     period: (row.period as string) ?? '',
     planName: (row.plan_name as string) ?? undefined,
     createdAt: submittedAt,
@@ -118,6 +146,8 @@ export async function createPaymentFromPos(payload: PosPaymentPayload): Promise<
     .maybeSingle();
   if (client?.business_name) clientName = client.business_name;
 
+  await syncClientFromPosPayload(clientId, payload);
+
   const { data, error } = await db
     .from('payments')
     .insert({
@@ -128,7 +158,11 @@ export async function createPaymentFromPos(payload: PosPaymentPayload): Promise<
       method: payload.method,
       status,
       voucher_url: payload.voucherUrl ?? null,
-      reference: payload.reference ?? null,
+      reference: payload.reference ?? payload.operationNumber ?? null,
+      operation_number: payload.operationNumber ?? null,
+      admin_name: payload.adminName ?? null,
+      admin_email: payload.adminEmail ?? null,
+      payment_date: payload.paymentDate ?? submittedAt,
       period: payload.period ?? new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' }),
       plan_name: payload.plan ?? null,
       source: 'pos',

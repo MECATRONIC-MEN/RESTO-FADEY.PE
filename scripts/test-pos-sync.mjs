@@ -5,7 +5,6 @@
  */
 const platformUrl = process.env.NEXT_PUBLIC_PLATFORM_URL ?? 'http://localhost:3000';
 const apiSecret = process.env.API_SECRET_KEY ?? process.env.POS_API_KEY;
-/** Mismo ID que lib/demo.ts y seed Supabase */
 const clientId = process.env.DEMO_CLIENT_ID ?? 'b0000001-0000-4000-8000-000000000001';
 
 if (!apiSecret) {
@@ -13,26 +12,37 @@ if (!apiSecret) {
   process.exit(1);
 }
 
+const base = platformUrl.replace(/\/$/, '');
+const headers = {
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${apiSecret}`,
+  'X-Client-Id': clientId,
+};
+
 const payload = {
   clientId,
   restaurantName: 'Restaurante Demo POS',
+  adminName: 'Admin Demo',
+  adminEmail: 'demo@restofadey.pe',
   amount: 199,
   method: 'yape',
   voucherUrl: 'https://example.com/voucher-demo.jpg',
-  plan: 'pro',
-  createdAt: new Date().toISOString(),
+  operationNumber: `OP-${Date.now()}`,
+  paymentDate: new Date().toISOString(),
+  plan: 'Pro',
   paymentStatus: 'pending',
 };
 
-const res = await fetch(`${platformUrl.replace(/\/$/, '')}/api/payments`, {
+const payRes = await fetch(`${base}/api/payments`, {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiSecret}`,
-  },
+  headers,
   body: JSON.stringify(payload),
 });
+const payJson = await payRes.json();
+console.log('POST /api/payments', payRes.status, payJson);
 
-const json = await res.json();
-console.log(res.status, JSON.stringify(json, null, 2));
-process.exit(res.ok && json.success ? 0 : 1);
+const licRes = await fetch(`${base}/api/license-status/${clientId}`, { headers });
+const licJson = await licRes.json();
+console.log('GET /api/license-status', licRes.status, licJson);
+
+process.exit(payRes.ok && payJson.success ? 0 : 1);

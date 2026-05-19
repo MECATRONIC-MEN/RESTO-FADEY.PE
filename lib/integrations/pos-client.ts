@@ -1,23 +1,31 @@
 /**
- * Cliente HTTP para integrar en el POS (Vercel / Render).
- * Copiar este archivo al repositorio del POS o importar como paquete interno.
+ * Cliente HTTP para integrar en el POS (Render).
+ * Solo sincroniza pagos y consulta licencia — no ventas ni operaciones internas.
  *
- * Flujo recomendado tras subir voucher:
- * 1. Subir imagen a storage del POS (opcional)
- * 2. syncPaymentToPlatform() → aparece en /admin/payments (pendiente)
- * 3. Tras aprobación central, el POS recibe POST /api/payments/confirm
+ * Variables en el POS:
+ *   CLIENT_ID=
+ *   CENTRAL_API_URL=
+ *   API_SECRET_KEY=
+ *
+ * Siempre enviar header: X-Client-Id: {CLIENT_ID}
  */
+
+import type { ClientLicenseStatusResponse } from '@/lib/domain/types';
 
 export interface PosPaymentSyncInput {
   clientId: string;
   restaurantName: string;
+  adminName?: string;
+  adminEmail?: string;
   amount: number;
-  paymentMethod: 'transferencia' | 'yape' | 'plin' | 'efectivo' | 'tarjeta' | 'otro';
-  voucherUrl?: string;
+  paymentMethod?: 'transferencia' | 'yape' | 'plin' | 'efectivo' | 'tarjeta' | 'otro';
+  voucherUrl: string;
   plan?: string;
+  operationNumber?: string;
+  paymentDate?: string;
   reference?: string;
   period?: string;
-  createdAt?: string;
+  renderUrl?: string;
 }
 
 export interface PosLoginInput {
@@ -26,21 +34,25 @@ export interface PosLoginInput {
 }
 
 export class RestoFadeyPlatformClient {
+  private readonly clientId?: string;
+
   constructor(
     private readonly baseUrl: string,
-    private readonly apiSecret?: string
+    private readonly apiSecret?: string,
+    clientId?: string
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
+    this.clientId = clientId;
   }
 
   private headers(token?: string): HeadersInit {
     const h: Record<string, string> = { 'Content-Type': 'application/json' };
     const bearer = token ?? this.apiSecret;
     if (bearer) h.Authorization = `Bearer ${bearer}`;
+    if (this.clientId) h['X-Client-Id'] = this.clientId;
     return h;
   }
 
-  /** Mismo login que la web — usuarios compartidos */
   async login(input: PosLoginInput) {
     const res = await fetch(`${this.baseUrl}/api/auth/login`, {
       method: 'POST',
@@ -54,24 +66,31 @@ export class RestoFadeyPlatformClient {
     return json.data as { token: string; user: Record<string, unknown> };
   }
 
-  /**
-   * Sincroniza pago/voucher con el backoffice.
-   * Usar API_SECRET_KEY en producción o JWT de login().
-   */
+  /** Registra comprobante en el panel SaaS */
   async syncPayment(input: PosPaymentSyncInput, token?: string) {
+    const clientId = input.clientId || this.clientId;
+    if (!clientId) throw new Error('clientId es requerido');
+
     const res = await fetch(`${this.baseUrl}/api/payments`, {
       method: 'POST',
-      headers: this.headers(token),
+      headers: {
+        ...this.headers(token),
+        'X-Client-Id': clientId,
+      },
       body: JSON.stringify({
-        clientId: input.clientId,
+        clientId,
         restaurantName: input.restaurantName,
+        adminName: input.adminName,
+        adminEmail: input.adminEmail,
         amount: input.amount,
-        method: input.paymentMethod,
+        method: input.paymentMethod ?? 'transferencia',
         voucherUrl: input.voucherUrl,
         plan: input.plan,
-        reference: input.reference,
+        operationNumber: input.operationNumber,
+        paymentDate: input.paymentDate ?? new Date().toISOString(),
+        reference: input.reference ?? input.operationNumber,
         period: input.period,
-        createdAt: input.createdAt ?? new Date().toISOString(),
+        renderUrl: input.renderUrl,
         paymentStatus: 'pending',
       }),
     });
@@ -82,12 +101,30 @@ export class RestoFadeyPlatformClient {
     return json.data;
   }
 
-  /** Consultar decisión del admin (polling desde POS) */
-  async pollPaymentConfirm(paymentId: string) {
-    const res = await fetch(
-      `${this.baseUrl}/api/payments/confirm?paymentId=${encodeURIComponent(paymentId)}`,
-      { headers: this.headers() }
-    );
+  /** Consulta licencia y estado de pago del cliente */
+  async getLicenseStatus(clientId?: string): Promise<ClientLicenseStatusResponse> {
+    const id = clientId ?? this.clientId;
+    if (!id) throw new Error('clientId es requerido');
+
+    const res = await fetch(`${this.baseUrl}/api/license-status/${encodeURIComponent(id)}`, {
+      headers: this.headers(),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error ?? 'Error al consultar licencia');
+    }
+    return json.data as ClientLicenseStatusResponse;
+  }
+
+  /** Polling: decisión del admin sobre un pago */
+  async pollPaymentConfirm(paymentId: string, clientId?: string) {
+    const id = clientId ?? this.clientId;
+    const qs = new URLSearchParams({ paymentId });
+    if (id) qs.set('clientId', id);
+
+    const res = await fetch(`${this.baseUrl}/api/payments/confirm?${qs.toString()}`, {
+      headers: this.headers(),
+    });
     const json = await res.json();
     if (!res.ok || !json.success) {
       throw new Error(json.error ?? 'Error al consultar confirmación');
@@ -96,12 +133,11 @@ export class RestoFadeyPlatformClient {
   }
 }
 
-/** Helper — llamar después de guardar voucher en el POS */
 export async function syncPaymentToPlatform(
   platformUrl: string,
   apiSecret: string,
   input: PosPaymentSyncInput
 ) {
-  const client = new RestoFadeyPlatformClient(platformUrl, apiSecret);
+  const client = new RestoFadeyPlatformClient(platformUrl, apiSecret, input.clientId);
   return client.syncPayment(input);
 }

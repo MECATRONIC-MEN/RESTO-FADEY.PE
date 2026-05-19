@@ -1,5 +1,6 @@
 import { jsonOk, jsonError, requireAdminSession } from '@/lib/api/server-auth';
 import { requirePlatformAuth } from '@/lib/api/auth-middleware';
+import { assertBodyClientMatchesHeader, assertPosClientAccess } from '@/lib/api/pos-access';
 import { createPaymentFromPos, getPayments } from '@/lib/services/payments';
 import {
   normalizePosPaymentPayload,
@@ -45,6 +46,12 @@ export async function POST(request: Request) {
   if (validationError) {
     return jsonError(validationError);
   }
+
+  const denied = assertPosClientAccess(authResult, body.clientId, request);
+  if (denied) return denied;
+
+  const headerMismatch = assertBodyClientMatchesHeader(body.clientId, request);
+  if (headerMismatch) return headerMismatch;
 
   const diag = getSupabaseConfigDiagnostics();
   if (diag.warning) {

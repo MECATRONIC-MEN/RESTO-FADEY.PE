@@ -110,15 +110,33 @@ export interface PosPaymentPayload {
   clientId: string;
   businessName?: string;
   restaurantName?: string;
+  adminName?: string;
+  adminEmail?: string;
   amount: number;
   method: PaymentMethod;
   voucherUrl?: string;
   reference?: string;
+  operationNumber?: string;
   period?: string;
   submittedAt?: string;
   createdAt?: string;
+  paymentDate?: string;
   plan?: string;
   paymentStatus?: PaymentStatus;
+  renderUrl?: string;
+}
+
+/** Respuesta GET /api/license-status/:clientId para el POS */
+export interface ClientLicenseStatusResponse {
+  clientId: string;
+  restaurantName: string;
+  adminName: string;
+  adminEmail: string;
+  plan: string | null;
+  licenseStatus: LicenseStatus;
+  paymentStatus: PaymentStatus | null;
+  expirationDate: string | null;
+  renderUrl: string | null;
 }
 
 export interface PlatformUser {

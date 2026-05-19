@@ -48,7 +48,7 @@ export async function activateLicenseForPayment(
 
   await db
     .from('clients')
-    .update({ last_activity_at: now })
+    .update({ last_activity_at: now, payment_status: 'approved' })
     .eq('id', clientId);
 
   return 'activo';
