@@ -23,6 +23,7 @@ import {
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import { Logo } from '@/components/Logo';
+import { ADMIN_TOP_BAR_HEIGHT } from '@/components/layouts/AdminTopBar';
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 
@@ -84,11 +85,13 @@ function SidebarInner({
 
   return (
     <>
-      <div className="border-b border-brand-gold/20 p-5">
+      <div
+        className={cn(
+          'flex items-center border-b border-brand-gold/20 px-5',
+          ADMIN_TOP_BAR_HEIGHT
+        )}
+      >
         <Logo size="sm" href="/admin" />
-        <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-brand-gold-light">
-          Administración
-        </p>
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">

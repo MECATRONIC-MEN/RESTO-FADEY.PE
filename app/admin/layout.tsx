@@ -1,7 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/layouts/AdminSidebar';
-import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
+import { AdminTopBar } from '@/components/layouts/AdminTopBar';
 import { PwaInstallTracker } from '@/components/PwaInstallTracker';
 
 export const metadata = {
@@ -26,20 +26,7 @@ export default async function AdminLayout({
       </div>
       <AdminSidebar />
       <div className="relative lg:pl-64">
-        <header className="sticky top-0 z-30 border-b border-brand-gold/20 bg-brand-navy/85 px-4 py-4 backdrop-blur-xl sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 pl-12 lg:pl-0">
-            <div>
-              <h1 className="font-display text-lg font-semibold text-brand-soft">
-                Panel administrativo
-              </h1>
-              <p className="text-xs text-brand-mist">Gestión completa de Resto Fadey</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <AdminNotificationBell />
-              <p className="hidden text-sm text-brand-mist sm:block">{session.user.email}</p>
-            </div>
-          </div>
-        </header>
+        <AdminTopBar userEmail={session.user.email} />
         <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
       </div>
       <PwaInstallTracker />
