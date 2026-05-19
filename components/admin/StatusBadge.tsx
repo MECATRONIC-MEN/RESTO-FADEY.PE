@@ -10,6 +10,9 @@ const STYLES: Record<string, string> = {
   prueba: 'border-brand-cyan/40 bg-brand-cyan/15 text-brand-cyan',
   published: 'border-brand-cyan/40 bg-brand-cyan/15 text-brand-cyan',
   draft: 'border-white/20 bg-white/5 text-brand-mist',
+  online: 'border-emerald-400/40 bg-emerald-400/15 text-emerald-200',
+  offline: 'border-red-400/40 bg-red-400/15 text-red-200',
+  unknown: 'border-white/20 bg-white/5 text-brand-slate',
 };
 
 const LABELS: Record<string, string> = {
@@ -22,6 +25,9 @@ const LABELS: Record<string, string> = {
   prueba: 'Prueba',
   published: 'Publicado',
   draft: 'Borrador',
+  online: 'POS conectado',
+  offline: 'Sin conexión',
+  unknown: 'Sin verificar',
 };
 
 export function StatusBadge({ status }: { status: string }) {

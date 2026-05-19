@@ -72,11 +72,10 @@ export async function getClientLicenseStatus(
 }
 
 export async function getClientPosUrl(clientId: string): Promise<string | null> {
-  if (!isSupabaseConfigured()) return process.env.NEXT_PUBLIC_POS_URL ?? null;
+  if (!isSupabaseConfigured()) return null;
 
   const db = getSupabaseAdmin()!;
   const { data } = await db.from('clients').select('render_url').eq('id', clientId).maybeSingle();
   const url = (data?.render_url as string) ?? null;
-  if (url) return url.replace(/\/$/, '');
-  return process.env.NEXT_PUBLIC_POS_URL?.replace(/\/$/, '') ?? null;
+  return url ? url.replace(/\/$/, '') : null;
 }

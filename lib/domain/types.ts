@@ -28,6 +28,8 @@ export interface License {
   createdAt: string;
 }
 
+export type PosConnectionStatus = 'online' | 'offline' | 'unknown';
+
 export interface SaasClient {
   id: string;
   businessName: string;
@@ -41,6 +43,37 @@ export interface SaasClient {
   createdAt: string;
   lastActivityAt: string;
   posDeviceId?: string;
+  renderUrl?: string;
+  apiKey?: string;
+  systemVersion?: string;
+  isActive?: boolean;
+  posConnectionStatus?: PosConnectionStatus;
+  licenseExpiresAt?: string;
+  paymentStatus?: PaymentStatus | null;
+}
+
+/** Respuesta GET {renderUrl}/api/restaurant/info del POS */
+export interface PosRestaurantInfo {
+  clientId: string;
+  apiKey?: string;
+  restaurantName: string;
+  ownerName?: string;
+  ruc?: string;
+  phone?: string;
+  email?: string;
+  plan?: string;
+  licenseStatus?: string;
+  expirationDate?: string;
+  lastActivity?: string;
+  renderUrl?: string;
+  systemVersion?: string;
+}
+
+export interface ConnectRestaurantResult {
+  client: SaasClient;
+  created: boolean;
+  posOnline: boolean;
+  message: string;
 }
 
 export interface PaymentRecord {

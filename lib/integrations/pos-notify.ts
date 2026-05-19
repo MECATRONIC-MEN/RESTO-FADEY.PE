@@ -1,46 +1,33 @@
 import type { PaymentConfirmPayload, PaymentRecord } from '@/lib/domain/types';
 import { isValidApiSecret } from '@/lib/jwt';
+import { notifyPosLicenseConfirm } from '@/lib/integrations/pos-remote';
+import { getClientLicenseStatus } from '@/lib/services/client-license';
 
 /**
- * Notifica al POS la decisión del administrador central.
- * El POS debe exponer: POST {NEXT_PUBLIC_POS_URL}/api/payments/confirm
+ * Notifica al POS la decisión del administrador (usa renderUrl del cliente en DB).
  */
 export async function notifyPosPaymentConfirm(
   payload: PaymentConfirmPayload,
   posBaseUrl?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
-  const posBase =
-    posBaseUrl?.replace(/\/$/, '') ?? process.env.NEXT_PUBLIC_POS_URL?.replace(/\/$/, '');
+  const posBase = posBaseUrl?.replace(/\/$/, '');
   if (!posBase) {
     return {
       ok: false,
-      error: 'URL del POS no configurada (render_url del cliente o NEXT_PUBLIC_POS_URL)',
+      error: 'render_url del cliente no configurada — conecte el restaurante en Clientes',
     };
   }
 
-  const secret = process.env.API_SECRET_KEY ?? process.env.POS_API_KEY;
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (secret) headers.Authorization = `Bearer ${secret}`;
+  const lic = await getClientLicenseStatus(payload.clientId);
 
-  try {
-    const res = await fetch(`${posBase}/api/payments/confirm`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(15000),
-    });
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      return { ok: false, error: `POS respondió ${res.status}: ${text.slice(0, 200)}` };
-    }
-    return { ok: true };
-  } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : 'Error al contactar POS',
-    };
-  }
+  return notifyPosLicenseConfirm(posBase, {
+    clientId: payload.clientId,
+    paymentId: payload.paymentId,
+    status: payload.status,
+    planStatus: payload.planStatus,
+    planName: payload.planName,
+    expirationDate: lic?.expirationDate ?? null,
+  });
 }
 
 export function buildConfirmPayload(
