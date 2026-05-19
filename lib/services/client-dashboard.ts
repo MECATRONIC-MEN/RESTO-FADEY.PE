@@ -1,9 +1,9 @@
 import { getClientById } from '@/lib/services/clients';
 import {
-  listCourses,
-  listModuleVideos,
-  listResources,
-  listActivePromotions,
+  safeListCourses,
+  safeListModuleVideos,
+  safeListResources,
+  safeListActivePromotions,
 } from '@/lib/services/academy-content';
 import type { ClientDashboardSummary } from '@/lib/domain/types';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
@@ -13,10 +13,10 @@ export async function getClientDashboardSummary(
   clientId: string | null | undefined
 ): Promise<ClientDashboardSummary> {
   const [courses, videos, resources, promotions] = await Promise.all([
-    listCourses(true),
-    listModuleVideos(true),
-    listResources(true),
-    listActivePromotions(),
+    safeListCourses(true),
+    safeListModuleVideos(true),
+    safeListResources(true),
+    safeListActivePromotions(),
   ]);
 
   let planName: string | null = null;

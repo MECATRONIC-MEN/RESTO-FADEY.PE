@@ -1,8 +1,8 @@
 import { ClientCourseList } from '@/components/dashboard/ClientCourseList';
-import { listCourses } from '@/lib/services/academy-content';
+import { safeListCourses } from '@/lib/services/academy-content';
 
 export default async function CursosPage() {
-  const courses = await listCourses(true);
+  const courses = await safeListCourses(true);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

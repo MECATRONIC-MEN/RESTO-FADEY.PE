@@ -1,8 +1,8 @@
 import { ClientResourceList } from '@/components/dashboard/ClientResourceList';
-import { listResources } from '@/lib/services/academy-content';
+import { safeListResources } from '@/lib/services/academy-content';
 
 export default async function RecursosPage() {
-  const resources = await listResources(true);
+  const resources = await safeListResources(true);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

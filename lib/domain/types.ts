@@ -257,6 +257,9 @@ export interface AcademyModuleVideo {
   thumbnailUrl?: string;
   isPublished: boolean;
   hasVideo: boolean;
+  /** Módulo extra creado en admin (no es de los 9 del sistema) */
+  isCustom?: boolean;
+  sortOrder?: number;
 }
 
 export interface ClientPromotion {

@@ -1,3 +1,4 @@
+import { buildDefaultModuleVideos } from '@/lib/academy/default-modules';
 import { ACADEMY_SYSTEM_MODULES } from '@/lib/academy/system-modules';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
@@ -35,11 +36,35 @@ export async function listCourses(publishedOnly = false): Promise<AcademyCourse[
   }
 
   const db = getSupabaseAdmin()!;
-  let q = db.from('courses').select('*').order('sort_order', { ascending: true });
+  let q = db.from('courses').select('*');
   if (publishedOnly) q = q.eq('is_published', true);
   const { data, error } = await q;
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((r) => mapCourse(r as Record<string, unknown>));
+  if (error) {
+    if (error.message.includes('does not exist')) return [];
+    throw new Error(error.message);
+  }
+  const rows = (data ?? []) as Record<string, unknown>[];
+  rows.sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0));
+  return rows.map((r) => mapCourse(r));
+}
+
+function mapVideoRow(
+  row: Record<string, unknown> | undefined,
+  fallback: { slug: string; title: string; description: string },
+  isCustom: boolean
+): AcademyModuleVideo {
+  const videoUrl = row?.video_url as string | undefined;
+  return {
+    slug: fallback.slug,
+    title: (row?.title as string) ?? fallback.title,
+    description: (row?.description as string) ?? fallback.description,
+    videoUrl,
+    thumbnailUrl: (row?.thumbnail_url as string) ?? undefined,
+    isPublished: row ? Boolean(row.is_published) : false,
+    hasVideo: Boolean(videoUrl?.trim()),
+    isCustom,
+    sortOrder: row?.sort_order != null ? Number(row.sort_order) : undefined,
+  };
 }
 
 export async function createCourse(input: {
@@ -138,12 +163,13 @@ export async function deleteCourse(id: string): Promise<void> {
 
 export async function listModuleVideos(publishedOnly = false): Promise<AcademyModuleVideo[]> {
   const dbRows = new Map<string, Record<string, unknown>>();
+  const systemSlugs = new Set<string>(ACADEMY_SYSTEM_MODULES.map((m) => m.slug));
 
   if (isSupabaseConfigured()) {
     const db = getSupabaseAdmin()!;
-    let q = db.from('academy_videos').select('*').order('sort_order', { ascending: true });
-    if (publishedOnly) q = q.eq('is_published', true);
-    const { data, error } = await q;
+    const { data, error } = await db.from('academy_videos').select('*').order('sort_order', {
+      ascending: true,
+    });
     if (error && !error.message.includes('does not exist')) throw new Error(error.message);
     for (const row of data ?? []) {
       dbRows.set(row.module_slug as string, row as Record<string, unknown>);
@@ -157,24 +183,39 @@ export async function listModuleVideos(publishedOnly = false): Promise<AcademyMo
         video_url: v.videoUrl,
         thumbnail_url: v.thumbnailUrl,
         is_published: v.isPublished,
+        sort_order: v.sortOrder ?? 0,
       });
     }
   }
 
-  return ACADEMY_SYSTEM_MODULES.map((mod, index) => {
+  const systemVideos = ACADEMY_SYSTEM_MODULES.map((mod, index) => {
     const row = dbRows.get(mod.slug);
-    const videoUrl = row?.video_url as string | undefined;
-    const isPublished = row ? Boolean(row.is_published) : false;
-    return {
-      slug: mod.slug,
-      title: (row?.title as string) ?? mod.title,
-      description: (row?.description as string) ?? mod.description,
-      videoUrl,
-      thumbnailUrl: (row?.thumbnail_url as string) ?? undefined,
-      isPublished,
-      hasVideo: Boolean(videoUrl?.trim()),
-    };
+    const video = mapVideoRow(row, mod, false);
+    if (video.sortOrder == null) video.sortOrder = index;
+    return video;
   });
+
+  const customVideos: AcademyModuleVideo[] = [];
+  for (const [slug, row] of dbRows) {
+    if (systemSlugs.has(slug)) continue;
+    const video = mapVideoRow(
+      row,
+      {
+        slug,
+        title: (row.title as string) ?? 'Video',
+        description: (row.description as string) ?? '',
+      },
+      true
+    );
+    customVideos.push(video);
+  }
+  customVideos.sort((a, b) => (a.sortOrder ?? 99) - (b.sortOrder ?? 99));
+
+  let combined = [...systemVideos, ...customVideos];
+  if (publishedOnly) {
+    combined = combined.filter((v) => v.isPublished);
+  }
+  return combined;
 }
 
 export async function upsertModuleVideo(
@@ -185,35 +226,44 @@ export async function upsertModuleVideo(
     videoUrl?: string;
     thumbnailUrl?: string;
     isPublished?: boolean;
+    sortOrder?: number;
   }
 ): Promise<AcademyModuleVideo> {
   const mod = ACADEMY_SYSTEM_MODULES.find((m) => m.slug === moduleSlug);
-  if (!mod) throw new Error('Módulo no válido');
+  const isCustom = !mod;
+  const fallbackDesc = input.description ?? mod?.description ?? '';
 
   if (!isSupabaseConfigured()) {
     mockVideos[moduleSlug] = {
       title: input.title,
-      description: input.description,
+      description: fallbackDesc,
       videoUrl: input.videoUrl,
       thumbnailUrl: input.thumbnailUrl,
       isPublished: input.isPublished,
+      sortOrder: input.sortOrder,
     };
     const list = await listModuleVideos(false);
     return list.find((v) => v.slug === moduleSlug)!;
   }
 
   const db = getSupabaseAdmin()!;
+  const sortOrder =
+    input.sortOrder ??
+    (mod
+      ? ACADEMY_SYSTEM_MODULES.findIndex((m) => m.slug === moduleSlug)
+      : (await listModuleVideos(false)).length);
+
   const { data, error } = await db
     .from('academy_videos')
     .upsert(
       {
         module_slug: moduleSlug,
         title: input.title,
-        description: input.description ?? mod.description,
-        video_url: input.videoUrl ?? null,
+        description: fallbackDesc,
+        video_url: input.videoUrl?.trim() || null,
         thumbnail_url: input.thumbnailUrl ?? null,
         is_published: input.isPublished ?? false,
-        sort_order: ACADEMY_SYSTEM_MODULES.findIndex((m) => m.slug === moduleSlug),
+        sort_order: sortOrder,
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'module_slug' }
@@ -222,16 +272,77 @@ export async function upsertModuleVideo(
     .single();
   if (error) throw new Error(error.message);
 
-  const videoUrl = data.video_url as string | undefined;
-  return {
-    slug: moduleSlug,
-    title: data.title as string,
-    description: (data.description as string) ?? mod.description,
-    videoUrl,
-    thumbnailUrl: (data.thumbnail_url as string) ?? undefined,
-    isPublished: Boolean(data.is_published),
-    hasVideo: Boolean(videoUrl?.trim()),
-  };
+  return mapVideoRow(
+    data as Record<string, unknown>,
+    {
+      slug: moduleSlug,
+      title: input.title,
+      description: fallbackDesc,
+    },
+    isCustom
+  );
+}
+
+export async function createCustomModuleVideo(input: {
+  title: string;
+  description?: string;
+}): Promise<AcademyModuleVideo> {
+  const slug = `custom-${Date.now().toString(36)}`;
+  return upsertModuleVideo(slug, {
+    title: input.title.trim(),
+    description: input.description?.trim() ?? '',
+    isPublished: false,
+  });
+}
+
+export async function deleteModuleVideo(moduleSlug: string): Promise<void> {
+  const isSystem = ACADEMY_SYSTEM_MODULES.some((m) => m.slug === moduleSlug);
+
+  if (!isSupabaseConfigured()) {
+    if (isSystem) {
+      delete mockVideos[moduleSlug];
+    } else {
+      delete mockVideos[moduleSlug];
+    }
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { error } = await db.from('academy_videos').delete().eq('module_slug', moduleSlug);
+  if (error) throw new Error(error.message);
+}
+
+/** Listado seguro para páginas del panel cliente (no rompe si faltan tablas) */
+export async function safeListCourses(publishedOnly = false): Promise<AcademyCourse[]> {
+  try {
+    return await listCourses(publishedOnly);
+  } catch {
+    return [];
+  }
+}
+
+export async function safeListModuleVideos(publishedOnly = false): Promise<AcademyModuleVideo[]> {
+  try {
+    return await listModuleVideos(publishedOnly);
+  } catch {
+    return publishedOnly ? [] : buildDefaultModuleVideos();
+  }
+}
+
+export async function safeListResources(publishedOnly = false): Promise<AcademyResource[]> {
+  try {
+    return await listResources(publishedOnly);
+  } catch {
+    return [];
+  }
+}
+
+export async function safeListActivePromotions(): Promise<ClientPromotion[]> {
+  try {
+    return await listActivePromotions();
+  } catch {
+    return [];
+  }
 }
 
 function mapResource(row: Record<string, unknown>): AcademyResource {

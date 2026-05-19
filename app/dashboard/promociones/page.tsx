@@ -1,8 +1,8 @@
 import { Tag } from 'lucide-react';
-import { listActivePromotions } from '@/lib/services/academy-content';
+import { safeListActivePromotions } from '@/lib/services/academy-content';
 
 export default async function PromocionesPage() {
-  const promotions = await listActivePromotions();
+  const promotions = await safeListActivePromotions();
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

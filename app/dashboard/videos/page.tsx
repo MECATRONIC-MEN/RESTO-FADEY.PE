@@ -1,8 +1,8 @@
 import { ModuleVideoGrid } from '@/components/dashboard/ModuleVideoGrid';
-import { listModuleVideos } from '@/lib/services/academy-content';
+import { safeListModuleVideos } from '@/lib/services/academy-content';
 
 export default async function VideosPage() {
-  const modules = await listModuleVideos(false);
+  const modules = await safeListModuleVideos(false);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">

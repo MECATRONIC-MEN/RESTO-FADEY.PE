@@ -5,10 +5,10 @@ import { ArrowRight, BookOpen, PlayCircle, Tag, LifeBuoy, FolderOpen } from 'luc
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { getClientDashboardSummary } from '@/lib/services/client-dashboard';
 import {
-  listCourses,
-  listModuleVideos,
-  listResources,
-  listActivePromotions,
+  safeListCourses,
+  safeListModuleVideos,
+  safeListResources,
+  safeListActivePromotions,
 } from '@/lib/services/academy-content';
 import { QUICK_LINKS } from '@/lib/dashboard-data';
 
@@ -38,10 +38,10 @@ export default async function DashboardPage() {
   const clientId = session.user.clientId ?? null;
   const [summary, courses, videoData, resources, promotions] = await Promise.all([
     getClientDashboardSummary(clientId),
-    listCourses(true),
-    listModuleVideos(true),
-    listResources(true),
-    listActivePromotions(),
+    safeListCourses(true),
+    safeListModuleVideos(false),
+    safeListResources(true),
+    safeListActivePromotions(),
   ]);
 
   const publishedVideos = videoData.filter((v) => v.isPublished);
