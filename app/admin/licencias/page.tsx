@@ -5,6 +5,7 @@ import type { License, SaasClient, SaasPlan } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { resolvePlanLabel } from '@/lib/utils/plan-display';
 
 export default function AdminLicenciasPage() {
   const { data: licenses, loading } = useAdminApi<License[]>('/api/licenses');
@@ -49,13 +50,7 @@ export default function AdminLicenciasPage() {
               (licenses ?? []).map((lic) => {
                 const client = clientById.get(lic.clientId);
                 const plan = planById.get(lic.planId);
-                const planLabel =
-                  plan?.name ??
-                  (lic.planId.includes('premium')
-                    ? 'Premium'
-                    : lic.planId.includes('pro')
-                      ? 'Pro'
-                      : 'Básico');
+                const planLabel = resolvePlanLabel(lic.planId, planById);
                 return (
                   <tr key={lic.id} className="border-b border-white/5 hover:bg-white/5">
                     <td className="px-4 py-3 font-medium text-brand-soft">

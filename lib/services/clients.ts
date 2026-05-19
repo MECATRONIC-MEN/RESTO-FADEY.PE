@@ -5,8 +5,10 @@ import type { License, LicenseStatus, PlanTier, PosConnectionStatus, SaasClient 
 
 function mapClientRow(
   c: Record<string, unknown>,
-  lic?: { id: string; status: LicenseStatus; expires_at?: string }
+  lic?: { id: string; status: LicenseStatus; expires_at?: string; plan_id?: string }
 ): SaasClient {
+  const clientPlanId = (c.plan_id as string) ?? '';
+  const licensePlanId = (lic?.plan_id as string) ?? '';
   return {
     id: c.id as string,
     businessName: c.business_name as string,
@@ -14,7 +16,7 @@ function mapClientRow(
     contactName: c.contact_name as string,
     email: c.email as string,
     phone: (c.phone as string) ?? '',
-    planId: (c.plan_id as string) ?? '',
+    planId: clientPlanId || licensePlanId,
     licenseId: lic?.id ?? (c.license_id as string) ?? '',
     licenseStatus: lic?.status ?? 'prueba',
     createdAt: c.created_at as string,
@@ -39,12 +41,14 @@ export async function getClients(includeInactive = false): Promise<SaasClient[]>
     query = query.eq('is_active', true);
   }
   const { data: clients } = await query;
-  const { data: licenses } = await db.from('licenses').select('id, client_id, status, expires_at');
+  const { data: licenses } = await db
+    .from('licenses')
+    .select('id, client_id, status, expires_at, plan_id');
 
   const licByClient = new Map(
     (licenses ?? []).map((l) => [
       l.client_id as string,
-      l as { id: string; status: LicenseStatus; expires_at?: string },
+      l as { id: string; status: LicenseStatus; expires_at?: string; plan_id?: string },
     ])
   );
 

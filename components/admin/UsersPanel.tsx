@@ -10,15 +10,7 @@ import { StatusBadge } from './StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { ConnectRestaurantModal } from './ConnectRestaurantModal';
 import { RestaurantClientActions } from './RestaurantClientActions';
-
-function planLabel(c: SaasClient, planById: Map<string, SaasPlan>) {
-  const plan = planById.get(c.planId);
-  if (plan?.name) return plan.name;
-  if (c.planId.includes('premium')) return 'Premium';
-  if (c.planId.includes('pro')) return 'Pro';
-  if (c.planId.includes('basico')) return 'Básico';
-  return '—';
-}
+import { resolvePlanLabel } from '@/lib/utils/plan-display';
 
 function formatDate(iso?: string) {
   if (!iso) return '—';
@@ -146,7 +138,7 @@ export function UsersPanel() {
                   </tr>
                 ) : (
                   filteredClients.map((c) => {
-                    const label = planLabel(c, planById);
+                    const label = resolvePlanLabel(c.planId, planById);
                     const plan = planById.get(c.planId);
                     const conn = c.posConnectionStatus ?? 'unknown';
                     return (

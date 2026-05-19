@@ -210,6 +210,15 @@ export async function connectRestaurantFromPos(input: {
     await db.from('clients').update({ license_id: licenseId }).eq('id', clientId);
   }
 
+  const { data: licPlan } = await db
+    .from('licenses')
+    .select('plan_id')
+    .eq('client_id', clientId)
+    .maybeSingle();
+  if (licPlan?.plan_id) {
+    await db.from('clients').update({ plan_id: licPlan.plan_id }).eq('id', clientId);
+  }
+
   const client = await getClientById(clientId);
   if (!client) throw new Error('No se pudo cargar el cliente tras conectar');
 
