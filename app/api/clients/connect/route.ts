@@ -23,6 +23,13 @@ export async function POST(request: Request) {
     });
     return jsonOk(result, result.created ? 201 : 200);
   } catch (e) {
-    return jsonError(e instanceof Error ? e.message : 'Error al conectar', 500);
+    const msg = e instanceof Error ? e.message : 'Error al conectar';
+    if (msg.includes("api_key") && msg.includes('schema cache')) {
+      return jsonError(
+        'Falta la migración de base de datos. En Supabase → SQL Editor ejecute el archivo supabase/EJECUTAR_008_CONECTAR_POS.sql y vuelva a intentar.',
+        500
+      );
+    }
+    return jsonError(msg, 500);
   }
 }
