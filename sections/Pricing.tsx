@@ -3,6 +3,7 @@
 import { Check, Layers, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PLANS } from '@/lib/data';
+import { PLAN_DISPLAY_NAMES } from '@/lib/landing-data';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -18,20 +19,19 @@ export function Pricing() {
       <div className="relative mx-auto max-w-7xl">
         <SectionHeader
           badge="Planes"
-          title="Precios transparentes"
-          subtitle="Cada plan incluye módulos claros y escalables. Empieza con lo esencial y crece hasta la suite completa con inteligencia de negocio."
+          title="Inversión clara, valor premium"
+          subtitle="Comparativa moderna para escalar: empieza con lo esencial y crece hasta la suite empresarial con IA."
         />
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mx-auto mt-6 max-w-3xl text-center text-sm text-brand-mist"
+          className="mx-auto mt-6 w-full max-w-7xl overflow-x-auto text-center text-[11px] whitespace-nowrap text-brand-mist sm:text-xs md:text-sm [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <span className="text-brand-cyan">Básico</span> → operación diaria ·{' '}
-          <span className="text-brand-cyan">Pro</span> → inventario, pedidos y facturación ·{' '}
-          <span className="text-brand-gold">Premium</span> → indicadores, personal y finanzas
-          avanzadas
+          <span className="text-brand-cyan">Profesional</span> → inventario y facturación ·{' '}
+          <span className="text-brand-gold">Empresarial</span> → inventario inteligente, requerimientos y asistencia administrativa total
         </motion.p>
 
         <div className="mt-16 grid gap-8 lg:grid-cols-3">
@@ -42,11 +42,12 @@ export function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
+              whileHover={{ y: plan.highlighted ? -6 : -4 }}
               className={cn(
                 'relative flex flex-col rounded-2xl border p-8 transition-all duration-300',
                 plan.highlighted
-                  ? 'z-10 border-brand-gold/45 bg-premium-gradient shadow-glow-gold lg:scale-[1.02]'
-                  : 'glass-card border-white/15 hover:border-brand-cyan/25 hover:shadow-glow-cyan'
+                  ? 'z-10 border-brand-gold/45 bg-premium-gradient shadow-glow-gold lg:scale-[1.03]'
+                  : 'glass-card border-white/15 hover:border-brand-cyan/30 hover:shadow-glow-cyan'
               )}
             >
               {plan.badge && (
@@ -56,7 +57,9 @@ export function Pricing() {
               )}
 
               <div className="flex items-start justify-between gap-2">
-                <h3 className="font-display text-2xl font-bold text-brand-soft">{plan.name}</h3>
+                <h3 className="font-display text-2xl font-bold text-brand-soft">
+                  {PLAN_DISPLAY_NAMES[plan.name] ?? plan.name}
+                </h3>
                 {plan.highlighted && (
                   <Sparkles className="h-5 w-5 shrink-0 text-brand-gold-light" aria-hidden />
                 )}

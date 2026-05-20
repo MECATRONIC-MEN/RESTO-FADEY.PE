@@ -15,7 +15,14 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="footer" className="relative border-t border-white/10 bg-white/[0.03] backdrop-blur-sm">
+    <footer
+      id="footer"
+      className="relative border-t border-brand-cyan/15 bg-gradient-to-b from-white/[0.04] to-brand-deep/40 backdrop-blur-sm"
+    >
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-cyan/40 to-transparent"
+        aria-hidden
+      />
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

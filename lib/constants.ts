@@ -20,9 +20,9 @@ export const WHATSAPP_MESSAGE = encodeURIComponent(
 
 export const NAV_LINKS = [
   { href: '#inicio', label: 'Inicio' },
-  { href: '#funciones', label: 'Funciones' },
+  { href: '#modulos', label: 'Módulos' },
+  { href: '#ia', label: 'IA' },
   { href: '#beneficios', label: 'Beneficios' },
-  { href: '#galeria', label: 'Galería' },
   { href: '#planes', label: 'Planes' },
   { href: '#faq', label: 'FAQ' },
   { href: '#contacto', label: 'Contacto' },
