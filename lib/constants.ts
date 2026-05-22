@@ -19,13 +19,13 @@ export const WHATSAPP_MESSAGE = encodeURIComponent(
 );
 
 export const NAV_LINKS = [
-  { href: '#inicio', label: 'Inicio' },
-  { href: '#modulos', label: 'Módulos' },
-  { href: '#ia', label: 'IA' },
-  { href: '#beneficios', label: 'Beneficios' },
-  { href: '#planes', label: 'Planes' },
-  { href: '#faq', label: 'FAQ' },
-  { href: '#contacto', label: 'Contacto' },
+  { href: '/#inicio', label: 'Inicio' },
+  { href: '/#modulos', label: 'Módulos' },
+  { href: '/#ia', label: 'IA' },
+  { href: '/#beneficios', label: 'Beneficios' },
+  { href: '/#planes', label: 'Planes' },
+  { href: '/#faq', label: 'FAQ' },
+  { href: '/contacto', label: 'Contacto' },
 ] as const;
 
 export const SOCIAL_LINKS = [

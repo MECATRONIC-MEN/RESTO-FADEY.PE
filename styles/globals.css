@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@property --liquid-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 @layer base {
   :root {
     --bg-app: #0a2340;
@@ -92,6 +98,14 @@
     @apply inline-flex items-center rounded-full border border-brand-cyan/35 bg-brand-cyan/15 px-4 py-1 text-xs font-medium text-brand-cyan;
   }
 
+  .badge-tech-bright {
+    @apply inline-flex items-center rounded-full border border-brand-sky/45 bg-brand-sky/20 px-4 py-1 text-xs font-semibold text-brand-sky;
+  }
+
+  .badge-basic {
+    @apply inline-flex items-center rounded-full border border-white/25 bg-white/10 px-4 py-1 text-xs font-semibold text-brand-soft;
+  }
+
   .kpi-gold {
     @apply font-display font-bold text-brand-gold-light;
   }
@@ -134,6 +148,791 @@
   .glow-border:hover::before {
     opacity: 1;
   }
+
+  /*
+   * Líquido neón en el borde — un arco fino recorre el perímetro (mask).
+   * Celeste: ecosistema + plan Pro. Dorado: plan Empresarial.
+   */
+  .tech-border-shell,
+  .premium-border-shell,
+  .white-border-shell {
+    @apply relative isolate overflow-visible rounded-2xl;
+  }
+
+  .tech-border-shell {
+    --liquid-border-size: 2px;
+  }
+
+  /* Cards ecosistema (arriba): borde líquido al doble */
+  .tech-border-shell--ecosystem {
+    --liquid-border-size: 4px;
+  }
+
+  .tech-border-shell::after,
+  .premium-border-shell::after,
+  .white-border-shell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .tech-border-shell::after {
+    border: 1px solid rgba(59, 201, 244, 0.14);
+  }
+
+  .premium-border-shell::after {
+    border: 1px solid rgba(212, 175, 55, 0.14);
+  }
+
+  .white-border-shell::after {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .tech-border-shell::before,
+  .premium-border-shell::before,
+  .white-border-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: liquid-border-angle 9s linear infinite;
+  }
+
+  .tech-border-shell::before {
+    padding: var(--liquid-border-size);
+    background: conic-gradient(
+      from var(--liquid-angle),
+      transparent 0deg 344deg,
+      rgba(27, 140, 255, 0.35) 347deg,
+      rgba(140, 220, 255, 0.75) 349deg,
+      #3bc9f4 350deg,
+      #e8fcff 351deg,
+      #3bc9f4 352deg,
+      rgba(140, 220, 255, 0.75) 354deg,
+      rgba(27, 140, 255, 0.35) 357deg,
+      transparent 360deg
+    );
+  }
+
+  .premium-border-shell::before {
+    padding: 6px;
+    /* 5 flujos dorados (~32° cada uno), en secuencia al rotar */
+    background: conic-gradient(
+      from var(--liquid-angle),
+      transparent 0deg,
+      transparent 20deg,
+      rgba(184, 146, 42, 0.45) 24deg,
+      rgba(255, 236, 180, 0.88) 30deg,
+      #d4af37 36deg,
+      #fff8e8 40deg,
+      #f0d78c 44deg,
+      #d4af37 48deg,
+      rgba(255, 236, 180, 0.88) 52deg,
+      rgba(184, 146, 42, 0.45) 56deg,
+      transparent 60deg,
+      transparent 92deg,
+      rgba(184, 146, 42, 0.45) 96deg,
+      rgba(255, 236, 180, 0.88) 102deg,
+      #d4af37 108deg,
+      #fff8e8 112deg,
+      #f0d78c 116deg,
+      #d4af37 120deg,
+      rgba(255, 236, 180, 0.88) 124deg,
+      rgba(184, 146, 42, 0.45) 128deg,
+      transparent 132deg,
+      transparent 164deg,
+      rgba(184, 146, 42, 0.45) 168deg,
+      rgba(255, 236, 180, 0.88) 174deg,
+      #d4af37 180deg,
+      #fff8e8 184deg,
+      #f0d78c 188deg,
+      #d4af37 192deg,
+      rgba(255, 236, 180, 0.88) 196deg,
+      rgba(184, 146, 42, 0.45) 200deg,
+      transparent 204deg,
+      transparent 236deg,
+      rgba(184, 146, 42, 0.45) 240deg,
+      rgba(255, 236, 180, 0.88) 246deg,
+      #d4af37 252deg,
+      #fff8e8 256deg,
+      #f0d78c 260deg,
+      #d4af37 264deg,
+      rgba(255, 236, 180, 0.88) 268deg,
+      rgba(184, 146, 42, 0.45) 272deg,
+      transparent 276deg,
+      transparent 308deg,
+      rgba(184, 146, 42, 0.45) 312deg,
+      rgba(255, 236, 180, 0.88) 318deg,
+      #d4af37 324deg,
+      #fff8e8 328deg,
+      #f0d78c 332deg,
+      #d4af37 336deg,
+      rgba(255, 236, 180, 0.88) 340deg,
+      rgba(184, 146, 42, 0.45) 344deg,
+      transparent 348deg,
+      transparent 360deg
+    );
+    animation-duration: 11s;
+  }
+
+  .white-border-shell::before {
+    padding: 4px;
+    animation-duration: 10s;
+    animation-delay: var(--liquid-delay, 0s);
+    /* 5 flujos blancos en secuencia */
+    background: conic-gradient(
+      from var(--liquid-angle),
+      transparent 0deg,
+      transparent 20deg,
+      rgba(255, 255, 255, 0.22) 24deg,
+      rgba(255, 255, 255, 0.55) 30deg,
+      rgba(255, 255, 255, 0.92) 36deg,
+      #ffffff 40deg,
+      rgba(248, 252, 255, 1) 44deg,
+      rgba(255, 255, 255, 0.92) 48deg,
+      rgba(255, 255, 255, 0.55) 52deg,
+      rgba(255, 255, 255, 0.22) 56deg,
+      transparent 60deg,
+      transparent 92deg,
+      rgba(255, 255, 255, 0.22) 96deg,
+      rgba(255, 255, 255, 0.55) 102deg,
+      rgba(255, 255, 255, 0.92) 108deg,
+      #ffffff 112deg,
+      rgba(248, 252, 255, 1) 116deg,
+      rgba(255, 255, 255, 0.92) 120deg,
+      rgba(255, 255, 255, 0.55) 124deg,
+      rgba(255, 255, 255, 0.22) 128deg,
+      transparent 132deg,
+      transparent 164deg,
+      rgba(255, 255, 255, 0.22) 168deg,
+      rgba(255, 255, 255, 0.55) 174deg,
+      rgba(255, 255, 255, 0.92) 180deg,
+      #ffffff 184deg,
+      rgba(248, 252, 255, 1) 188deg,
+      rgba(255, 255, 255, 0.92) 192deg,
+      rgba(255, 255, 255, 0.55) 196deg,
+      rgba(255, 255, 255, 0.22) 200deg,
+      transparent 204deg,
+      transparent 236deg,
+      rgba(255, 255, 255, 0.22) 240deg,
+      rgba(255, 255, 255, 0.55) 246deg,
+      rgba(255, 255, 255, 0.92) 252deg,
+      #ffffff 256deg,
+      rgba(248, 252, 255, 1) 260deg,
+      rgba(255, 255, 255, 0.92) 264deg,
+      rgba(255, 255, 255, 0.55) 268deg,
+      rgba(255, 255, 255, 0.22) 272deg,
+      transparent 276deg,
+      transparent 308deg,
+      rgba(255, 255, 255, 0.22) 312deg,
+      rgba(255, 255, 255, 0.55) 318deg,
+      rgba(255, 255, 255, 0.92) 324deg,
+      #ffffff 328deg,
+      rgba(248, 252, 255, 1) 332deg,
+      rgba(255, 255, 255, 0.92) 336deg,
+      rgba(255, 255, 255, 0.55) 340deg,
+      rgba(255, 255, 255, 0.22) 344deg,
+      transparent 348deg,
+      transparent 360deg
+    );
+  }
+
+  .tech-border-inner,
+  .premium-border-inner {
+    @apply relative z-[2] flex min-h-0 flex-1 flex-col rounded-[14px] bg-brand-navy/90 backdrop-blur-md;
+  }
+
+  .tech-border-inner {
+    margin: var(--liquid-border-size);
+    @apply border border-brand-sky/25;
+  }
+
+  .premium-border-inner {
+    margin: 6px;
+    @apply border border-brand-gold/25;
+    background: linear-gradient(
+      180deg,
+      rgba(212, 175, 55, 0.06) 0%,
+      rgba(11, 35, 66, 0.98) 18%,
+      rgba(11, 35, 66, 0.98) 100%
+    );
+  }
+
+  .white-border-inner {
+    margin: 4px;
+    @apply relative z-[2] flex flex-col rounded-[14px] border border-white/15 bg-white/[0.06] backdrop-blur-md;
+  }
+
+  .white-border-shell:hover::before {
+    animation-duration: 7.5s;
+  }
+
+  .tech-border-shell:hover::before {
+    animation-duration: 7s;
+  }
+
+  .premium-border-shell:hover::before {
+    animation-duration: 8s;
+  }
+
+  /* Radar: haz de luz desde esquina superior izquierda → inferior derecha */
+  .radar-sweep-card {
+    @apply relative isolate overflow-hidden;
+  }
+
+  .radar-sweep-card::before,
+  .radar-sweep-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 220%;
+    height: 220%;
+    pointer-events: none;
+    transform-origin: 0 0;
+  }
+
+  .radar-sweep-card::before {
+    background: conic-gradient(
+      from 225deg at 0% 0%,
+      transparent 0deg,
+      rgba(59, 201, 244, 0.14) 8deg,
+      rgba(212, 175, 55, 0.1) 14deg,
+      rgba(59, 201, 244, 0.06) 20deg,
+      transparent 28deg
+    );
+    animation: radar-sweep-tl-br 5s linear infinite;
+    animation-delay: var(--radar-delay, 0s);
+  }
+
+  .radar-sweep-card::after {
+    background: conic-gradient(
+      from 225deg at 0% 0%,
+      transparent 0deg,
+      rgba(184, 240, 255, 0.55) 3deg,
+      rgba(255, 248, 220, 0.4) 5deg,
+      rgba(59, 201, 244, 0.25) 9deg,
+      transparent 14deg
+    );
+    animation: radar-sweep-tl-br 5s linear infinite;
+    animation-delay: var(--radar-delay, 0s);
+  }
+
+  .radar-sweep-card__content {
+    @apply relative z-[1] flex min-h-0 flex-1 flex-col;
+  }
+
+  /* Hero — fondo circuitos IA */
+  .hero-circuit-bg {
+    background: linear-gradient(165deg, #0a2340 0%, #0f3058 45%, #0c2848 100%);
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 40%, black 30%, transparent 78%);
+  }
+
+  .hero-circuit-bg svg {
+    animation: hero-circuit-drift 28s ease-in-out infinite;
+  }
+
+  .hero-circuit-glow {
+    background:
+      radial-gradient(ellipse 45% 40% at 25% 30%, rgba(59, 201, 244, 0.07), transparent 55%),
+      radial-gradient(ellipse 40% 35% at 80% 55%, rgba(27, 140, 255, 0.05), transparent 50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-circuit-bg svg {
+      animation: none;
+    }
+  }
+
+  /* Sección planes — fondo distinto (inversión / premium comercial) */
+  .pricing-section {
+    background: linear-gradient(
+      180deg,
+      #0a2340 0%,
+      #061528 12%,
+      #081422 28%,
+      #0a1620 52%,
+      #081422 78%,
+      #071a32 100%
+    );
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .pricing-bg-base {
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212, 175, 55, 0.06), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 15% 85%, rgba(27, 140, 255, 0.05), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 90% 75%, rgba(212, 175, 55, 0.04), transparent 48%);
+  }
+
+  .pricing-bg-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 95% 80% at 50% 50%, black 25%, transparent 78%);
+    opacity: 0.9;
+  }
+
+  .pricing-bg-glow {
+    background: radial-gradient(
+      ellipse 60% 35% at 50% 100%,
+      rgba(212, 175, 55, 0.07),
+      transparent 65%
+    );
+  }
+
+  /* Sección IA — identidad propia (sin bordes líquidos) */
+  .ia-intelligence {
+    background: linear-gradient(
+      165deg,
+      #041222 0%,
+      #061528 22%,
+      #071a32 45%,
+      #0a2648 68%,
+      #071a32 100%
+    );
+  }
+
+  .ia-intelligence-grid {
+    background-image:
+      linear-gradient(rgba(59, 201, 244, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 201, 244, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 85% 70% at 50% 40%, black 20%, transparent 75%);
+  }
+
+  .ia-hub-panel {
+    animation: ia-panel-breathe 5s ease-in-out infinite;
+  }
+
+  .ia-hub-glow {
+    animation: ia-glow-pulse 6s ease-in-out infinite;
+  }
+
+  .ia-live-dot {
+    animation: ia-dot-pulse 2.2s ease-in-out infinite;
+  }
+
+  .ia-activity-bar {
+    animation: ia-bar-grow 2.8s ease-in-out infinite;
+    transform-origin: bottom;
+  }
+
+  .ia-feature-card {
+    transition:
+      transform 0.35s ease,
+      box-shadow 0.35s ease,
+      border-color 0.35s ease;
+  }
+
+  .ia-feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(7, 26, 50, 0.45), 0 0 24px rgba(59, 201, 244, 0.08);
+  }
+
+  .ia-particle {
+    animation: ia-particle-drift 18s ease-in-out infinite;
+  }
+
+  .ia-intelligence-neural {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='rgba(59%2C201%2C244%2C0.12)' stroke-width='0.6'%3E%3Cpath d='M20 40 L80 60 L120 20 L180 80 L220 50'/%3E%3Cpath d='M40 120 L100 100 L140 160 L200 120'/%3E%3Cpath d='M60 200 L120 180 L160 220'/%3E%3C/g%3E%3Cg fill='rgba(59%2C201%2C244%2C0.35)'%3E%3Ccircle cx='80' cy='60' r='2'/%3E%3Ccircle cx='120' cy='20' r='2'/%3E%3Ccircle cx='100' cy='100' r='2'/%3E%3Ccircle cx='140' cy='160' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    opacity: 0.45;
+    mask-image: radial-gradient(ellipse 90% 75% at 50% 45%, black 15%, transparent 72%);
+    animation: ia-neural-shift 32s linear infinite;
+  }
+
+  .ia-intelligence-waves {
+    background:
+      radial-gradient(ellipse 55% 40% at 20% 60%, rgba(59, 201, 244, 0.08), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 75% 35%, rgba(27, 140, 255, 0.06), transparent 55%);
+    filter: blur(40px);
+    animation: ia-wave-drift 14s ease-in-out infinite;
+  }
+
+  .pricing-bg-particles span {
+    position: absolute;
+    border-radius: 9999px;
+    background: rgba(212, 175, 55, 0.35);
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.25);
+    animation: pricing-gold-drift 22s ease-in-out infinite;
+  }
+
+  /* —— Fondos por sección (ecosistema SaaS premium) —— */
+  .section-backdrop {
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .section-backdrop > * {
+    position: absolute;
+    inset: 0;
+  }
+
+  .section-backdrop__fade-top {
+    inset: 0 0 auto;
+    height: 5rem;
+    background: linear-gradient(to bottom, rgba(6, 21, 40, 0.85), transparent);
+    opacity: 0.7;
+  }
+
+  .section-backdrop__fade-bottom {
+    inset: auto 0 0;
+    height: 5rem;
+    background: linear-gradient(to top, rgba(6, 21, 40, 0.75), transparent);
+    opacity: 0.65;
+  }
+
+  .section-backdrop__mesh,
+  .section-backdrop__accent {
+    opacity: 0;
+  }
+
+  /* Métricas — puente operativo cyan */
+  .section-backdrop--metrics .section-backdrop__base {
+    background: linear-gradient(
+      180deg,
+      #0a2340 0%,
+      #0c2848 35%,
+      #0a2648 70%,
+      #081c36 100%
+    );
+  }
+
+  .section-backdrop--metrics .section-backdrop__pattern {
+    background-image:
+      linear-gradient(rgba(59, 201, 244, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 201, 244, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 50%, black 20%, transparent 80%);
+  }
+
+  .section-backdrop--metrics .section-backdrop__glow {
+    background: radial-gradient(ellipse 60% 45% at 50% 30%, rgba(59, 201, 244, 0.1), transparent 60%);
+    animation: section-glow-breathe 8s ease-in-out infinite;
+  }
+
+  /* Módulos — centro operativo azul profundo */
+  .section-backdrop--modules .section-backdrop__base {
+    background: linear-gradient(
+      165deg,
+      #041222 0%,
+      #061a35 28%,
+      #0a2648 55%,
+      #071a32 100%
+    );
+  }
+
+  .section-backdrop--modules .section-backdrop__pattern {
+    background-image:
+      linear-gradient(rgba(27, 140, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(27, 140, 255, 0.07) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: radial-gradient(ellipse 100% 85% at 50% 45%, black 30%, transparent 85%);
+  }
+
+  .section-backdrop--modules .section-backdrop__mesh {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='280' viewBox='0 0 400 280'%3E%3Cg fill='none' stroke='rgba(59%2C201%2C244%2C0.14)' stroke-width='0.8'%3E%3Cpath d='M0 140 H120 L200 80 L280 140 L400 100'/%3E%3Cpath d='M80 0 V100 L160 140 L240 60 L320 200'/%3E%3Cpath d='M40 280 L160 200 L280 240'/%3E%3C/g%3E%3Ccircle cx='200' cy='80' r='3' fill='rgba(59%2C201%2C244%2C0.4)'/%3E%3Ccircle cx='120' cy='140' r='2.5' fill='rgba(27%2C140%2C255%2C0.35)'/%3E%3Ccircle cx='280' cy='140' r='2.5' fill='rgba(27%2C140%2C255%2C0.35)'/%3E%3C/svg%3E");
+    background-size: 400px 280px;
+    background-position: center 40%;
+    mask-image: radial-gradient(ellipse 95% 80% at 50% 50%, black 25%, transparent 78%);
+  }
+
+  .section-backdrop--modules .section-backdrop__glow {
+    background:
+      radial-gradient(ellipse 45% 35% at 15% 40%, rgba(27, 140, 255, 0.14), transparent 55%),
+      radial-gradient(ellipse 40% 30% at 88% 25%, rgba(59, 201, 244, 0.1), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 50% 85%, rgba(27, 140, 255, 0.08), transparent 60%);
+  }
+
+  .section-backdrop--modules .section-backdrop__accent {
+    opacity: 1;
+    background:
+      linear-gradient(135deg, transparent 40%, rgba(59, 201, 244, 0.03) 50%, transparent 60%),
+      radial-gradient(ellipse 25% 20% at 72% 58%, rgba(255, 255, 255, 0.04), transparent 70%);
+    animation: modules-panel-float 12s ease-in-out infinite;
+  }
+
+  /* Beneficios — valor premium morado/cyan */
+  .section-backdrop--benefits .section-backdrop__base {
+    background: linear-gradient(
+      155deg,
+      #071a32 0%,
+      #0a2340 30%,
+      #122a52 55%,
+      #0c2848 78%,
+      #071a32 100%
+    );
+  }
+
+  .section-backdrop--benefits .section-backdrop__pattern {
+    background-image: repeating-linear-gradient(
+      125deg,
+      transparent,
+      transparent 48px,
+      rgba(139, 92, 246, 0.04) 48px,
+      rgba(139, 92, 246, 0.04) 49px
+    );
+    mask-image: radial-gradient(ellipse 90% 75% at 50% 40%, black 20%, transparent 75%);
+  }
+
+  .section-backdrop--benefits .section-backdrop__mesh {
+    opacity: 1;
+    background:
+      radial-gradient(ellipse 35% 28% at 12% 25%, rgba(139, 92, 246, 0.12), transparent 70%),
+      radial-gradient(ellipse 40% 32% at 88% 70%, rgba(59, 201, 244, 0.1), transparent 68%),
+      radial-gradient(ellipse 30% 25% at 55% 15%, rgba(27, 140, 255, 0.08), transparent 65%);
+    filter: blur(2px);
+  }
+
+  .section-backdrop--benefits .section-backdrop__glow {
+    background: radial-gradient(ellipse 65% 50% at 50% 20%, rgba(59, 201, 244, 0.09), transparent 58%);
+    animation: section-glow-breathe 9s ease-in-out infinite;
+  }
+
+  .section-backdrop--benefits .section-backdrop__accent {
+    opacity: 1;
+    background: linear-gradient(
+      215deg,
+      transparent 55%,
+      rgba(139, 92, 246, 0.05) 62%,
+      transparent 72%
+    );
+  }
+
+  /* Video demo — escena producto */
+  .section-backdrop--video .section-backdrop__base {
+    background: linear-gradient(180deg, #071a32 0%, #081f3a 50%, #0a2340 100%);
+  }
+
+  .section-backdrop--video .section-backdrop__pattern {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.6;
+  }
+
+  .section-backdrop--video .section-backdrop__glow {
+    background: radial-gradient(ellipse 70% 45% at 50% 60%, rgba(27, 140, 255, 0.08), transparent 65%);
+  }
+
+  /* Testimonios — confianza suave */
+  .section-backdrop--testimonials .section-backdrop__base {
+    background: linear-gradient(180deg, #071a32 0%, #0a2340 45%, #0c2848 100%);
+  }
+
+  .section-backdrop--testimonials .section-backdrop__pattern {
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212, 175, 55, 0.05), transparent 65%);
+  }
+
+  .section-backdrop--testimonials .section-backdrop__glow {
+    background: radial-gradient(ellipse 55% 40% at 50% 30%, rgba(59, 201, 244, 0.07), transparent 60%);
+  }
+
+  /* FAQ — claridad azul grisáceo */
+  .section-backdrop--faq .section-backdrop__base {
+    background: linear-gradient(
+      180deg,
+      #0a2340 0%,
+      #1a2f4a 35%,
+      #1e3348 55%,
+      #152a42 85%,
+      #0c2848 100%
+    );
+  }
+
+  .section-backdrop--faq .section-backdrop__pattern {
+    background-image: radial-gradient(circle at center, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 85% 70% at 50% 50%, black 25%, transparent 78%);
+    opacity: 0.7;
+  }
+
+  .section-backdrop--faq .section-backdrop__glow {
+    background: radial-gradient(ellipse 55% 40% at 50% 15%, rgba(148, 163, 184, 0.12), transparent 58%);
+    animation: section-glow-breathe 10s ease-in-out infinite;
+  }
+
+  .section-backdrop--faq .section-backdrop__accent {
+    opacity: 1;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(59, 201, 244, 0.04) 50%,
+      transparent
+    );
+    height: 1px;
+    inset: auto 10% 12%;
+    top: auto;
+    bottom: 12%;
+  }
+
+  /* Contrato / CTA — seguridad neutra oscura */
+  .section-backdrop--contract .section-backdrop__base {
+    background: linear-gradient(
+      180deg,
+      #0c2848 0%,
+      #0d1f2e 40%,
+      #111820 70%,
+      #0a1624 100%
+    );
+  }
+
+  .section-backdrop--contract .section-backdrop__pattern {
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(255, 255, 255, 0.025) 39px,
+      rgba(255, 255, 255, 0.025) 40px
+    );
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%);
+  }
+
+  .section-backdrop--contract .section-backdrop__mesh {
+    opacity: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath fill='none' stroke='rgba(255%2C255%2C255%2C0.06)' stroke-width='0.5' d='M0 100 H200 M100 0 V200 M0 0 L200 200 M200 0 L0 200'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 0.5;
+  }
+
+  .section-backdrop--contract .section-backdrop__glow {
+    background: radial-gradient(ellipse 50% 35% at 50% 50%, rgba(255, 255, 255, 0.04), transparent 65%);
+  }
+
+  /* Contacto — acercamiento cyan profundo */
+  .section-backdrop--contact .section-backdrop__base {
+    background: linear-gradient(
+      165deg,
+      #041222 0%,
+      #061528 30%,
+      #0a2648 60%,
+      #071a32 100%
+    );
+  }
+
+  .section-backdrop--contact .section-backdrop__pattern {
+    background-image:
+      linear-gradient(rgba(59, 201, 244, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 201, 244, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 95% 80% at 50% 30%, black 25%, transparent 78%);
+  }
+
+  .section-backdrop--contact .section-backdrop__glow {
+    background:
+      radial-gradient(ellipse 50% 40% at 25% 30%, rgba(59, 201, 244, 0.12), transparent 58%),
+      radial-gradient(ellipse 45% 35% at 78% 65%, rgba(27, 140, 255, 0.1), transparent 55%);
+    filter: blur(24px);
+    animation: section-glow-breathe 11s ease-in-out infinite;
+  }
+
+  .section-backdrop--contact .section-backdrop__accent {
+    opacity: 1;
+    background-image: radial-gradient(circle, rgba(59, 201, 244, 0.45) 1px, transparent 1px);
+    background-size: 120px 120px;
+    animation: contact-particles 24s linear infinite;
+    mask-image: radial-gradient(ellipse 90% 75% at 50% 40%, black 15%, transparent 72%);
+  }
+
+  /* Footer — cierre casi negro */
+  .section-backdrop--footer .section-backdrop__base {
+    background: linear-gradient(180deg, #0a1624 0%, #060d16 45%, #040810 100%);
+  }
+
+  .section-backdrop--footer .section-backdrop__pattern {
+    background-image:
+      linear-gradient(rgba(59, 201, 244, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 201, 244, 0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: linear-gradient(to bottom, transparent, black 30%, black 100%);
+    opacity: 0.5;
+  }
+
+  .section-backdrop--footer .section-backdrop__glow {
+    background: radial-gradient(ellipse 80% 30% at 50% 0%, rgba(59, 201, 244, 0.06), transparent 70%);
+  }
+
+  .section-backdrop--footer .section-backdrop__fade-top {
+    height: 4rem;
+    background: linear-gradient(to bottom, rgba(10, 22, 36, 0.9), transparent);
+  }
+
+  .section-shell-content {
+    position: relative;
+    z-index: 10;
+  }
+
+  .contract-cta-card {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(
+      145deg,
+      rgba(15, 28, 42, 0.95) 0%,
+      rgba(10, 22, 36, 0.92) 50%,
+      rgba(8, 18, 32, 0.95) 100%
+    );
+    box-shadow:
+      0 24px 64px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .contract-cta-card__grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tech-border-shell::before,
+    .premium-border-shell::before,
+    .white-border-shell::before {
+      animation: none;
+      --liquid-angle: 135deg;
+    }
+
+    .radar-sweep-card::before,
+    .radar-sweep-card::after {
+      animation: none;
+      opacity: 0;
+    }
+
+    .ia-hub-panel,
+    .ia-hub-glow,
+    .ia-live-dot,
+    .ia-activity-bar,
+    .ia-particle,
+    .ia-intelligence-neural,
+    .ia-intelligence-waves,
+    .pricing-bg-particles span,
+    .section-backdrop--metrics .section-backdrop__glow,
+    .section-backdrop--benefits .section-backdrop__glow,
+    .section-backdrop--faq .section-backdrop__glow,
+    .section-backdrop--contact .section-backdrop__glow,
+    .section-backdrop--modules .section-backdrop__accent,
+    .section-backdrop--contact .section-backdrop__accent {
+      animation: none;
+    }
+  }
 }
 
 @layer utilities {
@@ -145,6 +944,168 @@
 @keyframes loader-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes liquid-border-angle {
+  to {
+    --liquid-angle: 360deg;
+  }
+}
+
+@keyframes radar-sweep-tl-br {
+  0% {
+    transform: rotate(-8deg);
+    opacity: 0.35;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(82deg);
+    opacity: 0.35;
+  }
+}
+
+@keyframes hero-circuit-drift {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-1%, -0.5%);
+  }
+}
+
+@keyframes ia-panel-breathe {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 32px rgba(7, 26, 50, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  50% {
+    box-shadow:
+      0 8px 40px rgba(7, 26, 50, 0.55),
+      0 0 28px rgba(59, 201, 244, 0.06),
+      0 0 0 1px rgba(59, 201, 244, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+@keyframes ia-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes ia-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ia-bar-grow {
+  0%,
+  100% {
+    transform: scaleY(0.72);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ia-particle-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(12px, -18px);
+    opacity: 0.5;
+  }
+}
+
+@keyframes ia-neural-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 240px 240px;
+  }
+}
+
+@keyframes ia-wave-drift {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-2%, 1%) scale(1.03);
+  }
+}
+
+@keyframes pricing-gold-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(8px, -12px);
+    opacity: 0.45;
+  }
+}
+
+@keyframes section-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes modules-panel-float {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes contact-particles {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 120px 120px;
   }
 }
 

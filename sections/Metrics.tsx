@@ -1,18 +1,18 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { motion } from 'framer-motion';
+import { AnimatedBorderCard } from '@/components/landing/AnimatedBorderCard';
 import { AnimatedCounter } from '@/components/landing/AnimatedCounter';
 import { LANDING_METRICS } from '@/lib/landing-data';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 
 export function Metrics() {
   return (
-    <section className="section-padding relative overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(59,201,244,0.08),transparent)]"
-        aria-hidden
-      />
-      <div className="relative mx-auto max-w-7xl">
+    <section className="section-padding relative overflow-x-hidden">
+      <SectionBackdrop variant="metrics" />
+      <div className="section-shell-content mx-auto max-w-7xl">
         <SectionHeader
           badge="Impacto real"
           title="Resultados que escalan con tu operación"
@@ -20,14 +20,17 @@ export function Metrics() {
         />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {LANDING_METRICS.map((metric, index) => (
-            <motion.div
+            <AnimatedBorderCard
               key={metric.id}
+              variant="white"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.06 }}
-              whileHover={{ y: -4, borderColor: 'rgb(77, 183, 215)' }}
-              className="glow-border rounded-2xl border border-white/15 bg-white/[0.06] p-6 text-center backdrop-blur-md transition-shadow hover:shadow-glow-cyan"
+              whileHover={{ y: -4 }}
+              style={{ '--liquid-delay': `${index * 0.55}s` } as CSSProperties}
+              className="h-full"
+              innerClassName="p-6 text-center"
             >
               <p className="font-display text-3xl font-bold gradient-text sm:text-4xl">
                 <AnimatedCounter
@@ -38,7 +41,7 @@ export function Metrics() {
                 />
               </p>
               <p className="mt-2 text-sm text-brand-mist">{metric.label}</p>
-            </motion.div>
+            </AnimatedBorderCard>
           ))}
         </div>
       </div>

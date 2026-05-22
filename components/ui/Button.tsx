@@ -2,6 +2,13 @@
 
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  getSectionIdFromHref,
+  isLandingHashHref,
+  landingHashHref,
+  scrollToSectionId,
+} from '@/lib/nav-scroll';
 import { cn } from '@/lib/utils';
 
 type ButtonVariant = 'primary' | 'secondary' | 'premium' | 'green' | 'ghost';
@@ -40,8 +47,36 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(variants[variant], size !== 'md' && sizes[size], className);
+  const pathname = usePathname();
 
   if (href) {
+    const sectionId = getSectionIdFromHref(href);
+    if (!external && sectionId && isLandingHashHref(href)) {
+      const targetHref = landingHashHref(sectionId);
+      return (
+        <Link
+          href={targetHref}
+          className={classes}
+          scroll={false}
+          onClick={(e) => {
+            if (pathname === '/') {
+              e.preventDefault();
+              scrollToSectionId(sectionId);
+              window.history.pushState(null, '', targetHref);
+            }
+          }}
+        >
+          <motion.span
+            className="inline-flex items-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {children}
+          </motion.span>
+        </Link>
+      );
+    }
+
     if (external) {
       return (
         <motion.a

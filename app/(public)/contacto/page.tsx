@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ContactInfo } from '@/components/ContactInfo';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 import { CONTACT } from '@/lib/constants';
 import { getWhatsAppUrl } from '@/lib/utils';
 
@@ -13,13 +14,14 @@ export const metadata: Metadata = {
 
 export default function ContactoPage() {
   return (
-    <section className="section-padding min-h-screen pt-32 pb-20">
-      <div className="mx-auto max-w-4xl px-4">
+    <section className="section-padding relative min-h-screen overflow-hidden pt-32 pb-20">
+      <SectionBackdrop variant="contact" />
+      <div className="section-shell-content relative z-10 mx-auto max-w-4xl px-4">
         <div className="text-center">
           <h1 className="font-display text-4xl font-bold sm:text-5xl">
             <span className="gradient-text">Contáctanos</span>
           </h1>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-brand-mist">
             Estamos listos para ayudarte a modernizar tu restaurante.
           </p>
         </div>
@@ -28,7 +30,7 @@ export default function ContactoPage() {
           <div className="glass-card p-8">
             <h2 className="font-display text-xl font-semibold text-white">Información de contacto</h2>
             <ContactInfo className="mt-6" />
-            <div className="mt-8 flex items-center gap-3 border-t border-white/10 pt-6 text-sm text-gray-400">
+            <div className="mt-8 flex items-center gap-3 border-t border-white/10 pt-6 text-sm text-brand-mist">
               <MapPin className="h-4 w-4 text-brand-blue" />
               {CONTACT.location}
             </div>
@@ -91,7 +93,7 @@ export default function ContactoPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/" className="text-sm text-gray-400 hover:text-white">
+          <Link href="/" className="text-sm text-brand-mist transition-colors hover:text-white">
             ← Volver al inicio
           </Link>
         </div>
@@ -99,4 +101,3 @@ export default function ContactoPage() {
     </section>
   );
 }
-

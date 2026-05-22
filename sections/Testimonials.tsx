@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react';
 import { TESTIMONIALS_PREMIUM } from '@/lib/landing-data';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 
 export function Testimonials() {
@@ -22,7 +23,8 @@ export function Testimonials() {
 
   return (
     <section id="testimonios" className="section-padding relative overflow-hidden">
-      <div className="mx-auto max-w-4xl">
+      <SectionBackdrop variant="testimonials" />
+      <div className="section-shell-content mx-auto max-w-4xl">
         <SectionHeader
           badge="Testimonios"
           title="Restaurantes que confían en nosotros"

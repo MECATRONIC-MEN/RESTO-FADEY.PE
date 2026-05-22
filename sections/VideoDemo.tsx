@@ -5,11 +5,13 @@ import { Play, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/Button';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 
 export function VideoDemo() {
   return (
-    <section className="section-padding relative">
-      <div className="mx-auto max-w-5xl">
+    <section className="section-padding relative overflow-hidden">
+      <SectionBackdrop variant="video" />
+      <div className="section-shell-content mx-auto max-w-5xl">
         <SectionHeader
           badge="Demo en acción"
           title="Mira la plataforma en funcionamiento"
@@ -52,13 +54,9 @@ export function VideoDemo() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-8 flex flex-wrap justify-center gap-4"
+          className="mt-8 flex justify-center"
         >
-          <Button href="/demo" variant="primary">
-            <Play className="h-5 w-5" />
-            Agendar demo
-          </Button>
-          <Button href="#modulos" variant="secondary">
+          <Button href="/#modulos" variant="secondary">
             Ver todos los módulos
           </Button>
         </motion.div>

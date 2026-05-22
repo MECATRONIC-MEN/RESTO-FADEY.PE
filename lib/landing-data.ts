@@ -11,8 +11,17 @@ import {
   Brain,
   BellRing,
   Settings,
+  ShoppingCart,
+  Truck,
   type LucideIcon,
 } from 'lucide-react';
+
+export interface EcosystemCard {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  accent?: 'cyan' | 'gold';
+}
 
 export interface LandingMetric {
   id: string;
@@ -47,7 +56,27 @@ export interface AIFeature {
   title: string;
   description: string;
   metric: string;
+  /** Clase de gradiente para la card (sección IA) */
+  tone?: 'cyan' | 'blue' | 'slate' | 'gold' | 'teal' | 'indigo';
+  /** Alturas relativas para mini barras de actividad (0–100) */
+  activity?: number[];
 }
+
+export const ADMIN_INTELLIGENCE_HUB = {
+  title: 'Centro inteligente de administración',
+  description:
+    'El sistema supervisa continuamente tu operación para detectar riesgos, recomendar acciones y ayudarte a tomar mejores decisiones.',
+  highlights: [
+    'Alertas automáticas en tiempo real',
+    'Recomendaciones operativas accionables',
+    'Control de inventario, ventas y personal',
+  ],
+  statuses: [
+    { label: 'Monitoreo activo', level: 92 },
+    { label: 'Automatizaciones', level: 78 },
+    { label: 'Análisis del día', level: 85 },
+  ],
+} as const;
 
 export interface TestimonialPremium {
   name: string;
@@ -314,7 +343,7 @@ export const MODULE_TABS: ModuleTab[] = [
       { name: 'Pico en 45 min', status: 'IA' },
       { name: 'Merma atípica', status: 'Revisión' },
     ],
-    accent: 'cyan',
+    accent: 'gold',
   },
   {
     id: 'configuracion',
@@ -339,36 +368,88 @@ export const MODULE_TABS: ModuleTab[] = [
   },
 ];
 
+/** Mini cards del ecosistema (sección ¿Por qué elegir?) */
+export const ECOSYSTEM_CARDS: EcosystemCard[] = [
+  {
+    title: 'POS Inteligente',
+    description: 'Ventas rápidas y automatizadas.',
+    icon: ShoppingCart,
+    accent: 'cyan',
+  },
+  {
+    title: 'Inventario Inteligente',
+    description: 'Control total de stock y kardex.',
+    icon: Package,
+    accent: 'cyan',
+  },
+  {
+    title: 'Delivery Integrado',
+    description: 'Pedidos y motorizados en tiempo real.',
+    icon: Truck,
+    accent: 'cyan',
+  },
+  {
+    title: 'Finanzas Avanzadas',
+    description: 'Indicadores y reportes ejecutivos.',
+    icon: Wallet,
+    accent: 'gold',
+  },
+  {
+    title: 'IA Predictiva',
+    description: 'Automatización y recomendaciones inteligentes.',
+    icon: Brain,
+    accent: 'gold',
+  },
+  {
+    title: 'Alertas de IA',
+    description: 'Stock, mermas y desvíos en tiempo real.',
+    icon: BellRing,
+    accent: 'gold',
+  },
+];
+
 export const AI_FEATURES: AIFeature[] = [
   {
-    title: 'Predicción de ventas',
-    description: 'Anticipa demanda por día, turno y canal.',
-    metric: '94% precisión',
-  },
-  {
-    title: 'Productos rentables',
-    description: 'Identifica platos estrella y los de baja rotación.',
-    metric: '+18% margen',
-  },
-  {
-    title: 'Horarios pico',
-    description: 'Optimiza personal e inventario antes del rush.',
-    metric: '-22% espera',
-  },
-  {
     title: 'Alertas inteligentes',
-    description: 'Stock crítico, mermas y desvíos en tiempo real.',
-    metric: '5 alertas/día',
+    description: 'Stock crítico, mermas, desvíos de caja y picos de demanda antes de que afecten.',
+    metric: 'Tiempo real',
+    tone: 'cyan',
+    activity: [42, 68, 55, 72, 48],
   },
   {
-    title: 'Recomendaciones IA',
-    description: 'Sugerencias accionables para el gerente.',
-    metric: 'Auto-pilot',
+    title: 'Automatización operativa',
+    description: 'Tareas repetitivas, cierres y reportes sin intervención manual constante.',
+    metric: '24/7 activo',
+    tone: 'blue',
+    activity: [35, 50, 78, 62, 70],
   },
   {
-    title: 'Compras predictivas',
-    description: 'Sugiere pedidos a proveedores según ventas y stock.',
-    metric: '-12% merma',
+    title: 'Recomendaciones',
+    description: 'Sugerencias claras para compras, turnos, promociones y ajustes de menú.',
+    metric: 'Accionables',
+    tone: 'gold',
+    activity: [58, 45, 65, 80, 52],
+  },
+  {
+    title: 'Control operativo',
+    description: 'Visión unificada de caja, pedidos, cocina y cumplimiento del turno.',
+    metric: 'Un solo panel',
+    tone: 'slate',
+    activity: [70, 55, 48, 66, 74],
+  },
+  {
+    title: 'Análisis de datos',
+    description: 'KPIs, tendencias y comparativos para entender el rendimiento del local.',
+    metric: 'Dashboard vivo',
+    tone: 'teal',
+    activity: [48, 72, 60, 85, 58],
+  },
+  {
+    title: 'Asistencia administrativa',
+    description: 'Apoyo inteligente para decisiones de personal, costos y rentabilidad.',
+    metric: 'Asistente IA',
+    tone: 'indigo',
+    activity: [55, 62, 75, 50, 68],
   },
 ];
 
@@ -418,6 +499,6 @@ export const TESTIMONIALS_PREMIUM: TestimonialPremium[] = [
 /** Nombres comerciales para la landing (planes internos siguen en lib/data) */
 export const PLAN_DISPLAY_NAMES: Record<string, string> = {
   Básico: 'Básico',
-  Pro: 'Profesional',
+  Pro: 'Intermedio',
   Premium: 'Empresarial',
 };

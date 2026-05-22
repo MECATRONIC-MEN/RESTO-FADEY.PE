@@ -3,6 +3,7 @@ import { Footer } from '@/components/Footer';
 import { WhatsAppFloat } from '@/components/WhatsAppFloat';
 import { Loader } from '@/components/Loader';
 import { PageBackground } from '@/components/PageBackground';
+import { HashScrollOnLoad } from '@/components/HashScrollOnLoad';
 
 /** Layout comercial: landing y páginas públicas */
 export default function PublicLayout({
@@ -14,6 +15,7 @@ export default function PublicLayout({
     <>
       <PageBackground />
       <Loader />
+      <HashScrollOnLoad />
       <Navbar />
       <main className="relative z-0 w-full max-w-full overflow-x-hidden">{children}</main>
       <Footer />

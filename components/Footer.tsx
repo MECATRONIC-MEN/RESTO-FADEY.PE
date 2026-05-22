@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Facebook, MessageCircle } from 'lucide-react';
 import { NAV_LINKS, FUTURE_ROUTES, SITE_URL, CONTACT, SOCIAL_LINKS } from '@/lib/constants';
+import { NavAnchor } from '@/components/NavAnchor';
 import { Logo } from '@/components/Logo';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 
 const socialIcons = {
   facebook: Facebook,
@@ -17,17 +19,18 @@ export function Footer() {
   return (
     <footer
       id="footer"
-      className="relative border-t border-brand-cyan/15 bg-gradient-to-b from-white/[0.04] to-brand-deep/40 backdrop-blur-sm"
+      className="relative overflow-hidden border-t border-brand-cyan/10"
     >
+      <SectionBackdrop variant="footer" />
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-cyan/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-px bg-gradient-to-r from-transparent via-brand-cyan/35 to-transparent"
         aria-hidden
       />
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10 xl:px-14"
+        className="section-shell-content relative z-10 mx-auto w-full max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10 xl:px-14"
       >
         <motion.div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <motion.div>
@@ -44,9 +47,12 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="text-sm text-brand-mist transition-colors hover:text-white">
+                  <NavAnchor
+                    href={link.href}
+                    className="text-sm text-brand-mist transition-colors hover:text-white"
+                  >
                     {link.label}
-                  </a>
+                  </NavAnchor>
                 </li>
               ))}
             </ul>

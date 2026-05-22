@@ -20,6 +20,64 @@ const QUICK_STATS = [
   { icon: Zap, label: 'Automatización total' },
 ];
 
+function HeroCircuitBackground() {
+  return (
+    <div className="hero-circuit-bg pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <svg
+        className="absolute inset-0 h-full w-full opacity-[0.14]"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <pattern
+            id="hero-circuit-grid"
+            width="120"
+            height="120"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M0 60 H40 M80 60 H120 M60 0 V40 M60 80 V120"
+              fill="none"
+              stroke="rgba(59,201,244,0.35)"
+              strokeWidth="0.5"
+            />
+            <circle cx="60" cy="60" r="2" fill="rgba(59,201,244,0.5)" />
+            <circle cx="0" cy="60" r="1.5" fill="rgba(91,200,255,0.4)" />
+            <circle cx="120" cy="60" r="1.5" fill="rgba(91,200,255,0.4)" />
+            <circle cx="60" cy="0" r="1.5" fill="rgba(91,200,255,0.4)" />
+            <circle cx="60" cy="120" r="1.5" fill="rgba(91,200,255,0.4)" />
+          </pattern>
+          <linearGradient id="hero-circuit-fade" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(59,201,244,0.15)" />
+            <stop offset="50%" stopColor="rgba(27,140,255,0.08)" />
+            <stop offset="100%" stopColor="rgba(59,201,244,0.12)" />
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-circuit-grid)" />
+        <path
+          d="M-20 80 Q200 40 400 100 T900 60 L1100 120"
+          fill="none"
+          stroke="url(#hero-circuit-fade)"
+          strokeWidth="1"
+        />
+        <path
+          d="M100 -20 Q350 120 600 80 T1100 200"
+          fill="none"
+          stroke="rgba(59,201,244,0.12)"
+          strokeWidth="1"
+        />
+        <path
+          d="M50 400 Q300 280 550 350 T1050 300"
+          fill="none"
+          stroke="rgba(91,200,255,0.1)"
+          strokeWidth="1"
+        />
+      </svg>
+      <div className="hero-circuit-glow absolute inset-0" />
+    </div>
+  );
+}
+
 function HeroCtaButtons({ className }: { className?: string }) {
   return (
     <div className={className}>
@@ -27,7 +85,7 @@ function HeroCtaButtons({ className }: { className?: string }) {
         <Play size={18} />
         Solicitar Demo
       </Button>
-      <Button href="#modulos" variant="secondary" className="w-full justify-center sm:w-auto">
+      <Button href="/#modulos" variant="secondary" className="w-full justify-center sm:w-auto">
         Ver Funciones
       </Button>
       <Button
@@ -49,12 +107,9 @@ export function Hero() {
   return (
     <section
       id="inicio"
-      className="relative w-full max-w-full overflow-hidden pb-10 pt-[max(5.75rem,calc(env(safe-area-inset-top,0px)+4.75rem))] sm:pb-14 sm:pt-28 lg:min-h-[min(100vh,920px)] lg:pb-16 lg:pt-24"
+      className="relative w-full max-w-full scroll-mt-24 overflow-hidden pb-10 pt-[max(5.75rem,calc(env(safe-area-inset-top,0px)+4.75rem))] sm:pb-14 sm:pt-28 lg:min-h-[min(100vh,920px)] lg:pb-16 lg:pt-24"
     >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-brand-cyan/10 blur-[100px]" />
-        <div className="absolute -right-32 bottom-20 h-80 w-80 rounded-full bg-brand-gold/10 blur-[90px]" />
-      </div>
+      <HeroCircuitBackground />
 
       <div className="relative mx-auto w-full min-w-0 max-w-[1600px] px-4 sm:px-6 lg:px-10 xl:px-14">
         <div className="flex w-full min-w-0 flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center lg:gap-10 xl:gap-14">

@@ -283,6 +283,7 @@ export const PLANS: Plan[] = [
       'Acceso en la nube desde PC o tablet',
       'Soporte por email en horario laboral',
     ],
+    badge: 'Para empezar',
   },
   {
     name: 'Pro',
@@ -305,6 +306,7 @@ export const PLANS: Plan[] = [
       'Cocina y bar integrados al flujo de pedidos',
       'Soporte prioritario por WhatsApp y email',
     ],
+    badge: 'Operación completa',
   },
   {
     name: 'Premium',

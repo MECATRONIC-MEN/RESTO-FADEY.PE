@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Calendar } from 'lucide-react';
 import { NAV_LINKS } from '@/lib/constants';
+import { NavAnchor } from '@/components/NavAnchor';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
@@ -41,13 +42,13 @@ export function Navbar() {
 
         <div className="hidden items-center gap-7 lg:flex">
           {NAV_LINKS.map((link) => (
-            <a
+            <NavAnchor
               key={link.href}
               href={link.href}
               className="relative text-sm font-medium text-brand-mist transition-colors hover:text-brand-cyan after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-brand-cyan after:transition-all hover:after:w-full"
             >
               {link.label}
-            </a>
+            </NavAnchor>
           ))}
         </div>
 
@@ -87,17 +88,20 @@ export function Navbar() {
           >
             <div className="flex flex-col gap-3 px-4 py-6">
               {NAV_LINKS.map((link, i) => (
-                <motion.a
+                <motion.div
                   key={link.href}
-                  href={link.href}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  onClick={() => setIsOpen(false)}
-                  className="text-lg font-medium text-brand-mist hover:text-brand-cyan"
                 >
-                  {link.label}
-                </motion.a>
+                  <NavAnchor
+                    href={link.href}
+                    onNavigate={() => setIsOpen(false)}
+                    className="block text-lg font-medium text-brand-mist hover:text-brand-cyan"
+                  >
+                    {link.label}
+                  </NavAnchor>
+                </motion.div>
               ))}
               <Link href="/login" onClick={() => setIsOpen(false)} className="text-brand-mist">
                 Iniciar sesión

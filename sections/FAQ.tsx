@@ -9,13 +9,11 @@ import {
   Layers,
   UtensilsCrossed,
   GraduationCap,
-  MessageCircle,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { FAQS } from '@/lib/data';
+import { SectionBackdrop } from '@/components/landing/SectionBackdrop';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { Button } from '@/components/ui/Button';
-import { getWhatsAppUrl } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 const FAQ_ICONS: LucideIcon[] = [Wifi, ShieldCheck, Layers, UtensilsCrossed, GraduationCap];
@@ -121,28 +119,10 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="section-padding relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute left-1/2 top-0 h-[420px] w-[min(100%,720px)] -translate-x-1/2 rounded-full bg-brand-cyan/10 blur-[100px]" />
-        <motion.div
-          className="absolute left-1/2 top-1/3 h-[280px] w-[min(100%,600px)] -translate-x-1/2 rounded-full bg-brand-blue/15 blur-[90px]"
-          animate={{ opacity: [0.25, 0.45, 0.25] }}
-          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(59,201,244,0.9) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(59,201,244,0.9) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px',
-          }}
-          animate={{ opacity: [0.02, 0.05, 0.02] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-cyan/25 to-transparent" />
-      </div>
+    <section id="faq" className="section-padding relative scroll-mt-24 overflow-hidden">
+      <SectionBackdrop variant="faq" />
 
-      <div className="relative mx-auto max-w-3xl">
+      <div className="section-shell-content mx-auto max-w-3xl">
         <SectionHeader
           badge="Preguntas frecuentes"
           title="Todo lo que necesitas saber antes de empezar"
@@ -164,29 +144,17 @@ export function FAQ() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="mt-12 rounded-2xl border border-brand-cyan/20 bg-gradient-to-br from-brand-cyan/10 via-white/[0.04] to-transparent p-6 text-center backdrop-blur-md sm:p-8"
+          className="mt-10 text-center text-sm text-brand-mist"
         >
-          <p className="font-display text-lg font-semibold text-brand-soft">
-            ¿Listo para modernizar tu restaurante?
-          </p>
-          <p className="mt-2 text-sm text-brand-mist">
-            Agenda una demo gratuita o escríbenos por WhatsApp. Te ayudamos a elegir el plan ideal.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button href="/demo" variant="primary">
-              Solicitar demo
-            </Button>
-            <Button href={getWhatsAppUrl()} variant="green" external>
-              <MessageCircle size={18} />
-              WhatsApp
-            </Button>
-          </div>
-        </motion.div>
+          ¿Más preguntas?{' '}
+          <a href="/#cta-final" className="font-medium text-brand-cyan hover:underline">
+            Agenda tu demo al final de la página
+          </a>
+        </motion.p>
       </div>
     </section>
   );
