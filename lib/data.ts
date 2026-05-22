@@ -291,7 +291,7 @@ export const PLANS: Plan[] = [
     name: 'Pro',
     price: 'S/ 249',
     period: '/mes',
-    tagline: 'Control operativo completo: Gestion de Ventas, Inventario, Almacenes, Reportes y Facturación Electrónica.',
+    tagline: 'Control operativo: Gestion de Ventas, Inventario, Almacenes, Reportes y Facturación Electrónica.',
     description:
       'El plan intermedio ideal para restaurantes en crecimiento que necesitan Automatización y Control de su Negocio.',
     includesFrom: 'Básico',
@@ -322,7 +322,7 @@ export const PLANS: Plan[] = [
     period: '/mes',
     tagline: 'Inteligencia de negocio, personal y decisiones estratégicas.',
     description:
-      'La solución más completa para restaurantes de alto volumen que exigen indicadores avanzados, finanzas y gestión de equipo. Y lo nas importante . Para aquellos que quieren escalar y ser un negocio top',
+      'La solución más completa y control total para restaurantes de alto volumen que exigen indicadores avanzados, finanzas y gestión de equipo. Y lo más importante . Para aquellos que quieren escalar y ser un negocio top',
     includesFrom: 'Pro',
     modules: [
       'Indicadores inteligentes — tendencias automáticas e insights visuales',
