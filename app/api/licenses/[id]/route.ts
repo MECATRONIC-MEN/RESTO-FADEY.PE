@@ -33,7 +33,7 @@ export async function PATCH(
   }
 }
 
-/** DELETE — Eliminar licencia (sesión admin). Opcional: password si useGate en body. */
+/** DELETE — Eliminar licencia (requiere clave de administración) */
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -43,19 +43,18 @@ export async function DELETE(
 
   const { id } = await context.params;
 
-  let body: { password?: string; useGate?: boolean } = {};
+  let body: { password?: string };
   try {
     const text = await request.text();
-    if (text.trim()) body = JSON.parse(text) as typeof body;
+    if (!text.trim()) return jsonError('Clave de administración requerida', 400);
+    body = JSON.parse(text) as typeof body;
   } catch {
     return jsonError('JSON inválido');
   }
 
-  if (body.useGate) {
-    if (!body.password?.trim()) return jsonError('Clave requerida', 400);
-    if (!verifyLicenseAdminGate(body.password)) {
-      return jsonError('Clave incorrecta', 403);
-    }
+  if (!body.password?.trim()) return jsonError('Clave de administración requerida', 400);
+  if (!verifyLicenseAdminGate(body.password)) {
+    return jsonError('Clave incorrecta', 403);
   }
 
   try {

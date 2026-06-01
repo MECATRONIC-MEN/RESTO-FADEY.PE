@@ -8,7 +8,7 @@ export default function AdminEntornoPage() {
     <div className="mx-auto max-w-7xl space-y-8">
       <AdminPageHeader
         title="Entorno e integraciones"
-        description="POS, API REST, variables de entorno, llaves Render y herramientas de prueba."
+        description="POS, API REST, diagnóstico y herramientas de prueba. Licencias y llaves Render en el módulo Licencias."
       />
 
       <EntornoDataReset />
