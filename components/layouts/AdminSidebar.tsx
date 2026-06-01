@@ -51,16 +51,9 @@ type NavEntry = NavLink | NavGroup;
 const NAV: NavEntry[] = [
   { type: 'link', href: '/admin', label: 'Panel', icon: LayoutDashboard, exact: true },
   { type: 'link', href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
-  {
-    type: 'group',
-    label: 'Finanzas',
-    icon: Landmark,
-    children: [
-      { href: '/admin/finanzas/ganancia', label: 'Ganancia', icon: TrendingUp },
-      { href: '/admin/finanzas/impuestos', label: 'Impuestos', icon: Landmark },
-      { href: '/admin/finanzas/personal', label: 'Personal', icon: UsersRound },
-    ],
-  },
+  { type: 'link', href: '/admin/finanzas/ganancia', label: 'Ganancia', icon: TrendingUp },
+  { type: 'link', href: '/admin/finanzas/impuestos', label: 'Impuestos', icon: Landmark },
+  { type: 'link', href: '/admin/finanzas/personal', label: 'Personal', icon: UsersRound },
   { type: 'link', href: '/admin/users', label: 'Clientes', icon: Users },
   { type: 'link', href: '/admin/payments', label: 'Pagos', icon: Wallet },
   { type: 'link', href: '/admin/licencias', label: 'Licencias', icon: KeyRound },

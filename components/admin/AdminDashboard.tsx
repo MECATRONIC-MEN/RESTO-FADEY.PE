@@ -15,9 +15,13 @@ import {
   ExternalLink,
   ImageIcon,
   Settings,
+  Landmark,
+  TrendingUp,
+  UsersRound,
 } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
-import type { FinancialStats, PaymentRecord } from '@/lib/domain/types';
+import type { FinancialStats, PaymentRecord, SaasFinanceSummary } from '@/lib/domain/types';
+import { FinanceModulesNav } from '@/components/admin/finance/FinanceModulesNav';
 import { AdminPageHeader } from './AdminPageHeader';
 import { KpiCard } from './KpiCard';
 import { StatusBadge } from './StatusBadge';
@@ -31,6 +35,8 @@ function formatMethod(method: string) {
 
 export function AdminDashboard() {
   const { data: stats, refetch: refetchStats } = useAdminApi<FinancialStats>('/api/statistics');
+  const { data: finance, error: financeError } =
+    useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
   const { data: payments, loading: loadingPayments, refetch: refetchPayments } =
     useAdminApi<PaymentRecord[]>('/api/payments?limit=5');
 
@@ -143,6 +149,9 @@ export function AdminDashboard() {
           <div className="space-y-2">
             {[
               { href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
+              { href: '/admin/finanzas/ganancia', label: 'Ganancia', icon: TrendingUp },
+              { href: '/admin/finanzas/impuestos', label: 'Impuestos', icon: Landmark },
+              { href: '/admin/finanzas/personal', label: 'Personal', icon: UsersRound },
               { href: '/admin/payments', label: 'Pagos y vouchers', icon: Wallet },
               { href: '/admin/users', label: 'Clientes', icon: Users },
               { href: '/admin/cursos', label: 'Cursos', icon: BookOpen },
@@ -167,6 +176,8 @@ export function AdminDashboard() {
           </div>
         </DashboardCard>
       </div>
+
+      <FinanceModulesNav finance={finance} financeError={financeError} />
 
     </div>
   );

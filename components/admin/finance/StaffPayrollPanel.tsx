@@ -14,9 +14,9 @@ import {
 } from '@/components/admin/finance/finance-ui';
 
 export function StaffPayrollPanel() {
-  const { data: staff, loading: loadingStaff, refetch: refetchStaff } =
+  const { data: staff, loading: loadingStaff, error: staffError, refetch: refetchStaff } =
     useAdminApi<SaasStaffMember[]>('/api/admin/finance/staff');
-  const { data: payments, loading: loadingPay, refetch: refetchPay } =
+  const { data: payments, loading: loadingPay, error: payError, refetch: refetchPay } =
     useAdminApi<SaasStaffPayment[]>('/api/admin/finance/staff-payments');
   const { data: summary, refetch: refetchSummary } =
     useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
@@ -154,6 +154,13 @@ export function StaffPayrollPanel() {
         title="Pago del personal"
         description="Tu equipo interno Resto Fadey: datos, fechas, montos, avisos y registro de pagos. Se descuenta de la ganancia."
       />
+
+      {(staffError || payError) && (
+        <div className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+          {staffError ?? payError}. Si usas Supabase, ejecuta{' '}
+          <code className="text-red-100">EJECUTAR_013_FINANZAS_SAAS.sql</code> y recarga la página.
+        </div>
+      )}
 
       <UpcomingPaymentsAlert items={upcoming} />
 
