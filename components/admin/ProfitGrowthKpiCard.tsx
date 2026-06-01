@@ -5,33 +5,55 @@ import { profitGrowthProgress } from '@/lib/profit-growth';
 
 interface ProfitGrowthKpiCardProps {
   amount: number;
+  dense?: boolean;
   className?: string;
 }
 
-export function ProfitGrowthKpiCard({ amount, className }: ProfitGrowthKpiCardProps) {
+export function ProfitGrowthKpiCard({ amount, dense, className }: ProfitGrowthKpiCardProps) {
   const progress = profitGrowthProgress(amount);
   const progressRounded = Math.round(progress);
 
   return (
     <div
       className={cn(
-        'card-dashboard border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
+        'card-dashboard min-h-[7.5rem] border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
+        dense && 'p-4',
         className
       )}
     >
-      <p className="text-xs font-medium uppercase tracking-wider text-brand-gold-light/90">
+      <p
+        className={cn(
+          'font-medium uppercase tracking-wider text-brand-gold-light/90',
+          dense ? 'text-[10px] leading-tight' : 'text-xs'
+        )}
+      >
         Ganancia acumulada
       </p>
-      <p className="mt-2 font-display text-2xl font-bold sm:text-3xl kpi-gold">
+      <p
+        className={cn(
+          'font-display font-bold kpi-gold',
+          dense ? 'mt-1.5 text-lg leading-tight' : 'mt-2 text-2xl sm:text-3xl'
+        )}
+      >
         {formatFinancePen(amount)}
       </p>
-      <p className="mt-2 flex items-center gap-1 text-xs text-brand-mist">
-        <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+      <p
+        className={cn(
+          'flex items-center gap-1 text-brand-mist',
+          dense ? 'mt-1 text-[10px] leading-tight' : 'mt-2 text-xs'
+        )}
+      >
+        <TrendingUp className={cn('text-emerald-400', dense ? 'h-3 w-3' : 'h-3.5 w-3.5')} />
         Desde el inicio hasta hoy
       </p>
 
-      <div className="mt-4">
-        <div className="mb-1.5 flex items-center justify-between text-xs text-brand-mist">
+      <div className={dense ? 'mt-2' : 'mt-4'}>
+        <div
+          className={cn(
+            'mb-1 flex items-center justify-between text-brand-mist',
+            dense ? 'text-[10px]' : 'mb-1.5 text-xs'
+          )}
+        >
           <span>Avance</span>
           <span className="font-medium text-brand-gold-light">{progressRounded}%</span>
         </div>
