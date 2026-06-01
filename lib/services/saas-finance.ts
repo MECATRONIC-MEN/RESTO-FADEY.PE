@@ -210,9 +210,14 @@ export async function updateStaff(
   if (!isSupabaseConfigured()) {
     const idx = mockStaff.findIndex((s) => s.id === id);
     if (idx < 0) throw new Error('No encontrado');
+    const nextPayDay =
+      patch.payDayOfMonth === null
+        ? undefined
+        : patch.payDayOfMonth ?? mockStaff[idx].payDayOfMonth;
     mockStaff[idx] = {
       ...mockStaff[idx],
       ...patch,
+      payDayOfMonth: nextPayDay,
       name: patch.name?.trim() ?? mockStaff[idx].name,
     };
     return mockStaff[idx];

@@ -1,19 +1,35 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { X, ExternalLink } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { FinancialStats, SaasFinanceSummary } from '@/lib/domain/types';
-import { FinanceModulesNav } from '@/components/admin/finance/FinanceModulesNav';
 import { UpcomingPaymentsAlert, formatFinancePen } from '@/components/admin/finance/finance-ui';
 import { AdminPageHeader } from './AdminPageHeader';
 import { KpiCard } from './KpiCard';
 import { BarChart } from './BarChart';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { SAAS_BACKOFFICE_FINANCE, type SaasBackofficeFinanceId } from '@/lib/saas-backoffice-finance';
 
 const REFRESH_MS = 30_000;
 
 function formatPen(amount: number) {
   return `S/ ${amount.toLocaleString('es-PE')}`;
+}
+
+function financeMetric(id: SaasBackofficeFinanceId, finance: SaasFinanceSummary | null): string {
+  if (!finance) return '—';
+  switch (id) {
+    case 'impuestos_planes':
+      return formatFinancePen(finance.taxesPaidThisMonth);
+    case 'ganancia_total':
+      return formatFinancePen(finance.netProfitThisMonth);
+    case 'pago_personal':
+      return formatFinancePen(finance.payrollPaidThisMonth);
+    default:
+      return '—';
+  }
 }
 
 export function StatisticsPanel() {
@@ -23,6 +39,12 @@ export function StatisticsPanel() {
     error: financeError,
     refetch: refetchFinance,
   } = useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
+  const [activeFinance, setActiveFinance] = useState<SaasBackofficeFinanceId | null>(null);
+
+  const selectedFinance = useMemo(
+    () => SAAS_BACKOFFICE_FINANCE.find((item) => item.id === activeFinance) ?? null,
+    [activeFinance]
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,7 +94,28 @@ export function StatisticsPanel() {
         <KpiCard label="Tasa renovación" value={`${stats.renewalRate}%`} premium />
       </div>
 
-      <FinanceModulesNav finance={finance} financeError={financeError} />
+      <div className="space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-brand-slate">
+          Funciones financieras
+        </p>
+        <div className="grid gap-4 md:grid-cols-3">
+          {SAAS_BACKOFFICE_FINANCE.map((item) => (
+            <KpiCard
+              key={item.id}
+              label={item.title}
+              value={financeMetric(item.id, finance ?? null)}
+              change="Clic para gestionar"
+              premium
+              onClick={() => setActiveFinance(item.id)}
+            />
+          ))}
+        </div>
+        {financeError && (
+          <p className="text-xs text-red-300">
+            {financeError}. Ejecuta <code>EJECUTAR_013_FINANZAS_SAAS.sql</code> en Supabase.
+          </p>
+        )}
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <DashboardCard title="Ingresos mensuales (últimos 6 meses)">
@@ -121,6 +164,68 @@ export function StatisticsPanel() {
           </div>
         </div>
       </DashboardCard>
+
+      {selectedFinance && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-deep/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-2xl border border-brand-gold/30 bg-brand-panel p-6 shadow-2xl">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-wider text-brand-slate">Módulo financiero</p>
+                <h3 className="font-display text-2xl font-bold text-brand-soft">{selectedFinance.title}</h3>
+                <p className="mt-1 text-sm text-brand-mist">{selectedFinance.description}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveFinance(null)}
+                className="rounded-lg p-2 text-brand-mist hover:bg-white/10"
+                aria-label="Cerrar"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <DashboardCard title="Opciones">
+                <ul className="space-y-2 text-sm text-brand-mist">
+                  {selectedFinance.id === 'impuestos_planes' && (
+                    <>
+                      <li>• Registrar nuevo impuesto</li>
+                      <li>• Definir fecha de vencimiento</li>
+                      <li>• Marcar impuesto como pagado</li>
+                    </>
+                  )}
+                  {selectedFinance.id === 'ganancia_total' && (
+                    <>
+                      <li>• Ver ganancia neta del mes</li>
+                      <li>• Revisar ingresos vs egresos</li>
+                      <li>• Ver pendientes por pagar</li>
+                    </>
+                  )}
+                  {selectedFinance.id === 'pago_personal' && (
+                    <>
+                      <li>• Registrar colaborador</li>
+                      <li>• Programar pagos por fecha</li>
+                      <li>• Marcar pago del personal</li>
+                    </>
+                  )}
+                </ul>
+              </DashboardCard>
+              <DashboardCard title="Acción rápida">
+                <p className="text-sm text-brand-mist">
+                  Abre la ventana completa para registrar y gestionar este módulo.
+                </p>
+                <Link
+                  href={selectedFinance.href}
+                  className="btn-primary mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm"
+                >
+                  Abrir {selectedFinance.title}
+                  <ExternalLink className="h-4 w-4" />
+                </Link>
+              </DashboardCard>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

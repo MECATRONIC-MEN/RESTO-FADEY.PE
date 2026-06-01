@@ -8,17 +8,27 @@ interface KpiCardProps {
   trend?: 'up' | 'down' | 'neutral';
   premium?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
-export function KpiCard({ label, value, change, trend = 'neutral', premium, className }: KpiCardProps) {
-  return (
-    <div
-      className={cn(
-        'card-dashboard',
-        premium && 'border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
-        className
-      )}
-    >
+export function KpiCard({
+  label,
+  value,
+  change,
+  trend = 'neutral',
+  premium,
+  className,
+  onClick,
+}: KpiCardProps) {
+  const cardClass = cn(
+    'card-dashboard',
+    onClick && 'text-left transition-colors hover:border-brand-gold/35 hover:bg-brand-gold/5',
+    premium && 'border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
+    className
+  );
+
+  const content = (
+    <>
       <p
         className={cn(
           'text-xs font-medium uppercase tracking-wider',
@@ -37,6 +47,20 @@ export function KpiCard({ label, value, change, trend = 'neutral', premium, clas
           {change}
         </p>
       )}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cardClass}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={cardClass}>
+      {content}
     </div>
   );
 }
