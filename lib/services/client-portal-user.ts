@@ -108,6 +108,7 @@ async function findUserByClientId(clientId: string): Promise<PlatformUser | null
     name: string;
     role: 'cliente';
     client_id: string;
+    portal_delivery_password?: string | null;
     clients?: { business_name: string; plan_id: string | null } | null;
   };
 
@@ -153,6 +154,7 @@ export async function provisionClientPortalUser(input: {
         if (input.regeneratePassword) {
           const password = generateClientPortalPassword(username);
           mockUser.passwordHash = await hashPassword(password);
+          mockUser.portalDeliveryPassword = password;
           return {
             username,
             password,
@@ -181,6 +183,7 @@ export async function provisionClientPortalUser(input: {
       clientId: input.clientId,
       restaurant: username,
       plan: null,
+      portalDeliveryPassword: password,
     });
 
     return { username, password, email, created: true, regenerated: false };
@@ -196,6 +199,7 @@ export async function provisionClientPortalUser(input: {
     if (input.regeneratePassword) {
       const password = generateClientPortalPassword(username);
       updates.password_hash = await hashPassword(password);
+      updates.portal_delivery_password = password;
       await db.from('users').update(updates).eq('id', existing.id);
       return {
         username,
@@ -219,6 +223,7 @@ export async function provisionClientPortalUser(input: {
   const { error } = await db.from('users').insert({
     email,
     password_hash: await hashPassword(password),
+    portal_delivery_password: password,
     name: username,
     role: 'cliente',
     client_id: input.clientId,
@@ -252,4 +257,49 @@ export async function ensureClientPortalUser(input: {
     return provisionClientPortalUser({ ...input, regeneratePassword: false });
   }
   return provisionClientPortalUser(input);
+}
+
+/** Guarda la contraseña actual para entrega al cliente sin cambiar el hash de login. */
+export async function storePortalDeliveryPassword(input: {
+  userId: string;
+  password: string;
+}): Promise<{ stored: boolean; email: string; name: string }> {
+  const password = input.password.trim();
+  if (!password) throw new Error('Contraseña requerida');
+
+  if (!isSupabaseConfigured()) {
+    const mockUser = USERS.find((u) => u.id === input.userId && u.role === 'cliente');
+    if (!mockUser) throw new Error('Usuario cliente no encontrado');
+    const valid = await bcrypt.compare(password, mockUser.passwordHash);
+    if (!valid) throw new Error('La contraseña no coincide con la cuenta actual');
+    mockUser.portalDeliveryPassword = password;
+    return { stored: true, email: mockUser.email, name: mockUser.name };
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { data, error } = await db
+    .from('users')
+    .select('id, email, name, role, password_hash')
+    .eq('id', input.userId)
+    .eq('role', 'cliente')
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error('Usuario cliente no encontrado');
+
+  const valid = await bcrypt.compare(password, data.password_hash as string);
+  if (!valid) throw new Error('La contraseña no coincide con la cuenta actual');
+
+  const { error: updateErr } = await db
+    .from('users')
+    .update({ portal_delivery_password: password })
+    .eq('id', input.userId);
+
+  if (updateErr) throw new Error(updateErr.message);
+
+  return {
+    stored: true,
+    email: data.email as string,
+    name: data.name as string,
+  };
 }

@@ -206,6 +206,8 @@ export interface PlatformUser {
   restaurant?: string | null;
   plan?: string | null;
   isActive: boolean;
+  /** Contraseña de entrega al restaurante (solo admin) */
+  portalDeliveryPassword?: string | null;
 }
 
 export interface CommercialLead {

@@ -13,6 +13,7 @@ type DbUser = {
   role: UserRole;
   client_id: string | null;
   is_active: boolean;
+  portal_delivery_password?: string | null;
   clients?: { business_name: string; plan_id: string | null } | null;
 };
 
@@ -35,6 +36,7 @@ async function mapDbUser(row: DbUser): Promise<PlatformUser> {
     restaurant: row.clients?.business_name ?? null,
     plan,
     isActive: row.is_active,
+    portalDeliveryPassword: row.portal_delivery_password ?? null,
   };
 }
 
@@ -66,6 +68,7 @@ export async function findUserByEmail(email: string): Promise<PlatformUser | nul
     restaurant: mock.restaurant ?? null,
     plan: mock.plan ?? null,
     isActive: true,
+    portalDeliveryPassword: mock.portalDeliveryPassword ?? null,
   };
 }
 
@@ -107,6 +110,7 @@ export async function findUserByLogin(login: string): Promise<PlatformUser | nul
     restaurant: mock.restaurant ?? null,
     plan: mock.plan ?? null,
     isActive: true,
+    portalDeliveryPassword: mock.portalDeliveryPassword ?? null,
   };
 }
 
@@ -132,6 +136,7 @@ export async function listUsers(): Promise<PlatformUser[]> {
       restaurant: u.restaurant ?? null,
       plan: u.plan ?? null,
       isActive: true,
+      portalDeliveryPassword: u.portalDeliveryPassword ?? null,
     }));
   }
 

@@ -11,7 +11,20 @@ export async function GET(request: Request) {
 
   try {
     if (view === 'accounts') {
-      return jsonOk(await listUsers());
+      const users = await listUsers();
+      return jsonOk(
+        users.map((u) => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role,
+          clientId: u.clientId,
+          restaurant: u.restaurant,
+          plan: u.plan,
+          isActive: u.isActive,
+          portalDeliveryPassword: u.portalDeliveryPassword ?? null,
+        }))
+      );
     }
     return jsonOk(await getClients());
   } catch (e) {

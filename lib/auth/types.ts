@@ -10,6 +10,8 @@ export interface AppUser {
   clientId?: string | null;
   restaurant?: string | null;
   plan?: string | null;
+  /** Contraseña en texto para entregar al cliente (solo panel admin) */
+  portalDeliveryPassword?: string | null;
   /** Preparado: stripeCustomerId, licenseKey, companyId */
   metadata?: Record<string, string>;
 }

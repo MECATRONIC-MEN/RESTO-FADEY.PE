@@ -9,6 +9,7 @@ import { AdminPageHeader } from './AdminPageHeader';
 import { StatusBadge } from './StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { ConnectRestaurantModal } from './ConnectRestaurantModal';
+import { ClientDeliveryPasswordCell } from './ClientDeliveryPasswordCell';
 import { RestaurantClientActions } from './RestaurantClientActions';
 import { resolvePlanLabel } from '@/lib/utils/plan-display';
 
@@ -186,7 +187,13 @@ export function UsersPanel() {
                           <StatusBadge status={conn} />
                         </td>
                         <td className="px-4 py-3">
-                          <RestaurantClientActions client={c} onChanged={refetchClients} />
+                          <RestaurantClientActions
+                            client={c}
+                            onChanged={() => {
+                              refetchClients();
+                              refetchAccounts();
+                            }}
+                          />
                         </td>
                       </tr>
                     );
@@ -204,6 +211,7 @@ export function UsersPanel() {
                 <tr className="border-b border-white/10 bg-white/5 text-xs uppercase text-brand-slate">
                   <th className="px-4 py-3">Usuario (acceso)</th>
                   <th className="px-4 py-3">Correo de acceso</th>
+                  <th className="px-4 py-3">Contraseña</th>
                   <th className="px-4 py-3">Rol</th>
                   <th className="px-4 py-3">Restaurante vinculado</th>
                 </tr>
@@ -211,7 +219,7 @@ export function UsersPanel() {
               <tbody>
                 {loadingAccounts ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-brand-mist">
+                    <td colSpan={5} className="px-4 py-8 text-center text-brand-mist">
                       Cargando…
                     </td>
                   </tr>
@@ -219,14 +227,25 @@ export function UsersPanel() {
                   filteredAccounts.map((a) => (
                     <tr key={a.id} className="border-b border-white/5 hover:bg-white/5">
                       <td className="px-4 py-3 font-medium text-brand-soft">
-                        {a.role === 'cliente' ? a.name : a.name}
+                        {a.name}
                         {a.role === 'cliente' && (
                           <p className="mt-0.5 text-[10px] text-brand-slate">
-                            Ingreso: nombre del restaurante o correo @rf.pe · contraseña: nombreunido + 4 dígitos
+                            Ingreso: nombre del restaurante o correo @rf.pe
                           </p>
                         )}
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-brand-mist">{a.email}</td>
+                      <td className="px-4 py-3">
+                        {a.role === 'cliente' ? (
+                          <ClientDeliveryPasswordCell
+                            userId={a.id}
+                            password={a.portalDeliveryPassword}
+                            onStored={refetchAccounts}
+                          />
+                        ) : (
+                          <span className="text-xs text-brand-slate">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 capitalize text-brand-slate">{a.role}</td>
                       <td className="px-4 py-3 text-xs text-brand-mist">
                         {a.clientId
