@@ -25,9 +25,11 @@ export function UsersPanel() {
     loading: loadingClients,
     refetch: refetchClients,
   } = useAdminApi<SaasClient[]>('/api/users');
-  const { data: accounts, loading: loadingAccounts } = useAdminApi<PlatformUser[]>(
-    '/api/users?view=accounts'
-  );
+  const {
+    data: accounts,
+    loading: loadingAccounts,
+    refetch: refetchAccounts,
+  } = useAdminApi<PlatformUser[]>('/api/users?view=accounts');
   const { data: plans } = useAdminApi<SaasPlan[]>('/api/plans');
   const [search, setSearch] = useState('');
 
@@ -71,7 +73,10 @@ export function UsersPanel() {
       <ConnectRestaurantModal
         open={connectOpen}
         onClose={() => setConnectOpen(false)}
-        onSuccess={() => refetchClients()}
+        onSuccess={() => {
+          refetchClients();
+          refetchAccounts();
+        }}
       />
 
       <div className="flex flex-wrap gap-2">
@@ -198,7 +203,7 @@ export function UsersPanel() {
               <thead>
                 <tr className="border-b border-white/10 bg-white/5 text-xs uppercase text-brand-slate">
                   <th className="px-4 py-3">Usuario (acceso)</th>
-                  <th className="px-4 py-3">Correo técnico</th>
+                  <th className="px-4 py-3">Correo de acceso</th>
                   <th className="px-4 py-3">Rol</th>
                   <th className="px-4 py-3">Restaurante vinculado</th>
                 </tr>
@@ -217,7 +222,7 @@ export function UsersPanel() {
                         {a.role === 'cliente' ? a.name : a.name}
                         {a.role === 'cliente' && (
                           <p className="mt-0.5 text-[10px] text-brand-slate">
-                            Ingreso: nombre del restaurante
+                            Ingreso: nombre del restaurante o correo @rf.pe
                           </p>
                         )}
                       </td>

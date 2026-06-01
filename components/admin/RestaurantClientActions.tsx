@@ -192,7 +192,7 @@ export function RestaurantClientActions({ client, onChanged }: RestaurantClientA
         <div className="absolute right-0 z-20 mt-1 min-w-[200px] rounded-xl border border-brand-cyan/20 bg-brand-navy py-1 shadow-lg">
           <button type="button" className={itemClass} onClick={generatePortalAccess}>
             <KeyRound className="h-4 w-4 shrink-0" />
-            Generar acceso panel
+            Crear o regenerar acceso
           </button>
           <button type="button" className={itemClass} onClick={showDetails}>
             <Eye className="h-4 w-4 shrink-0" />

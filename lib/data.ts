@@ -329,6 +329,9 @@ export const PLANS: Plan[] = [
       'Asistente de negocio — recomendaciones para mejorar resultados',
       'Gestión de personal — horarios, turnos y control de pagos',
       'Informes avanzados de finanzas — ingresos, egresos y flujo de caja',
+      'Módulo de pagos de impuestos — obligaciones tributarias, vencimientos y registro de pagos',
+      'Ganancia total — utilidad neta, margen y resultado consolidado del negocio',
+      'Pago del personal — nómina, adelantos, liquidaciones y control de planilla',
       'Informes avanzados de inventario — movimientos, mermas y stock crítico',
       'Indicadores estratégicos — KPIs, métricas clave y análisis empresarial',
       'IA — Asistente de negocio, recomendaciones para mejorar resultados',
@@ -368,9 +371,9 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     name: 'Roberto Vargas',
-    restaurant: 'Pizza Express Lima',
+    restaurant: 'Pizza Express',
     comment:
-      'El módulo de delivery cambió nuestro negocio. Gestionamos 200+ pedidos diarios sin errores. El soporte es excelente.',
+      'Los modulos en general, y el monitoreo en vivo, cambió nuestro negocio. Gestionamos 200+ pedidos diarios sin errores. El soporte es excelente.',
     rating: 5,
   },
   {

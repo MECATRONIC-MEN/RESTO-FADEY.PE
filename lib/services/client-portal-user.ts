@@ -13,27 +13,64 @@ export type ClientPortalAccess = {
   regenerated: boolean;
 };
 
-/** Contraseña: nombre del restaurante + 5 dígitos aleatorios */
-export function generateClientPortalPassword(restaurantName: string): string {
-  const base = restaurantName.trim();
-  const digits = String(randomInt(10000, 100000));
-  return `${base}${digits}`;
+/** Nombre normalizado para el correo (ej. "SISTEMA DEMO" → sistemademo) */
+export function slugifyRestaurantName(restaurantName: string): string {
+  return (
+    restaurantName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 48) || 'cliente'
+  );
 }
 
-export function buildClientPortalEmail(restaurantName: string, clientId: string): string {
-  const slug = restaurantName
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 40);
-  const shortId = clientId.replace(/-/g, '').slice(0, 8);
-  return `${slug || 'cliente'}.${shortId}@portal.restofadey.pe`;
+/** Correo de acceso: nombre@rf.pe */
+export function buildClientPortalEmail(restaurantName: string): string {
+  return `${slugifyRestaurantName(restaurantName)}@rf.pe`;
+}
+
+/** Contraseña: nombre del restaurante + 4 dígitos aleatorios */
+export function generateClientPortalPassword(restaurantName: string): string {
+  const base = restaurantName.trim();
+  const digits = String(randomInt(1000, 10000));
+  return `${base}${digits}`;
 }
 
 async function hashPassword(plain: string): Promise<string> {
   return bcrypt.hash(plain, 10);
+}
+
+async function isEmailTakenByOtherClient(email: string, clientId: string): Promise<boolean> {
+  const normalized = email.toLowerCase();
+
+  if (!isSupabaseConfigured()) {
+    return USERS.some(
+      (u) => u.email.toLowerCase() === normalized && u.clientId !== clientId
+    );
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { data } = await db
+    .from('users')
+    .select('client_id')
+    .eq('email', normalized)
+    .maybeSingle();
+
+  return Boolean(data && data.client_id !== clientId);
+}
+
+/** Resuelve un correo único; solo añade sufijo si otro cliente ya usa el mismo. */
+async function resolveClientPortalEmail(
+  restaurantName: string,
+  clientId: string
+): Promise<string> {
+  const base = buildClientPortalEmail(restaurantName);
+  if (!(await isEmailTakenByOtherClient(base, clientId))) {
+    return base;
+  }
+  const suffix = clientId.replace(/-/g, '').slice(0, 4);
+  return `${slugifyRestaurantName(restaurantName)}${suffix}@rf.pe`;
 }
 
 async function findUserByClientId(clientId: string): Promise<PlatformUser | null> {
@@ -89,7 +126,7 @@ async function findUserByClientId(clientId: string): Promise<PlatformUser | null
 
 /**
  * Crea o actualiza el usuario del panel cliente vinculado al restaurante.
- * Usuario = nombre del restaurante; contraseña = nombre + 5 dígitos (solo al crear o regenerar).
+ * Usuario = nombre del restaurante; correo = nombre@rf.pe; contraseña = nombre + 4 dígitos.
  */
 export async function provisionClientPortalUser(input: {
   clientId: string;
@@ -101,7 +138,7 @@ export async function provisionClientPortalUser(input: {
     throw new Error('Nombre de restaurante requerido para crear acceso');
   }
 
-  const email = buildClientPortalEmail(username, input.clientId);
+  const email = await resolveClientPortalEmail(username, input.clientId);
   const existing = await findUserByClientId(input.clientId);
 
   if (!isSupabaseConfigured()) {
@@ -110,6 +147,9 @@ export async function provisionClientPortalUser(input: {
       if (mockUser) {
         mockUser.name = username;
         mockUser.restaurant = username;
+        if (mockUser.email !== email) {
+          mockUser.email = email;
+        }
         if (input.regeneratePassword) {
           const password = generateClientPortalPassword(username);
           mockUser.passwordHash = await hashPassword(password);
@@ -150,6 +190,9 @@ export async function provisionClientPortalUser(input: {
 
   if (existing) {
     const updates: Record<string, string> = { name: username };
+    if (existing.email !== email) {
+      updates.email = email;
+    }
     if (input.regeneratePassword) {
       const password = generateClientPortalPassword(username);
       updates.password_hash = await hashPassword(password);
@@ -157,7 +200,7 @@ export async function provisionClientPortalUser(input: {
       return {
         username,
         password,
-        email: existing.email,
+        email: updates.email ?? existing.email,
         created: false,
         regenerated: true,
       };
@@ -166,7 +209,7 @@ export async function provisionClientPortalUser(input: {
     return {
       username,
       password: null,
-      email: existing.email,
+      email: updates.email ?? existing.email,
       created: false,
       regenerated: false,
     };
@@ -197,4 +240,16 @@ export async function provisionClientPortalUser(input: {
   }
 
   return { username, password, email, created: true, regenerated: false };
+}
+
+/** Crea la cuenta cliente si el restaurante aún no tiene una vinculada. */
+export async function ensureClientPortalUser(input: {
+  clientId: string;
+  restaurantName: string;
+}): Promise<ClientPortalAccess> {
+  const existing = await findUserByClientId(input.clientId);
+  if (existing) {
+    return provisionClientPortalUser({ ...input, regeneratePassword: false });
+  }
+  return provisionClientPortalUser(input);
 }

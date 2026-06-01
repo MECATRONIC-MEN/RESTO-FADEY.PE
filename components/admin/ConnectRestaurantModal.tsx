@@ -75,7 +75,8 @@ export function ConnectRestaurantModal({ open, onClose, onSuccess }: ConnectRest
           <div>
             <h2 className="font-display text-lg font-semibold text-brand-soft">Conectar restaurante</h2>
             <p className="mt-1 text-sm text-brand-mist">
-              Solo URL Render y CLIENT_ID. Se crea el usuario del panel cliente automáticamente.
+              Solo URL Render y CLIENT_ID. Se crea automáticamente el acceso del cliente
+              (correo nombre@rf.pe y contraseña nombre + 4 dígitos).
             </p>
           </div>
           <button

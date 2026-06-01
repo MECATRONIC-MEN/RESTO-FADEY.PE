@@ -13,7 +13,7 @@ import type {
   SaasClient,
 } from '@/lib/domain/types';
 import { getClientById } from '@/lib/services/clients';
-import { provisionClientPortalUser } from '@/lib/services/client-portal-user';
+import { ensureClientPortalUser } from '@/lib/services/client-portal-user';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -128,7 +128,7 @@ export async function connectRestaurantFromPos(input: {
     };
     if (existing) Object.assign(existing, client);
     else MOCK_CLIENTS.unshift(client);
-    const portal = await provisionClientPortalUser({
+    const portal = await ensureClientPortalUser({
       clientId,
       restaurantName: info.restaurantName,
     });
@@ -136,7 +136,11 @@ export async function connectRestaurantFromPos(input: {
       client,
       created,
       posOnline: health.online,
-      message: created ? 'Restaurante conectado y registrado' : 'Restaurante actualizado desde POS',
+      message: created
+        ? 'Restaurante conectado y registrado'
+        : portal.created
+          ? 'Restaurante actualizado — acceso de cliente creado'
+          : 'Restaurante actualizado desde POS',
       portalAccess:
         portal.password != null
           ? { username: portal.username, password: portal.password, email: portal.email }
@@ -231,7 +235,7 @@ export async function connectRestaurantFromPos(input: {
   const client = await getClientById(clientId);
   if (!client) throw new Error('No se pudo cargar el cliente tras conectar');
 
-  const portal = await provisionClientPortalUser({
+  const portal = await ensureClientPortalUser({
     clientId,
     restaurantName: info.restaurantName,
   });
@@ -242,7 +246,9 @@ export async function connectRestaurantFromPos(input: {
     posOnline: health.online,
     message: created
       ? 'Restaurante conectado y registrado automáticamente'
-      : 'Datos del restaurante sincronizados desde el POS',
+      : portal.created
+        ? 'Datos sincronizados — acceso de cliente creado'
+        : 'Datos del restaurante sincronizados desde el POS',
     portalAccess:
       portal.password != null
         ? { username: portal.username, password: portal.password, email: portal.email }

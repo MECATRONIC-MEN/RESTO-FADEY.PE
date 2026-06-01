@@ -22,14 +22,14 @@ export async function POST(
     });
 
     if (!portal.password) {
-      return jsonError('No se pudo generar contraseña');
+      return jsonError('No se pudo crear ni regenerar la contraseña del cliente');
     }
 
     return jsonOk({
       username: portal.username,
       password: portal.password,
       email: portal.email,
-      message: 'Nueva contraseña generada',
+      message: portal.created ? 'Acceso de cliente creado' : 'Nueva contraseña generada',
     });
   } catch (e) {
     return jsonError(e instanceof Error ? e.message : 'Error', 500);

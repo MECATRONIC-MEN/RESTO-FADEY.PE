@@ -54,7 +54,7 @@ export function ClientPortalCredentialsCard({
           </dd>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <dt className="text-brand-slate">Correo técnico</dt>
+          <dt className="text-brand-slate">Correo de acceso</dt>
           <dd className="truncate font-mono text-[10px] text-brand-mist">{credentials.email}</dd>
         </div>
       </dl>
