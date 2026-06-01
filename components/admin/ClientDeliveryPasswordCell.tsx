@@ -57,6 +57,7 @@ export function ClientDeliveryPasswordCell({
   }
 
   function copy() {
+    if (!stored) return;
     void navigator.clipboard.writeText(stored);
     alert('Contraseña copiada');
   }

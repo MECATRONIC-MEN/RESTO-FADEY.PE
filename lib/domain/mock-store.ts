@@ -8,6 +8,7 @@ import type {
   PosPaymentPayload,
 } from './types';
 import { DEMO_CLIENT_ID, DEMO_BUSINESS_NAME, DEMO_CLIENT_EMAIL } from '@/lib/demo';
+import { PREMIUM_PLAN_MODULES } from '@/lib/plan-modules';
 import { buildPlanMapFromSaasPlans, computeFinancialStats } from '@/lib/analytics/financial-metrics';
 
 /** Pagos en memoria (solo desarrollo sin Supabase; en Vercel usar Supabase) */
@@ -35,7 +36,7 @@ export const MOCK_PLANS: SaasPlan[] = [
     name: 'Premium',
     priceMonthly: 299,
     currency: 'PEN',
-    modules: ['all'],
+    modules: PREMIUM_PLAN_MODULES,
     limits: { usuarios: 'ilimitado', sucursales: 1 },
     highlighted: true,
   },
@@ -67,7 +68,7 @@ export const MOCK_LICENSES: License[] = [
     status: 'activo',
     licenseKey: 'RF-DEMO-2026',
     expiresAt: '2026-12-31T23:59:59Z',
-    modulesEnabled: ['all'],
+    modulesEnabled: PREMIUM_PLAN_MODULES,
     createdAt: new Date().toISOString(),
   },
 ];

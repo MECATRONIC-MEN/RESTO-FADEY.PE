@@ -1,14 +1,22 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Landmark, TrendingUp, UsersRound } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { FinancialStats } from '@/lib/domain/types';
+import { PREMIUM_FINANCE_MODULES, formatPlanModule } from '@/lib/plan-modules';
 import { AdminPageHeader } from './AdminPageHeader';
 import { KpiCard } from './KpiCard';
 import { BarChart } from './BarChart';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 
 const REFRESH_MS = 30_000;
+
+const FINANCE_MODULE_ICONS = {
+  pagos_impuestos: Landmark,
+  ganancia_total: TrendingUp,
+  pago_personal: UsersRound,
+} as const;
 
 function formatPen(amount: number) {
   return `S/ ${amount.toLocaleString('es-PE')}`;
@@ -53,6 +61,38 @@ export function StatisticsPanel() {
         <KpiCard label="Nuevos este mes" value={String(stats.newClientsThisMonth)} trend="up" />
         <KpiCard label="Tasa renovación" value={`${stats.renewalRate}%`} premium />
       </div>
+
+      <DashboardCard title="Módulos financieros Premium">
+        <p className="mb-4 text-sm text-brand-mist">
+          Incluidos en el plan Empresarial: impuestos, ganancia consolidada y planilla del personal.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {PREMIUM_FINANCE_MODULES.map((moduleId) => {
+            const Icon = FINANCE_MODULE_ICONS[moduleId];
+            const premiumCount = stats.premiumClients;
+            return (
+              <div
+                key={moduleId}
+                className="rounded-xl border border-brand-gold/20 bg-brand-gold/5 p-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg border border-brand-gold/25 bg-brand-gold/10 p-2">
+                    <Icon className="h-5 w-5 text-brand-gold-light" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-brand-soft">{formatPlanModule(moduleId)}</p>
+                    <p className="mt-1 text-xs text-brand-mist">
+                      {premiumCount > 0
+                        ? `${premiumCount} cliente(s) Premium con acceso`
+                        : 'Disponible en plan Empresarial'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </DashboardCard>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <DashboardCard title="Ingresos mensuales (últimos 6 meses)">

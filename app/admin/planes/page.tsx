@@ -2,6 +2,7 @@
 
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { SaasPlan } from '@/lib/domain/types';
+import { formatPlanModule } from '@/lib/plan-modules';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { ModuleShell } from '@/components/admin/ModuleShell';
 
@@ -34,7 +35,7 @@ export default function AdminPlanesPage() {
               </p>
               <ul className="mt-4 space-y-1 text-sm text-brand-mist">
                 {plan.modules.map((m) => (
-                  <li key={m}>• {m}</li>
+                  <li key={m}>• {formatPlanModule(m)}</li>
                 ))}
               </ul>
             </DashboardCard>
