@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import {
   Check,
   X,
@@ -11,6 +12,7 @@ import {
   Clock,
   Send,
   ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { useAdminApi, decidePayment, retryPosSync } from '@/hooks/useAdminApi';
 import type { FinancialStats, PaymentRecord } from '@/lib/domain/types';
@@ -20,7 +22,6 @@ import { StatusBadge } from './StatusBadge';
 import { KpiCard } from './KpiCard';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { cn } from '@/lib/utils';
-import { IntegrationDiagnostics } from './IntegrationDiagnostics';
 
 type FilterTab = 'pending' | 'all' | 'approved' | 'rejected';
 
@@ -402,17 +403,16 @@ export function PaymentApprovalCenter() {
         </DashboardCard>
       </div>
 
-      <DashboardCard title="Flujo de sincronización">
-        <p className="text-sm text-brand-mist">
-          POS → <code className="text-brand-cyan">POST /api/payments</code> → pendiente → admin
-          aprueba → licencia activa →{' '}
-          <code className="text-brand-cyan">POST {'{POS}'}/api/payments/confirm</code>. El POS
-          también puede consultar con{' '}
-          <code className="text-brand-cyan">GET /api/payments/confirm?paymentId=</code>.
-        </p>
-      </DashboardCard>
-
-      <IntegrationDiagnostics />
+      <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-brand-mist">
+        <p>Flujo POS, diagnóstico e integración técnica en Entorno.</p>
+        <Link
+          href="/admin/entorno"
+          className="inline-flex items-center gap-1 text-brand-cyan hover:underline"
+        >
+          Ir a Entorno
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
     </div>
   );
 }

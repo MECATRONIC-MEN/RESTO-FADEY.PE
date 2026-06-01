@@ -6,7 +6,6 @@ import {
   Wallet,
   Users,
   BarChart3,
-  AlertCircle,
   ArrowRight,
   Bell,
   BookOpen,
@@ -15,6 +14,7 @@ import {
   Tag,
   ExternalLink,
   ImageIcon,
+  Settings,
 } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { FinancialStats, PaymentRecord } from '@/lib/domain/types';
@@ -150,6 +150,7 @@ export function AdminDashboard() {
               { href: '/admin/recursos', label: 'Recursos', icon: FolderOpen },
               { href: '/admin/promociones', label: 'Promociones', icon: Tag },
               { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
+              { href: '/admin/entorno', label: 'Entorno e integraciones', icon: Settings },
             ].map((item) => {
               const Icon = item.icon;
               return (
@@ -167,20 +168,6 @@ export function AdminDashboard() {
         </DashboardCard>
       </div>
 
-      <DashboardCard title="Integración POS → Backoffice">
-        <div className="flex items-start gap-3 rounded-lg border border-brand-cyan/20 bg-brand-cyan/5 p-4">
-          <AlertCircle className="h-5 w-5 shrink-0 text-brand-cyan" />
-          <div className="text-sm text-brand-mist">
-            <p className="font-medium text-brand-soft">API REST activa</p>
-            <p className="mt-1">
-              El POS envía pagos a <code className="text-brand-cyan">POST /api/payments</code>. Al
-              aprobar, la plataforma notifica al POS vía{' '}
-              <code className="text-brand-cyan">POST /api/license/confirm</code> y activa la
-              licencia del cliente.
-            </p>
-          </div>
-        </div>
-      </DashboardCard>
     </div>
   );
 }

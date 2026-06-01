@@ -1,24 +1,19 @@
-import { ModuleShell } from '@/components/admin/ModuleShell';
-import { DashboardCard } from '@/components/dashboard/DashboardCard';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { EntornoDataReset } from '@/components/admin/EntornoDataReset';
+import { EntornoPosIntegrations } from '@/components/admin/EntornoPosIntegrations';
+import { DashboardCard } from '@/components/dashboard/DashboardCard';
 
 export default function AdminEntornoPage() {
   return (
-    <ModuleShell
-      title="Entorno e integraciones"
-      description="Branding, API keys, WhatsApp, SMTP, SUNAT y herramientas de prueba."
-      features={[
-        'Branding y colores',
-        'SEO y dominio',
-        'API keys (POS, Stripe)',
-        'WhatsApp Business',
-        'Correo SMTP',
-        'Seguridad y JWT',
-        'Reinicio de datos de prueba',
-      ]}
-      actions={['Guardar', 'Probar conexión', 'Rotar keys']}
-    >
+    <div className="mx-auto max-w-7xl space-y-8">
+      <AdminPageHeader
+        title="Entorno e integraciones"
+        description="POS, API REST, variables de entorno, llaves Render y herramientas de prueba."
+      />
+
       <EntornoDataReset />
+
+      <EntornoPosIntegrations />
 
       <div className="grid gap-4 md:grid-cols-2">
         <DashboardCard title="API REST">
@@ -27,9 +22,11 @@ export default function AdminEntornoPage() {
             <li>POST /api/payments</li>
             <li>PATCH /api/payments/[id]</li>
             <li>GET/POST /api/payments/confirm</li>
+            <li>POST /api/license/confirm</li>
             <li>GET /api/license-status/[clientId]</li>
             <li>GET /api/users</li>
             <li>GET /api/licenses</li>
+            <li>POST /api/licenses/generate-pos-link</li>
             <li>GET /api/plans</li>
             <li>GET /api/statistics</li>
             <li>POST /api/leads · GET (admin)</li>
@@ -45,6 +42,6 @@ export default function AdminEntornoPage() {
           </p>
         </DashboardCard>
       </div>
-    </ModuleShell>
+    </div>
   );
 }

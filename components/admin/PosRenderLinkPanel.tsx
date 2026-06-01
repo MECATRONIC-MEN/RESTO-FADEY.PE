@@ -27,8 +27,7 @@ export function PosRenderLinkPanel({ licenses, clients, plans }: PosRenderLinkPa
   return (
     <DashboardCard title="Llaves para vincular POS en Render">
       <p className="mb-4 text-sm text-brand-mist">
-        Copie el CLIENT_ID y las variables de entorno para configurar el POS en Render. La tabla
-        de arriba no cambia — aquí solo agrega las opciones de vinculación.
+        Copie el CLIENT_ID y las variables de entorno para configurar el POS en Render.
       </p>
       <div className="space-y-3">
         {licenses.map((lic) => {
