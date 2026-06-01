@@ -80,47 +80,45 @@ export function StatisticsPanel() {
       )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:grid-rows-2">
-        <KpiCard dense label="Ingresos totales" value={formatPen(stats.totalRevenue)} premium />
-        <KpiCard dense label="Ingresos mensuales" value={formatPen(stats.monthlyRevenue)} change={monthLabel} />
+        {/* Montos (S/) — fila 1 */}
+        <KpiCard dense label="Ingresos totales" value={formatPen(stats.totalRevenue)} />
+        <ProfitGrowthKpiCard dense amount={finance?.netProfitTotal ?? 0} />
         <KpiCard
           dense
           label="Ganancia neta (mes)"
           value={finance ? formatFinancePen(finance.netProfitThisMonth) : '—'}
           change="Clic para gestionar"
-          premium
           onClick={() => setActiveFinance('ganancia_total')}
         />
-        <ProfitGrowthKpiCard dense amount={finance?.netProfitTotal ?? 0} />
-        <KpiCard dense label="Clientes activos" value={String(stats.activeClients)} />
-        <KpiCard dense label="Pagos pendientes" value={String(stats.pendingPayments)} change="Revisar ahora" />
-
-        <KpiCard dense label="Morosos / vencidos" value={String(stats.overdueClients)} change="Seguimiento" />
-        <KpiCard dense label="Nuevos este mes" value={String(stats.newClientsThisMonth)} trend="up" />
-        <KpiCard dense label="Tasa renovación" value={`${stats.renewalRate}%`} premium />
-        <KpiCard
-          dense
-          label="Pagos de impuestos"
-          value={financeMetric('impuestos_planes', finance ?? null)}
-          change="Clic para gestionar"
-          premium
-          onClick={() => setActiveFinance('impuestos_planes')}
-        />
-        <KpiCard
-          dense
-          label="Pago del personal"
-          value={financeMetric('pago_personal', finance ?? null)}
-          change="Clic para gestionar"
-          premium
-          onClick={() => setActiveFinance('pago_personal')}
-        />
+        <KpiCard dense label="Ingresos mensuales" value={formatPen(stats.monthlyRevenue)} change={monthLabel} />
         <KpiCard
           dense
           label="Pendiente por pagar"
           value={financeMetric('pendiente_pagar', finance ?? null)}
           change="Clic para gestionar"
-          premium
           onClick={() => setActiveFinance('pendiente_pagar')}
         />
+        <KpiCard
+          dense
+          label="Pagos de impuestos"
+          value={financeMetric('impuestos_planes', finance ?? null)}
+          change="Clic para gestionar"
+          onClick={() => setActiveFinance('impuestos_planes')}
+        />
+
+        {/* Montos + unidades — fila 2 */}
+        <KpiCard
+          dense
+          label="Pago del personal"
+          value={financeMetric('pago_personal', finance ?? null)}
+          change="Clic para gestionar"
+          onClick={() => setActiveFinance('pago_personal')}
+        />
+        <KpiCard dense label="Clientes activos" value={String(stats.activeClients)} />
+        <KpiCard dense label="Pagos pendientes" value={String(stats.pendingPayments)} change="Revisar ahora" />
+        <KpiCard dense label="Morosos / vencidos" value={String(stats.overdueClients)} change="Seguimiento" />
+        <KpiCard dense label="Nuevos este mes" value={String(stats.newClientsThisMonth)} trend="up" />
+        <KpiCard dense label="Tasa renovación" value={`${stats.renewalRate}%`} />
       </div>
 
       {financeError && (

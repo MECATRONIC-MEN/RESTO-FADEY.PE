@@ -25,7 +25,7 @@ export function KpiCard({
   const cardClass = cn(
     'card-dashboard min-h-[7.5rem]',
     dense && 'min-h-[7.5rem] p-4',
-    onClick && 'text-left transition-colors hover:border-brand-gold/35 hover:bg-brand-gold/5',
+    onClick && 'text-left transition-colors hover:border-brand-cyan/30 hover:bg-white/5',
     premium && 'border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
     className
   );

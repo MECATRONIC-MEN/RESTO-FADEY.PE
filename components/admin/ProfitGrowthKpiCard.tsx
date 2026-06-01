@@ -14,16 +14,10 @@ export function ProfitGrowthKpiCard({ amount, dense, className }: ProfitGrowthKp
   const progressRounded = Math.round(progress);
 
   return (
-    <div
-      className={cn(
-        'card-dashboard min-h-[7.5rem] border-brand-gold/30 bg-premium-gradient shadow-glow-gold',
-        dense && 'p-4',
-        className
-      )}
-    >
+    <div className={cn('card-dashboard min-h-[7.5rem]', dense && 'p-4', className)}>
       <p
         className={cn(
-          'font-medium uppercase tracking-wider text-brand-gold-light/90',
+          'font-medium uppercase tracking-wider text-brand-slate',
           dense ? 'text-[10px] leading-tight' : 'text-xs'
         )}
       >
@@ -31,7 +25,7 @@ export function ProfitGrowthKpiCard({ amount, dense, className }: ProfitGrowthKp
       </p>
       <p
         className={cn(
-          'font-display font-bold kpi-gold',
+          'font-display font-bold text-brand-soft',
           dense ? 'mt-1.5 text-lg leading-tight' : 'mt-2 text-2xl sm:text-3xl'
         )}
       >
@@ -55,11 +49,11 @@ export function ProfitGrowthKpiCard({ amount, dense, className }: ProfitGrowthKp
           )}
         >
           <span>Avance</span>
-          <span className="font-medium text-brand-gold-light">{progressRounded}%</span>
+          <span className="font-medium text-brand-soft">{progressRounded}%</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-brand-cyan to-brand-gold transition-[width] duration-500"
+            className="h-full rounded-full bg-brand-cyan/80 transition-[width] duration-500"
             style={{ width: `${progress}%` }}
             role="progressbar"
             aria-valuenow={progressRounded}
