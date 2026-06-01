@@ -196,7 +196,7 @@ CREATE INDEX IF NOT EXISTS idx_clients_active ON clients(is_active);
 INSERT INTO plans (id, slug, name, price_monthly, modules, limits, highlighted) VALUES
   ('a0000001-0000-4000-8000-000000000001', 'basico', 'Básico', 150, '["ventas","mesas","sunat"]', '{"usuarios":3}', false),
   ('a0000001-0000-4000-8000-000000000002', 'pro', 'Pro', 200, '["ventas","cocina","delivery","inventario","sunat"]', '{"usuarios":10}', false),
-  ('a0000001-0000-4000-8000-000000000003', 'premium', 'Premium', 299, '["ventas","cocina","delivery","inventario","sunat","reportes","finanzas","personal","pagos_impuestos","ganancia_total","pago_personal","ia_predictiva","alertas_ia"]', '{"usuarios":"ilimitado"}', true)
+  ('a0000001-0000-4000-8000-000000000003', 'premium', 'Premium', 299, '["all"]', '{"usuarios":"ilimitado"}', true)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO clients (id, business_name, ruc, contact_name, email, phone, plan_id, pos_device_id) VALUES
@@ -206,7 +206,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO licenses (id, client_id, plan_id, status, license_key, expires_at, modules_enabled) VALUES
   ('c0000001-0000-4000-8000-000000000001', 'b0000001-0000-4000-8000-000000000001',
-   'a0000001-0000-4000-8000-000000000003', 'activo', 'RF-CLI001-2026', '2026-12-31T23:59:59Z', '["ventas","cocina","delivery","inventario","sunat","reportes","finanzas","personal","pagos_impuestos","ganancia_total","pago_personal","ia_predictiva","alertas_ia"]')
+   'a0000001-0000-4000-8000-000000000003', 'activo', 'RF-CLI001-2026', '2026-12-31T23:59:59Z', '["all"]')
 ON CONFLICT (id) DO NOTHING;
 
 UPDATE clients SET license_id = 'c0000001-0000-4000-8000-000000000001'

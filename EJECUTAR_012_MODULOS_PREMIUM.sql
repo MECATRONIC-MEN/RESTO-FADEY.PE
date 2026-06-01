@@ -1,16 +1,13 @@
--- Ejecutar en Supabase SQL Editor si ya tienes la base desplegada
--- Agrega módulos Premium: pagos de impuestos, ganancia total, pago del personal
+-- NO ejecutar el script 012 anterior (mezclaba módulos POS con finanzas SaaS).
+-- Si ya lo ejecutaste, corre ESTE script para volver el plan Premium a ["all"].
 
 UPDATE plans
-SET modules = '[
-  "ventas","cocina","delivery","inventario","sunat","reportes","finanzas","personal",
-  "pagos_impuestos","ganancia_total","pago_personal","ia_predictiva","alertas_ia"
-]'::jsonb
+SET modules = '["all"]'::jsonb
 WHERE slug = 'premium';
 
 UPDATE licenses
-SET modules_enabled = '[
-  "ventas","cocina","delivery","inventario","sunat","reportes","finanzas","personal",
-  "pagos_impuestos","ganancia_total","pago_personal","ia_predictiva","alertas_ia"
-]'::jsonb
+SET modules_enabled = '["all"]'::jsonb
 WHERE plan_id IN (SELECT id FROM plans WHERE slug = 'premium');
+
+-- Los controles de impuestos / ganancia / planilla del negocio Resto Fadey
+-- viven en el panel admin (Estadísticas), NO en la tabla plans.

@@ -20,6 +20,9 @@ import {
   GraduationCap,
   ChevronDown,
   FolderOpen,
+  Landmark,
+  TrendingUp,
+  UsersRound,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
@@ -48,6 +51,16 @@ type NavEntry = NavLink | NavGroup;
 const NAV: NavEntry[] = [
   { type: 'link', href: '/admin', label: 'Panel', icon: LayoutDashboard, exact: true },
   { type: 'link', href: '/admin/estadisticas', label: 'Estadísticas', icon: BarChart3 },
+  {
+    type: 'group',
+    label: 'Finanzas',
+    icon: Landmark,
+    children: [
+      { href: '/admin/finanzas/ganancia', label: 'Ganancia', icon: TrendingUp },
+      { href: '/admin/finanzas/impuestos', label: 'Impuestos', icon: Landmark },
+      { href: '/admin/finanzas/personal', label: 'Personal', icon: UsersRound },
+    ],
+  },
   { type: 'link', href: '/admin/users', label: 'Clientes', icon: Users },
   { type: 'link', href: '/admin/payments', label: 'Pagos', icon: Wallet },
   { type: 'link', href: '/admin/licencias', label: 'Licencias', icon: KeyRound },
@@ -78,15 +91,28 @@ function SidebarInner({
   pathname: string;
   onNavigate?: () => void;
 }) {
-  const academiaOpenDefault =
-    pathname.startsWith('/admin/cursos') ||
-    pathname.startsWith('/admin/videos') ||
-    pathname.startsWith('/admin/recursos');
-  const [academiaOpen, setAcademiaOpen] = useState(academiaOpenDefault);
+  const defaultOpenGroups = NAV.filter(
+    (item): item is NavGroup =>
+      item.type === 'group' &&
+      item.children.some((c) => pathname.startsWith(c.href))
+  ).map((g) => g.label);
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(defaultOpenGroups.map((label) => [label, true]))
+  );
 
   useEffect(() => {
-    if (academiaOpenDefault) setAcademiaOpen(true);
-  }, [academiaOpenDefault]);
+    for (const item of NAV) {
+      if (item.type !== 'group') continue;
+      if (item.children.some((c) => pathname.startsWith(c.href))) {
+        setOpenGroups((prev) => ({ ...prev, [item.label]: true }));
+      }
+    }
+  }, [pathname]);
+
+  function toggleGroup(label: string) {
+    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  }
 
   return (
     <>
@@ -125,11 +151,13 @@ function SidebarInner({
           const groupActive = item.children.some((c) => pathname.startsWith(c.href));
           const GroupIcon = item.icon;
 
+          const groupOpen = openGroups[item.label] ?? false;
+
           return (
             <div key={item.label} className="space-y-0.5">
               <button
                 type="button"
-                onClick={() => setAcademiaOpen((v) => !v)}
+                onClick={() => toggleGroup(item.label)}
                 className={cn(
                   'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   groupActive
@@ -142,11 +170,11 @@ function SidebarInner({
                 <ChevronDown
                   className={cn(
                     'h-4 w-4 shrink-0 transition-transform duration-200',
-                    academiaOpen && 'rotate-180'
+                    groupOpen && 'rotate-180'
                   )}
                 />
               </button>
-              {academiaOpen && (
+              {groupOpen && (
                 <div className="ml-3 space-y-0.5 border-l border-brand-gold/15 pl-2">
                   {item.children.map((child) => {
                     const active = pathname.startsWith(child.href);

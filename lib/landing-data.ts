@@ -13,9 +13,6 @@ import {
   Settings,
   ShoppingCart,
   Truck,
-  Landmark,
-  TrendingUp,
-  UsersRound,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -308,65 +305,6 @@ export const MODULE_TABS: ModuleTab[] = [
     ],
     chartBars: [50, 62, 58, 75, 68, 82, 78, 88, 72, 85, 80, 92],
     orders: [],
-    accent: 'cyan',
-  },
-  {
-    id: 'pagos-impuestos',
-    label: 'Impuestos',
-    icon: Landmark,
-    title: 'Pagos de impuestos',
-    description:
-      'Obligaciones tributarias, vencimientos SUNAT y registro de pagos en un solo módulo financiero.',
-    bullets: ['Vencimientos', 'IGV / renta', 'Historial tributario'],
-    kpis: [
-      { label: 'Por pagar', value: 'S/ 2,840', trend: 'Este mes' },
-      { label: 'Pagados', value: 'S/ 18,200', trend: 'Año' },
-      { label: 'Próximo vto.', value: '12 jun', trend: 'PDT 621' },
-    ],
-    chartBars: [40, 55, 48, 62, 58, 70, 65, 72, 68, 75, 70, 78],
-    orders: [
-      { name: 'IGV — mayo', status: 'Pagado' },
-      { name: 'Renta 4ta', status: 'Programado' },
-      { name: 'Detracciones', status: 'Al día' },
-    ],
-    accent: 'gold',
-  },
-  {
-    id: 'ganancia-total',
-    label: 'Ganancia',
-    icon: TrendingUp,
-    title: 'Ganancia total',
-    description:
-      'Utilidad neta, margen y resultado consolidado del negocio con visión clara de rentabilidad.',
-    bullets: ['Utilidad neta', 'Margen bruto', 'Resultado consolidado'],
-    kpis: [
-      { label: 'Ganancia hoy', value: 'S/ 4,680', trend: '+12%' },
-      { label: 'Margen neto', value: '38%', trend: '+2 pp' },
-      { label: 'Mes acumulado', value: 'S/ 86K', trend: 'Consolidado' },
-    ],
-    chartBars: [52, 58, 62, 68, 72, 75, 78, 82, 85, 88, 90, 94],
-    orders: [],
-    accent: 'gold',
-  },
-  {
-    id: 'pago-personal',
-    label: 'Planilla',
-    icon: UsersRound,
-    title: 'Pago del personal',
-    description:
-      'Nómina, adelantos, liquidaciones y control de planilla integrado con la operación del restaurante.',
-    bullets: ['Nómina quincenal', 'Adelantos', 'Liquidaciones'],
-    kpis: [
-      { label: 'Planilla mes', value: 'S/ 24,500', trend: 'Estimado' },
-      { label: 'Colaboradores', value: '18', trend: 'Activos' },
-      { label: 'Adelantos', value: 'S/ 1,200', trend: 'Pendientes' },
-    ],
-    chartBars: [55, 58, 60, 62, 65, 68, 70, 72, 74, 76, 78, 80],
-    orders: [
-      { name: 'Salón — turno noche', status: 'Pagado' },
-      { name: 'Cocina — quincena', status: 'Procesando' },
-      { name: 'Delivery — comisiones', status: 'Calculado' },
-    ],
     accent: 'cyan',
   },
   {

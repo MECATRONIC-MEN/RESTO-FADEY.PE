@@ -163,6 +163,72 @@ export interface FinancialStats {
   rejectedPaymentsThisMonth?: number;
 }
 
+/** Colaborador interno Resto Fadey (planilla admin) */
+export interface SaasStaffMember {
+  id: string;
+  name: string;
+  role?: string;
+  phone?: string;
+  email?: string;
+  payAmount: number;
+  /** Día del mes (1–28) para aviso de pago recurrente */
+  payDayOfMonth?: number;
+  notes?: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+/** Pago programado o realizado a personal interno */
+export interface SaasStaffPayment {
+  id: string;
+  staffId: string;
+  staffName?: string;
+  amount: number;
+  dueDate: string;
+  paidAt?: string | null;
+  notes?: string;
+  createdAt: string;
+}
+
+/** Obligación tributaria sobre ingresos SaaS */
+export interface SaasTaxPayment {
+  id: string;
+  taxType: string;
+  amount: number;
+  dueDate: string;
+  paidAt?: string | null;
+  periodYear: number;
+  periodMonth: number;
+  reference?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface SaasUpcomingPayment {
+  id: string;
+  kind: 'staff' | 'tax';
+  label: string;
+  amount: number;
+  dueDate: string;
+  daysUntil: number;
+  overdue: boolean;
+}
+
+/** Resumen financiero del negocio SaaS (ingresos − impuestos − planilla) */
+export interface SaasFinanceSummary {
+  revenueTotal: number;
+  revenueThisMonth: number;
+  payrollPaidTotal: number;
+  payrollPaidThisMonth: number;
+  payrollPendingAmount: number;
+  taxesPaidTotal: number;
+  taxesPaidThisMonth: number;
+  taxesPendingAmount: number;
+  netProfitTotal: number;
+  netProfitThisMonth: number;
+  upcomingPayments: SaasUpcomingPayment[];
+}
+
 export interface PosPaymentPayload {
   clientId: string;
   businessName?: string;
