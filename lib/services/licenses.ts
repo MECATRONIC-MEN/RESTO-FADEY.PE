@@ -192,12 +192,20 @@ export async function deleteLicenseById(licenseId: string): Promise<void> {
 
   await deleteClientPortalUsersByClientId(clientId);
 
-  await db.from('clients').update({ license_id: null }).eq('license_id', licenseId);
-  await db.from('clients').update({ license_id: null }).eq('id', clientId);
+  const { error: unlinkByLicErr } = await db
+    .from('clients')
+    .update({ license_id: null })
+    .eq('license_id', licenseId);
+  if (unlinkByLicErr) throw new Error(unlinkByLicErr.message);
 
-  const { error: delLicErr } = await db.from('licenses').delete().eq('id', licenseId);
-  if (delLicErr) throw new Error(delLicErr.message);
+  const { error: unlinkByClientErr } = await db
+    .from('clients')
+    .update({ license_id: null })
+    .eq('id', clientId);
+  if (unlinkByClientErr) throw new Error(unlinkByClientErr.message);
 
   const { error: delClientErr } = await db.from('clients').delete().eq('id', clientId);
   if (delClientErr) throw new Error(delClientErr.message);
+
+  await db.from('licenses').delete().eq('id', licenseId);
 }
