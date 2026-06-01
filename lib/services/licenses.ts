@@ -69,3 +69,36 @@ export async function getLicenseStatusForClient(clientId: string): Promise<Licen
 
   return (data?.status as LicenseStatus) ?? 'prueba';
 }
+
+export async function deleteLicenseById(licenseId: string): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    const idx = MOCK_LICENSES.findIndex((l) => l.id === licenseId);
+    if (idx === -1) throw new Error('Licencia no encontrada');
+    const lic = MOCK_LICENSES[idx];
+    MOCK_LICENSES.splice(idx, 1);
+    const client = MOCK_CLIENTS.find((c) => c.id === lic.clientId);
+    if (client) {
+      client.licenseId = '';
+      client.licenseStatus = 'prueba';
+    }
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { data: lic, error: fetchErr } = await db
+    .from('licenses')
+    .select('id, client_id')
+    .eq('id', licenseId)
+    .maybeSingle();
+
+  if (fetchErr) throw new Error(fetchErr.message);
+  if (!lic) throw new Error('Licencia no encontrada');
+
+  const { error: delErr } = await db.from('licenses').delete().eq('id', licenseId);
+  if (delErr) throw new Error(delErr.message);
+
+  await db
+    .from('clients')
+    .update({ license_id: null })
+    .eq('id', lic.client_id as string);
+}
