@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Loader2, Plus, Trash2, CalendarPlus, ChevronDown } from 'lucide-react';
+import { Check, Loader2, Plus, Trash2, CalendarPlus, ChevronDown, Pencil } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { SaasFinanceSummary, SaasStaffMember, SaasStaffPayment } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
@@ -141,6 +141,42 @@ export function StaffPayrollPanel() {
     refetchAll();
   }
 
+  async function editStaff(member: SaasStaffMember) {
+    const nameNext = window.prompt('Nombre', member.name) ?? member.name;
+    if (!nameNext.trim()) return;
+    const roleNext = window.prompt('Cargo', member.role ?? '') ?? member.role ?? '';
+    const phoneNext = window.prompt('Teléfono', member.phone ?? '') ?? member.phone ?? '';
+    const payAmountRaw = window.prompt('Monto de pago (S/)', String(member.payAmount)) ?? String(member.payAmount);
+    const payDayRaw =
+      window.prompt('Día de pago del mes (1-28)', member.payDayOfMonth ? String(member.payDayOfMonth) : '') ??
+      '';
+    const payAmountNext = Number(payAmountRaw);
+    const payDayNext = payDayRaw.trim() ? Number(payDayRaw) : null;
+
+    if (Number.isNaN(payAmountNext)) {
+      alert('Monto inválido');
+      return;
+    }
+
+    const res = await fetch(`/api/admin/finance/staff/${member.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: nameNext.trim(),
+        role: roleNext.trim(),
+        phone: phoneNext.trim(),
+        payAmount: payAmountNext,
+        payDayOfMonth: payDayNext,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      alert(json.error ?? 'No se pudo editar');
+      return;
+    }
+    refetchAll();
+  }
+
   async function removePayment(id: string) {
     if (!confirm('¿Eliminar este registro de pago?')) return;
     const res = await fetch(`/api/admin/finance/staff-payments/${id}`, { method: 'DELETE' });
@@ -181,32 +217,18 @@ export function StaffPayrollPanel() {
             {formatFinancePen(summary?.payrollPendingAmount ?? 0)}
           </p>
         </DashboardCard>
-        <DashboardCard>
+        <button
+          type="button"
+          onClick={() => setOpenSection('history')}
+          className="card-dashboard text-left transition-colors hover:border-brand-cyan/35 hover:bg-brand-cyan/10"
+        >
           <p className="text-xs text-brand-slate">Colaboradores activos</p>
           <p className="mt-1 text-xl font-bold text-brand-soft">
             {activeStaffList.length}
           </p>
-        </DashboardCard>
+          <p className="mt-2 text-xs text-brand-cyan">Clic para ver lista</p>
+        </button>
       </div>
-
-      <DashboardCard title="Activos hoy">
-        {loadingStaff ? (
-          <p className="text-sm text-brand-mist">Cargando…</p>
-        ) : activeStaffList.length === 0 ? (
-          <p className="text-sm text-brand-mist">Sin colaboradores activos.</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {activeStaffList.map((s) => (
-              <span
-                key={s.id}
-                className="rounded-full border border-brand-cyan/25 bg-brand-cyan/10 px-3 py-1 text-xs text-brand-soft"
-              >
-                {s.name}
-              </span>
-            ))}
-          </div>
-        )}
-      </DashboardCard>
 
       <div className="grid gap-2 sm:grid-cols-3">
         <button
@@ -321,6 +343,15 @@ export function StaffPayrollPanel() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => editStaff(s)}
+                    className="rounded-lg p-2 text-brand-cyan hover:bg-brand-cyan/10"
+                    aria-label={`Editar ${s.name}`}
+                    title="Editar colaborador"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => scheduleMonth(s.id)}

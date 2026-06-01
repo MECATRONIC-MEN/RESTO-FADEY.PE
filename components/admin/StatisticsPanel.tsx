@@ -8,6 +8,7 @@ import type { FinancialStats, SaasFinanceSummary } from '@/lib/domain/types';
 import { UpcomingPaymentsAlert, formatFinancePen } from '@/components/admin/finance/finance-ui';
 import { AdminPageHeader } from './AdminPageHeader';
 import { KpiCard } from './KpiCard';
+import { ProfitGrowthKpiCard } from './ProfitGrowthKpiCard';
 import { BarChart } from './BarChart';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { SAAS_BACKOFFICE_FINANCE, type SaasBackofficeFinanceId } from '@/lib/saas-backoffice-finance';
@@ -27,6 +28,8 @@ function financeMetric(id: SaasBackofficeFinanceId, finance: SaasFinanceSummary 
       return formatFinancePen(finance.netProfitThisMonth);
     case 'pago_personal':
       return formatFinancePen(finance.payrollPaidThisMonth);
+    case 'pendiente_pagar':
+      return formatFinancePen(finance.taxesPendingAmount + finance.payrollPendingAmount);
     default:
       return '—';
   }
@@ -78,16 +81,22 @@ export function StatisticsPanel() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Ingresos totales" value={formatPen(stats.totalRevenue)} premium />
+        <KpiCard
+          label="Ganancia total"
+          value={finance ? formatFinancePen(finance.netProfitTotal) : '—'}
+          premium
+        />
         <KpiCard label="Ingresos mensuales" value={formatPen(stats.monthlyRevenue)} change={monthLabel} />
+        <KpiCard label="Clientes activos" value={String(stats.activeClients)} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <KpiCard
           label="Ganancia neta (mes)"
           value={finance ? formatFinancePen(finance.netProfitThisMonth) : '—'}
           premium
         />
-        <KpiCard label="Clientes activos" value={String(stats.activeClients)} />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ProfitGrowthKpiCard amount={finance?.netProfitTotal ?? 0} />
         <KpiCard label="Pagos pendientes" value={String(stats.pendingPayments)} change="Revisar ahora" />
         <KpiCard label="Morosos / vencidos" value={String(stats.overdueClients)} change="Seguimiento" />
         <KpiCard label="Nuevos este mes" value={String(stats.newClientsThisMonth)} trend="up" />
@@ -98,7 +107,7 @@ export function StatisticsPanel() {
         <p className="text-xs font-semibold uppercase tracking-wider text-brand-slate">
           Funciones financieras
         </p>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {SAAS_BACKOFFICE_FINANCE.map((item) => (
             <KpiCard
               key={item.id}
@@ -206,6 +215,13 @@ export function StatisticsPanel() {
                       <li>• Registrar colaborador</li>
                       <li>• Programar pagos por fecha</li>
                       <li>• Marcar pago del personal</li>
+                    </>
+                  )}
+                  {selectedFinance.id === 'pendiente_pagar' && (
+                    <>
+                      <li>• Ver impuestos pendientes</li>
+                      <li>• Ver planilla pendiente</li>
+                      <li>• Revisar cálculo de ganancia</li>
                     </>
                   )}
                 </ul>
