@@ -222,7 +222,7 @@ export function UsersPanel() {
                         {a.role === 'cliente' ? a.name : a.name}
                         {a.role === 'cliente' && (
                           <p className="mt-0.5 text-[10px] text-brand-slate">
-                            Ingreso: nombre del restaurante o correo @rf.pe
+                            Ingreso: nombre del restaurante o correo @rf.pe · contraseña: nombreunido + 4 dígitos
                           </p>
                         )}
                       </td>

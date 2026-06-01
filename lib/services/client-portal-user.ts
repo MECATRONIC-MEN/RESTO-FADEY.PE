@@ -30,9 +30,9 @@ export function buildClientPortalEmail(restaurantName: string): string {
   return `${slugifyRestaurantName(restaurantName)}@rf.pe`;
 }
 
-/** Contraseña: nombre del restaurante + 4 dígitos aleatorios */
+/** Contraseña: nombre unido (sin espacios) + 4 dígitos aleatorios (ej. sistemademo3847) */
 export function generateClientPortalPassword(restaurantName: string): string {
-  const base = restaurantName.trim();
+  const base = slugifyRestaurantName(restaurantName);
   const digits = String(randomInt(1000, 10000));
   return `${base}${digits}`;
 }
@@ -126,7 +126,7 @@ async function findUserByClientId(clientId: string): Promise<PlatformUser | null
 
 /**
  * Crea o actualiza el usuario del panel cliente vinculado al restaurante.
- * Usuario = nombre del restaurante; correo = nombre@rf.pe; contraseña = nombre + 4 dígitos.
+ * Usuario = nombre del restaurante; correo = nombre@rf.pe; contraseña = nombreunido + 4 dígitos.
  */
 export async function provisionClientPortalUser(input: {
   clientId: string;
