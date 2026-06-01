@@ -21,7 +21,7 @@ export function GeneratePosLinkModal({
   const [restaurantName, setRestaurantName] = useState('');
   const [planId, setPlanId] = useState('');
   const [ruc, setRuc] = useState('');
-  const [neverExpires, setNeverExpires] = useState(false);
+  const [neverExpires, setNeverExpires] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GeneratePosLinkResult | null>(null);
@@ -210,12 +210,12 @@ export function GeneratePosLinkModal({
             <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-3">
               <input
                 type="checkbox"
-                checked={neverExpires}
-                onChange={(e) => setNeverExpires(e.target.checked)}
+                checked={!neverExpires}
+                onChange={(e) => setNeverExpires(!e.target.checked)}
                 className="mt-0.5"
               />
               <span className="text-sm text-brand-mist">
-                Licencia sin vencimiento (permanente). Si no marca, vence en 1 año desde la creación.
+                Limitar vencimiento (1 año desde la creación). Por defecto la licencia es permanente.
               </span>
             </label>
 

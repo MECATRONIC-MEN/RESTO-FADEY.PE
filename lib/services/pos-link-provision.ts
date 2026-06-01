@@ -34,7 +34,7 @@ export async function generatePosRenderLink(input: {
 
   const clientId = randomUUID();
   const licenseKey = buildLicenseKeyFromClientId(clientId);
-  const neverExpires = Boolean(input.neverExpires);
+  const neverExpires = input.neverExpires !== false;
   const expiresAt = neverExpires ? null : defaultExpirationIso();
   const now = new Date().toISOString();
   const contactEmail =

@@ -1,6 +1,22 @@
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import { USERS } from '@/lib/auth/users';
+
+/** Elimina cuentas de acceso al panel del cliente (no toca pagos). */
+export async function deleteClientPortalUsersByClientId(clientId: string): Promise<void> {
+  if (!isSupabaseConfigured()) {
+    for (let i = USERS.length - 1; i >= 0; i--) {
+      if (USERS[i].clientId === clientId && USERS[i].role === 'cliente') {
+        USERS.splice(i, 1);
+      }
+    }
+    return;
+  }
+
+  const db = getSupabaseAdmin()!;
+  const { error } = await db.from('users').delete().eq('client_id', clientId);
+  if (error) throw new Error(error.message);
+}
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { PlatformUser } from '@/lib/domain/types';

@@ -99,10 +99,12 @@ export async function connectRestaurantFromPos(input: {
   const licenseStatus = mapLicenseStatus(info.licenseStatus);
   const planId = (await resolvePlanId(info.plan)) ?? undefined;
   const now = new Date().toISOString();
-  const expiresAt =
-    info.expirationDate && !Number.isNaN(Date.parse(info.expirationDate))
-      ? new Date(info.expirationDate).toISOString()
-      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const hasPosExpiration =
+    Boolean(info.expirationDate) && !Number.isNaN(Date.parse(info.expirationDate!));
+  const neverExpires = !hasPosExpiration;
+  const expiresAt = hasPosExpiration
+    ? new Date(info.expirationDate!).toISOString()
+    : null;
 
   if (!isSupabaseConfigured()) {
     const existing = MOCK_CLIENTS.find((c) => c.id === clientId);
@@ -198,7 +200,8 @@ export async function connectRestaurantFromPos(input: {
       .from('licenses')
       .update({
         status: licenseStatus,
-        expires_at: expiresAt,
+        never_expires: neverExpires,
+        expires_at: neverExpires ? null : expiresAt,
         plan_id: planId ?? undefined,
       })
       .eq('id', existingLic.id);
@@ -210,7 +213,8 @@ export async function connectRestaurantFromPos(input: {
         plan_id: planId,
         status: licenseStatus,
         license_key: licenseKey,
-        expires_at: expiresAt,
+        never_expires: neverExpires,
+        expires_at: neverExpires ? null : expiresAt,
         modules_enabled: ['all'],
       })
       .select('id')

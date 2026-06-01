@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { License, SaasClient, SaasPlan } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
@@ -12,7 +10,7 @@ import { LicenseExpiryEditButton } from '@/components/admin/LicenseExpiryEditBut
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { resolvePlanLabel } from '@/lib/utils/plan-display';
-import { formatLicenseExpiry, LICENSE_RENEWAL_DAYS } from '@/lib/utils/license-expiry';
+import { formatLicenseExpiry } from '@/lib/utils/license-expiry';
 
 export default function AdminLicenciasPage() {
   const { data: licenses, loading, refetch: refetchLicenses } = useAdminApi<License[]>('/api/licenses');
@@ -42,29 +40,6 @@ export default function AdminLicenciasPage() {
         title="Licencias"
         description="Consulta de estado, vencimiento y claves por cliente."
       />
-
-      <div className="space-y-3">
-        <div className="rounded-lg border border-brand-cyan/20 bg-brand-cyan/5 px-4 py-3 text-sm text-brand-mist">
-          <p className="font-medium text-brand-soft">Renovación con pagos</p>
-          <p className="mt-1">
-            Al <strong className="text-brand-soft">aprobar un pago</strong> en Pagos, la licencia pasa a{' '}
-            <em>activo</em> y, si tiene vencimiento, se suman{' '}
-            <strong className="text-brand-soft">{LICENSE_RENEWAL_DAYS} días</strong> desde la fecha actual o
-            desde el vencimiento vigente (lo que sea posterior). Las licencias{' '}
-            <strong className="text-brand-soft">sin vencimiento</strong> no cambian de fecha.
-          </p>
-        </div>
-        <div className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-brand-mist">
-          <p>
-            Para generar llaves Render o copiar variables de entorno, use{' '}
-            <Link href="/admin/entorno" className="inline-flex items-center gap-1 text-brand-cyan hover:underline">
-              Entorno e integraciones
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-            . Calendario: vencimiento o permanente. Botón <strong className="text-brand-soft">Eliminar</strong>: borra la licencia (pide confirmación).
-          </p>
-        </div>
-      </div>
 
       <DashboardCard className="overflow-hidden p-0">
         <table className="w-full text-left text-sm">

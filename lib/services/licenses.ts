@@ -2,6 +2,7 @@ import { MOCK_LICENSES, MOCK_CLIENTS } from '@/lib/domain/mock-store';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import type { License, LicenseStatus } from '@/lib/domain/types';
+import { deleteClientPortalUsersByClientId } from '@/lib/services/client-portal-user';
 import { LICENSE_RENEWAL_DAYS } from '@/lib/utils/license-expiry';
 
 export { LICENSE_RENEWAL_DAYS };
@@ -150,35 +151,53 @@ export async function getLicenseStatusForClient(clientId: string): Promise<Licen
   return (data?.status as LicenseStatus) ?? 'prueba';
 }
 
+/**
+ * Elimina licencia, cliente y acceso al panel. Conserva pagos (desvinculados).
+ * La misma CLIENT_ID / LICENSE_KEY en Render puede usarse al conectar un restaurante nuevo.
+ */
 export async function deleteLicenseById(licenseId: string): Promise<void> {
   if (!isSupabaseConfigured()) {
     const idx = MOCK_LICENSES.findIndex((l) => l.id === licenseId);
     if (idx === -1) throw new Error('Licencia no encontrada');
     const lic = MOCK_LICENSES[idx];
+    const clientId = lic.clientId;
     MOCK_LICENSES.splice(idx, 1);
-    const client = MOCK_CLIENTS.find((c) => c.id === lic.clientId);
-    if (client) {
-      client.licenseId = '';
-      client.licenseStatus = 'prueba';
-    }
+    await deleteClientPortalUsersByClientId(clientId);
+    const cIdx = MOCK_CLIENTS.findIndex((c) => c.id === clientId);
+    if (cIdx !== -1) MOCK_CLIENTS.splice(cIdx, 1);
     return;
   }
 
   const db = getSupabaseAdmin()!;
   const { data: lic, error: fetchErr } = await db
     .from('licenses')
-    .select('id, client_id')
+    .select('id, client_id, license_key')
     .eq('id', licenseId)
     .maybeSingle();
 
   if (fetchErr) throw new Error(fetchErr.message);
   if (!lic) throw new Error('Licencia no encontrada');
 
-  const { error: delErr } = await db.from('licenses').delete().eq('id', licenseId);
-  if (delErr) throw new Error(delErr.message);
+  const clientId = lic.client_id as string;
 
-  await db
-    .from('clients')
-    .update({ license_id: null })
-    .eq('id', lic.client_id as string);
+  const { error: payErr } = await db
+    .from('payments')
+    .update({ client_id: null })
+    .eq('client_id', clientId);
+  if (payErr) {
+    throw new Error(
+      `${payErr.message}. Ejecuta EJECUTAR_015_PAGOS_CONSERVAR.sql en Supabase para conservar pagos al eliminar.`
+    );
+  }
+
+  await deleteClientPortalUsersByClientId(clientId);
+
+  await db.from('clients').update({ license_id: null }).eq('license_id', licenseId);
+  await db.from('clients').update({ license_id: null }).eq('id', clientId);
+
+  const { error: delLicErr } = await db.from('licenses').delete().eq('id', licenseId);
+  if (delLicErr) throw new Error(delLicErr.message);
+
+  const { error: delClientErr } = await db.from('clients').delete().eq('id', clientId);
+  if (delClientErr) throw new Error(delClientErr.message);
 }

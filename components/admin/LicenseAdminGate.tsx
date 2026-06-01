@@ -75,7 +75,7 @@ export function LicenseRenderKeysAccessButton({
 
 export async function confirmDeleteLicense(label: string): Promise<boolean> {
   return window.confirm(
-    `¿Eliminar la licencia de "${label}"?\n\nEsta acción no se puede deshacer.`
+    `¿Eliminar la licencia de "${label}"?\n\nSe borrarán el cliente y su acceso al panel. Los pagos quedan en el historial. Puede reutilizar la misma CLIENT_ID y clave en Render para vincular otro restaurante.`
   );
 }
 
