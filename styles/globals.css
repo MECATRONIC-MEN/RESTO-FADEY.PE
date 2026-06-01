@@ -25,8 +25,7 @@
 
   body {
     @apply text-brand-soft antialiased;
-    background: linear-gradient(165deg, #0a2340 0%, #0f3058 42%, #0c2848 100%);
-    background-attachment: fixed;
+    background: #03060d;
     min-height: 100vh;
     overflow-x: hidden;
     max-width: 100%;
@@ -462,21 +461,21 @@
   .pricing-section {
     background: linear-gradient(
       180deg,
-      #0a2340 0%,
-      #061528 12%,
-      #081422 28%,
-      #0a1620 52%,
-      #081422 78%,
-      #071a32 100%
+      #0a1620 0%,
+      #081018 18%,
+      #0c1018 40%,
+      #101820 62%,
+      #0a1218 82%,
+      #060a10 100%
     );
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(212, 175, 55, 0.08);
   }
 
   .pricing-bg-base {
     background:
-      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212, 175, 55, 0.06), transparent 55%),
-      radial-gradient(ellipse 55% 45% at 15% 85%, rgba(27, 140, 255, 0.05), transparent 50%),
-      radial-gradient(ellipse 50% 40% at 90% 75%, rgba(212, 175, 55, 0.04), transparent 48%);
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(212, 175, 55, 0.1), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 15% 85%, rgba(27, 140, 255, 0.06), transparent 50%),
+      radial-gradient(ellipse 50% 40% at 90% 75%, rgba(212, 175, 55, 0.07), transparent 48%);
   }
 
   .pricing-bg-grid {
@@ -500,11 +499,11 @@
   .ia-intelligence {
     background: linear-gradient(
       165deg,
-      #041222 0%,
-      #061528 22%,
-      #071a32 45%,
-      #0a2648 68%,
-      #071a32 100%
+      #020810 0%,
+      #041220 20%,
+      #061528 42%,
+      #0a2850 68%,
+      #061528 100%
     );
   }
 
@@ -579,6 +578,18 @@
     overflow: hidden;
   }
 
+  .section-backdrop__base {
+    opacity: 1;
+  }
+
+  .section-backdrop__pattern {
+    opacity: 0.85;
+  }
+
+  .section-backdrop__glow {
+    opacity: 1;
+  }
+
   .section-backdrop > * {
     position: absolute;
     inset: 0;
@@ -631,17 +642,17 @@
   .section-backdrop--modules .section-backdrop__base {
     background: linear-gradient(
       165deg,
-      #041222 0%,
-      #061a35 28%,
-      #0a2648 55%,
-      #071a32 100%
+      #020a18 0%,
+      #041528 22%,
+      #0a2850 52%,
+      #061a38 100%
     );
   }
 
   .section-backdrop--modules .section-backdrop__pattern {
     background-image:
-      linear-gradient(rgba(27, 140, 255, 0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(27, 140, 255, 0.07) 1px, transparent 1px);
+      linear-gradient(rgba(27, 140, 255, 0.11) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(27, 140, 255, 0.11) 1px, transparent 1px);
     background-size: 36px 36px;
     mask-image: radial-gradient(ellipse 100% 85% at 50% 45%, black 30%, transparent 85%);
   }
@@ -673,11 +684,11 @@
   .section-backdrop--benefits .section-backdrop__base {
     background: linear-gradient(
       155deg,
-      #071a32 0%,
-      #0a2340 30%,
-      #122a52 55%,
-      #0c2848 78%,
-      #071a32 100%
+      #0a0e28 0%,
+      #121842 28%,
+      #1a1f52 50%,
+      #0e2848 78%,
+      #081832 100%
     );
   }
 
@@ -686,8 +697,8 @@
       125deg,
       transparent,
       transparent 48px,
-      rgba(139, 92, 246, 0.04) 48px,
-      rgba(139, 92, 246, 0.04) 49px
+      rgba(139, 92, 246, 0.09) 48px,
+      rgba(139, 92, 246, 0.09) 49px
     );
     mask-image: radial-gradient(ellipse 90% 75% at 50% 40%, black 20%, transparent 75%);
   }
@@ -750,11 +761,11 @@
   .section-backdrop--faq .section-backdrop__base {
     background: linear-gradient(
       180deg,
-      #0a2340 0%,
-      #1a2f4a 35%,
-      #1e3348 55%,
-      #152a42 85%,
-      #0c2848 100%
+      #0c2848 0%,
+      #1e3348 30%,
+      #243548 55%,
+      #1a2f42 85%,
+      #142838 100%
     );
   }
 
