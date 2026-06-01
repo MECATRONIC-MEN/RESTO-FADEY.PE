@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Loader2, Plus, Trash2, CalendarPlus } from 'lucide-react';
+import { Check, Loader2, Plus, Trash2, CalendarPlus, ChevronDown } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { SaasFinanceSummary, SaasStaffMember, SaasStaffPayment } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
@@ -33,6 +33,7 @@ export function StaffPayrollPanel() {
   const [payDueDate, setPayDueDate] = useState('');
   const [payNotes, setPayNotes] = useState('');
   const [savingPay, setSavingPay] = useState(false);
+  const [openSection, setOpenSection] = useState<'add' | 'pay' | 'history'>('add');
 
   const staffList = staff ?? [];
   const paymentList = payments ?? [];
@@ -185,7 +186,55 @@ export function StaffPayrollPanel() {
         </DashboardCard>
       </div>
 
-      <DashboardCard title="Agregar colaborador">
+      <div className="grid gap-2 sm:grid-cols-3">
+        <button
+          type="button"
+          onClick={() => setOpenSection('add')}
+          className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
+            openSection === 'add'
+              ? 'border-brand-cyan/45 bg-brand-cyan/15 text-brand-soft'
+              : 'border-white/10 bg-white/5 text-brand-mist hover:border-brand-cyan/25'
+          }`}
+        >
+          <span className="flex items-center justify-between">
+            Agregar colaborador
+            <ChevronDown className={`h-4 w-4 transition-transform ${openSection === 'add' ? 'rotate-180' : ''}`} />
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpenSection('pay')}
+          className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
+            openSection === 'pay'
+              ? 'border-brand-cyan/45 bg-brand-cyan/15 text-brand-soft'
+              : 'border-white/10 bg-white/5 text-brand-mist hover:border-brand-cyan/25'
+          }`}
+        >
+          <span className="flex items-center justify-between">
+            Hacer pagos
+            <ChevronDown className={`h-4 w-4 transition-transform ${openSection === 'pay' ? 'rotate-180' : ''}`} />
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpenSection('history')}
+          className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
+            openSection === 'history'
+              ? 'border-brand-cyan/45 bg-brand-cyan/15 text-brand-soft'
+              : 'border-white/10 bg-white/5 text-brand-mist hover:border-brand-cyan/25'
+          }`}
+        >
+          <span className="flex items-center justify-between">
+            Historial
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${openSection === 'history' ? 'rotate-180' : ''}`}
+            />
+          </span>
+        </button>
+      </div>
+
+      {openSection === 'add' && (
+        <DashboardCard title="Agregar colaborador">
         <form onSubmit={handleAddStaff} className="grid gap-3 sm:grid-cols-2">
           <input
             required
@@ -229,9 +278,11 @@ export function StaffPayrollPanel() {
             Guardar colaborador
           </button>
         </form>
-      </DashboardCard>
+        </DashboardCard>
+      )}
 
-      <DashboardCard title="Colaboradores">
+      {openSection === 'history' && (
+        <DashboardCard title="Colaboradores">
         {loadingStaff ? (
           <p className="text-sm text-brand-mist">Cargando…</p>
         ) : staffList.length === 0 ? (
@@ -270,9 +321,11 @@ export function StaffPayrollPanel() {
             ))}
           </ul>
         )}
-      </DashboardCard>
+        </DashboardCard>
+      )}
 
-      <DashboardCard title="Registrar pago">
+      {openSection === 'pay' && (
+        <DashboardCard title="Registrar pago">
         <form onSubmit={handleAddPayment} className="grid gap-3 sm:grid-cols-2">
           <select
             required
@@ -315,9 +368,11 @@ export function StaffPayrollPanel() {
             Agregar pago programado
           </button>
         </form>
-      </DashboardCard>
+        </DashboardCard>
+      )}
 
-      <DashboardCard title="Historial de pagos" className="overflow-hidden p-0">
+      {openSection === 'history' && (
+        <DashboardCard title="Historial de pagos" className="overflow-hidden p-0">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-white/10 bg-white/5 text-xs uppercase text-brand-slate">
@@ -384,7 +439,8 @@ export function StaffPayrollPanel() {
             )}
           </tbody>
         </table>
-      </DashboardCard>
+        </DashboardCard>
+      )}
     </div>
   );
 }
