@@ -90,6 +90,8 @@ export function LicenseDeleteButton({
       const password = await promptForDelete(label);
       if (!password) return;
       await onDelete(password);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'No se pudo eliminar la licencia');
     } finally {
       setBusy(false);
     }

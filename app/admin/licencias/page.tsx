@@ -5,17 +5,36 @@ import { ArrowRight } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { License, SaasClient, SaasPlan } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import {
+  LicenseDeleteButton,
+  useLicenseAdminGate,
+} from '@/components/admin/LicenseAdminGate';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { resolvePlanLabel } from '@/lib/utils/plan-display';
 
 export default function AdminLicenciasPage() {
-  const { data: licenses, loading } = useAdminApi<License[]>('/api/licenses');
-  const { data: clients } = useAdminApi<SaasClient[]>('/api/users');
+  const { data: licenses, loading, refetch: refetchLicenses } = useAdminApi<License[]>('/api/licenses');
+  const { data: clients, refetch: refetchClients } = useAdminApi<SaasClient[]>('/api/users');
   const { data: plans } = useAdminApi<SaasPlan[]>('/api/plans');
+  const { promptForDelete } = useLicenseAdminGate();
 
   const clientById = new Map((clients ?? []).map((c) => [c.id, c]));
   const planById = new Map((plans ?? []).map((p) => [p.id, p]));
+
+  async function handleDeleteLicense(licenseId: string, password: string) {
+    const res = await fetch(`/api/licenses/${licenseId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error ?? 'No se pudo eliminar');
+    }
+    refetchLicenses();
+    refetchClients();
+  }
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -26,7 +45,7 @@ export default function AdminLicenciasPage() {
 
       <div className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-brand-mist">
         <p>
-          Para generar llaves Render, copiar variables de entorno o eliminar licencias, use{' '}
+          Para generar llaves Render o copiar variables de entorno, use{' '}
           <Link href="/admin/entorno" className="inline-flex items-center gap-1 text-brand-cyan hover:underline">
             Entorno e integraciones
             <ArrowRight className="h-3.5 w-3.5" />
@@ -44,18 +63,19 @@ export default function AdminLicenciasPage() {
               <th className="px-4 py-3">Plan</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Vence</th>
+              <th className="w-12 px-4 py-3" aria-label="Acciones" />
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {loading && !(licenses ?? []).length ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-brand-mist">
+                <td colSpan={6} className="px-4 py-8 text-center text-brand-mist">
                   Cargando…
                 </td>
               </tr>
             ) : (licenses ?? []).length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-brand-mist">
+                <td colSpan={6} className="px-4 py-8 text-center text-brand-mist">
                   Sin licencias. Vincula el cliente demo en Supabase o aprueba un pago.
                 </td>
               </tr>
@@ -81,6 +101,13 @@ export default function AdminLicenciasPage() {
                     </td>
                     <td className="px-4 py-3 text-brand-slate">
                       {new Date(lic.expiresAt).toLocaleDateString('es-PE')}
+                    </td>
+                    <td className="px-4 py-3">
+                      <LicenseDeleteButton
+                        label={label}
+                        promptForDelete={promptForDelete}
+                        onDelete={(password) => handleDeleteLicense(lic.id, password)}
+                      />
                     </td>
                   </tr>
                 );
