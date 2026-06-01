@@ -22,16 +22,14 @@ export function EntornoPosIntegrations() {
   const { data: licenses, loading, refetch: refetchLicenses } = useAdminApi<License[]>('/api/licenses');
   const { data: clients, refetch: refetchClients } = useAdminApi<SaasClient[]>('/api/users');
   const { data: plans } = useAdminApi<SaasPlan[]>('/api/plans');
-  const { renderKeysUnlocked, promptAndUnlockRenderKeys, promptForDelete } = useLicenseAdminGate();
+  const { renderKeysUnlocked, promptAndUnlockRenderKeys } = useLicenseAdminGate();
 
   const clientById = new Map((clients ?? []).map((c) => [c.id, c]));
   const planById = new Map((plans ?? []).map((p) => [p.id, p]));
 
-  async function handleDeleteLicense(licenseId: string, password: string) {
+  async function handleDeleteLicense(licenseId: string) {
     const res = await fetch(`/api/licenses/${licenseId}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, useGate: true }),
     });
     const json = await res.json();
     if (!res.ok || !json.success) {
@@ -166,9 +164,7 @@ export function EntornoPosIntegrations() {
                             <td className="px-4 py-3">
                               <LicenseDeleteButton
                                 label={label}
-                                requireGate
-                                promptForDelete={promptForDelete}
-                                onDelete={(password) => handleDeleteLicense(lic.id, password!)}
+                                onDelete={() => handleDeleteLicense(lic.id)}
                               />
                             </td>
                           </tr>

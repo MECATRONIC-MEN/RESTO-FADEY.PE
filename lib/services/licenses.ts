@@ -204,8 +204,24 @@ export async function deleteLicenseById(licenseId: string): Promise<void> {
     .eq('id', clientId);
   if (unlinkByClientErr) throw new Error(unlinkByClientErr.message);
 
+  const { data: stillLinked } = await db
+    .from('clients')
+    .select('id')
+    .eq('license_id', licenseId)
+    .limit(1);
+  if (stillLinked?.length) {
+    throw new Error(
+      'El cliente sigue vinculado a la licencia. Ejecuta EJECUTAR_016_LICENCIA_CLIENTE_FK.sql en Supabase y vuelve a intentar.'
+    );
+  }
+
+  const { error: delLicErr } = await db.from('licenses').delete().eq('id', licenseId);
+  if (delLicErr) {
+    throw new Error(
+      `${delLicErr.message}. Ejecuta EJECUTAR_016_LICENCIA_CLIENTE_FK.sql en Supabase (pega el script completo y Run).`
+    );
+  }
+
   const { error: delClientErr } = await db.from('clients').delete().eq('id', clientId);
   if (delClientErr) throw new Error(delClientErr.message);
-
-  await db.from('licenses').delete().eq('id', licenseId);
 }
