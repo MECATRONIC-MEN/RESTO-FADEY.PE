@@ -52,16 +52,9 @@ export function LicenciasPanel() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <AdminPageHeader
-        title="Licencias"
-        description="Llaves Render, vencimiento y gestión de licencias por cliente."
-      />
+      <AdminPageHeader title="Licencias" />
 
       <DashboardCard title="Llaves POS (Render)">
-        <p className="mb-4 text-sm text-brand-mist">
-          Genera CLIENT_ID y variables de entorno para el POS. Requiere clave de administración.
-          La licencia nueva es <strong className="text-brand-soft">permanente</strong> por defecto.
-        </p>
         <div className="flex flex-wrap items-center gap-2">
           <LicenseRenderKeysAccessButton
             unlocked={renderKeysUnlocked}

@@ -35,19 +35,13 @@ export function EntornoPosIntegrations() {
 
       <IntegrationDiagnostics />
 
-      <DashboardCard title="Llaves Render y licencias">
-        <p className="text-sm text-brand-mist">
-          La generación de llaves, variables de entorno y la gestión de licencias están centralizadas
-          en un solo módulo.
-        </p>
-        <Link
-          href="/admin/licencias"
-          className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand-cyan hover:underline"
-        >
-          Ir a Licencias
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </DashboardCard>
+      <Link
+        href="/admin/licencias"
+        className="inline-flex items-center gap-2 text-sm font-medium text-brand-cyan hover:underline"
+      >
+        Licencias y llaves Render
+        <ArrowRight className="h-4 w-4" />
+      </Link>
     </div>
   );
 }

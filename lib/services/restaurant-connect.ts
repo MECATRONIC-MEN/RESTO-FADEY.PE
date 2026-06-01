@@ -126,7 +126,7 @@ export async function connectRestaurantFromPos(input: {
       systemVersion: info.systemVersion,
       isActive: true,
       posConnectionStatus: posStatus,
-      licenseExpiresAt: expiresAt,
+      licenseExpiresAt: expiresAt ?? undefined,
     };
     if (existing) Object.assign(existing, client);
     else MOCK_CLIENTS.unshift(client);
