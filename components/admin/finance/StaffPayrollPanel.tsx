@@ -400,7 +400,7 @@ export function StaffPayrollPanel() {
         {selectedStaff && (
           <p className="mt-3 text-xs text-brand-mist">
             Seleccionado: <span className="text-brand-soft">{selectedStaff.name}</span>
-            {selectedStaff.role ? ` · ${selectedStaff.role}` : ''} · monto sugerido:{' '}
+            {selectedStaff.role ? ` · ${selectedStaff.role}` : ''} · monto de pago:{' '}
             <span className="kpi-gold">{formatFinancePen(selectedStaff.payAmount)}</span>
           </p>
         )}
