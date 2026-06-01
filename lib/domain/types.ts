@@ -83,6 +83,23 @@ export interface ConnectRestaurantResult {
   portalAccess?: ClientPortalCredentials;
 }
 
+/** Llaves para configurar el POS en Render antes de conectar */
+export interface PosRenderLinkBundle {
+  clientId: string;
+  licenseKey: string;
+  restaurantName: string;
+  planName: string;
+  centralApiUrl: string;
+  envTemplate: string;
+  expiresAt: string;
+}
+
+export interface GeneratePosLinkResult {
+  message: string;
+  bundle: PosRenderLinkBundle;
+  portalAccess?: ClientPortalCredentials;
+}
+
 export interface PaymentRecord {
   id: string;
   clientId: string;

@@ -1,15 +1,20 @@
 'use client';
 
+import { useState } from 'react';
+import { KeyRound } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
 import type { License, SaasClient, SaasPlan } from '@/lib/domain/types';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { GeneratePosLinkModal } from '@/components/admin/GeneratePosLinkModal';
+import { PosRenderLinkPanel } from '@/components/admin/PosRenderLinkPanel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { resolvePlanLabel } from '@/lib/utils/plan-display';
 
 export default function AdminLicenciasPage() {
-  const { data: licenses, loading } = useAdminApi<License[]>('/api/licenses');
-  const { data: clients } = useAdminApi<SaasClient[]>('/api/users');
+  const [generateOpen, setGenerateOpen] = useState(false);
+  const { data: licenses, loading, refetch: refetchLicenses } = useAdminApi<License[]>('/api/licenses');
+  const { data: clients, refetch: refetchClients } = useAdminApi<SaasClient[]>('/api/users');
   const { data: plans } = useAdminApi<SaasPlan[]>('/api/plans');
 
   const clientById = new Map((clients ?? []).map((c) => [c.id, c]));
@@ -20,6 +25,26 @@ export default function AdminLicenciasPage() {
       <AdminPageHeader
         title="Licencias"
         description="Estado, vencimiento, módulos habilitados y claves por cliente."
+        actions={
+          <button
+            type="button"
+            onClick={() => setGenerateOpen(true)}
+            className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+          >
+            <KeyRound className="h-4 w-4" />
+            Generar llaves POS Render
+          </button>
+        }
+      />
+
+      <GeneratePosLinkModal
+        open={generateOpen}
+        plans={plans ?? []}
+        onClose={() => setGenerateOpen(false)}
+        onSuccess={() => {
+          refetchLicenses();
+          refetchClients();
+        }}
       />
 
       <DashboardCard className="overflow-hidden p-0">
@@ -77,6 +102,12 @@ export default function AdminLicenciasPage() {
           </tbody>
         </table>
       </DashboardCard>
+
+      <PosRenderLinkPanel
+        licenses={licenses ?? []}
+        clients={clients ?? []}
+        plans={plans ?? []}
+      />
     </div>
   );
 }
