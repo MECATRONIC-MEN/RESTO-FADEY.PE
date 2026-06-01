@@ -22,6 +22,7 @@ export async function generatePosRenderLink(input: {
   planId: string;
   ruc?: string;
   contactEmail?: string;
+  neverExpires?: boolean;
 }): Promise<GeneratePosLinkResult> {
   const restaurantName = input.restaurantName.trim();
   if (!restaurantName) {
@@ -33,7 +34,8 @@ export async function generatePosRenderLink(input: {
 
   const clientId = randomUUID();
   const licenseKey = buildLicenseKeyFromClientId(clientId);
-  const expiresAt = defaultExpirationIso();
+  const neverExpires = Boolean(input.neverExpires);
+  const expiresAt = neverExpires ? null : defaultExpirationIso();
   const now = new Date().toISOString();
   const contactEmail =
     input.contactEmail?.trim() || `${slugifyRestaurantName(restaurantName)}@rf.pe`;
@@ -55,7 +57,7 @@ export async function generatePosRenderLink(input: {
       createdAt: now,
       lastActivityAt: now,
       posConnectionStatus: 'unknown',
-      licenseExpiresAt: expiresAt,
+      licenseExpiresAt: expiresAt ?? undefined,
       isActive: true,
     });
 
@@ -66,6 +68,7 @@ export async function generatePosRenderLink(input: {
       status: 'activo',
       licenseKey,
       expiresAt,
+      neverExpires,
       modulesEnabled: ['all'],
       createdAt: now,
     });
@@ -76,7 +79,7 @@ export async function generatePosRenderLink(input: {
       licenseKey,
       restaurantName,
       planName: plan.name,
-      expirationDate: expiresAt.split('T')[0],
+      expirationDate: expiresAt ? expiresAt.split('T')[0] : undefined,
     });
 
     return {
@@ -130,6 +133,7 @@ export async function generatePosRenderLink(input: {
       status: 'activo' satisfies LicenseStatus,
       license_key: licenseKey,
       expires_at: expiresAt,
+      never_expires: neverExpires,
       modules_enabled: ['all'],
     })
     .select('id')
@@ -146,7 +150,7 @@ export async function generatePosRenderLink(input: {
     licenseKey,
     restaurantName,
     planName,
-    expirationDate: expiresAt.split('T')[0],
+    expirationDate: expiresAt ? expiresAt.split('T')[0] : undefined,
   });
 
   return {

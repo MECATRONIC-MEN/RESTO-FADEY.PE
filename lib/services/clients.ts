@@ -71,7 +71,8 @@ export async function getLicenses(): Promise<License[]> {
     planId: l.plan_id as string,
     status: l.status as LicenseStatus,
     licenseKey: l.license_key as string,
-    expiresAt: l.expires_at as string,
+    expiresAt: (l.expires_at as string) ?? null,
+    neverExpires: Boolean(l.never_expires),
     modulesEnabled: (l.modules_enabled as string[]) ?? [],
     createdAt: l.created_at as string,
   }));

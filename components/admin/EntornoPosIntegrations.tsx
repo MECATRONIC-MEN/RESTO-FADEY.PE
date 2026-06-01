@@ -31,7 +31,7 @@ export function EntornoPosIntegrations() {
     const res = await fetch(`/api/licenses/${licenseId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ password, useGate: true }),
     });
     const json = await res.json();
     if (!res.ok || !json.success) {
@@ -166,8 +166,9 @@ export function EntornoPosIntegrations() {
                             <td className="px-4 py-3">
                               <LicenseDeleteButton
                                 label={label}
+                                requireGate
                                 promptForDelete={promptForDelete}
-                                onDelete={(password) => handleDeleteLicense(lic.id, password)}
+                                onDelete={(password) => handleDeleteLicense(lic.id, password!)}
                               />
                             </td>
                           </tr>

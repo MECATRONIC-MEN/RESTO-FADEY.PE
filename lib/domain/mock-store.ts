@@ -67,6 +67,7 @@ export const MOCK_LICENSES: License[] = [
     status: 'activo',
     licenseKey: 'RF-DEMO-2026',
     expiresAt: '2026-12-31T23:59:59Z',
+    neverExpires: false,
     modulesEnabled: ['all'],
     createdAt: new Date().toISOString(),
   },

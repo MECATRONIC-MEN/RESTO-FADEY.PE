@@ -40,7 +40,10 @@ export function PosRenderLinkPanel({ licenses, clients, plans }: PosRenderLinkPa
             restaurantName,
             planName: planLabel,
             centralApiUrl: SITE_URL,
-            expirationDate: new Date(lic.expiresAt).toISOString().split('T')[0],
+            expirationDate:
+              lic.neverExpires || !lic.expiresAt
+                ? undefined
+                : new Date(lic.expiresAt).toISOString().split('T')[0],
           });
 
           return (

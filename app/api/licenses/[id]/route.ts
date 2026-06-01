@@ -1,8 +1,39 @@
 import { requireAdminSession, jsonOk, jsonError } from '@/lib/api/server-auth';
 import { verifyLicenseAdminGate } from '@/lib/services/license-admin-gate';
-import { deleteLicenseById } from '@/lib/services/licenses';
+import { deleteLicenseById, updateLicenseExpiration } from '@/lib/services/licenses';
 
-/** DELETE — Eliminar licencia (requiere clave de administración) */
+/** PATCH — Vencimiento finito o licencia sin vencimiento */
+export async function PATCH(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const admin = await requireAdminSession();
+  if ('error' in admin) return admin.error;
+
+  const { id } = await context.params;
+  let body: { neverExpires?: boolean; expiresAt?: string | null };
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError('JSON inválido');
+  }
+
+  if (typeof body.neverExpires !== 'boolean') {
+    return jsonError('Indique neverExpires (true o false)', 400);
+  }
+
+  try {
+    const license = await updateLicenseExpiration(id, {
+      neverExpires: body.neverExpires,
+      expiresAt: body.expiresAt,
+    });
+    return jsonOk(license);
+  } catch (e) {
+    return jsonError(e instanceof Error ? e.message : 'Error al actualizar', 500);
+  }
+}
+
+/** DELETE — Eliminar licencia (sesión admin). Opcional: password si useGate en body. */
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -11,16 +42,20 @@ export async function DELETE(
   if ('error' in admin) return admin.error;
 
   const { id } = await context.params;
-  let body: { password?: string };
+
+  let body: { password?: string; useGate?: boolean } = {};
   try {
-    body = await request.json();
+    const text = await request.text();
+    if (text.trim()) body = JSON.parse(text) as typeof body;
   } catch {
     return jsonError('JSON inválido');
   }
 
-  if (!body.password?.trim()) return jsonError('Clave requerida', 400);
-  if (!verifyLicenseAdminGate(body.password)) {
-    return jsonError('Clave incorrecta', 403);
+  if (body.useGate) {
+    if (!body.password?.trim()) return jsonError('Clave requerida', 400);
+    if (!verifyLicenseAdminGate(body.password)) {
+      return jsonError('Clave incorrecta', 403);
+    }
   }
 
   try {

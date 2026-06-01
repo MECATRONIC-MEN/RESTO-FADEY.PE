@@ -19,7 +19,7 @@ export async function getClientLicenseStatus(
       plan: planName,
       licenseStatus: client.licenseStatus,
       paymentStatus: null,
-      expirationDate: lic?.expiresAt ?? null,
+      expirationDate: lic?.neverExpires ? null : (lic?.expiresAt ?? null),
       renderUrl: null,
     };
   }
@@ -46,7 +46,7 @@ export async function getClientLicenseStatus(
 
   const { data: license } = await db
     .from('licenses')
-    .select('status, expires_at')
+    .select('status, expires_at, never_expires')
     .eq('client_id', clientId)
     .maybeSingle();
 
@@ -66,7 +66,9 @@ export async function getClientLicenseStatus(
     plan: planName,
     licenseStatus: (license?.status as LicenseStatus) ?? 'prueba',
     paymentStatus: (lastPayment?.status as PaymentStatus) ?? (client.payment_status as PaymentStatus) ?? null,
-    expirationDate: (license?.expires_at as string) ?? null,
+    expirationDate: license?.never_expires
+      ? null
+      : ((license?.expires_at as string) ?? null),
     renderUrl: (client.render_url as string) ?? null,
   };
 }

@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     planId?: string;
     ruc?: string;
     contactEmail?: string;
+    neverExpires?: boolean;
   };
 
   try {
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       planId: body.planId.trim(),
       ruc: body.ruc?.trim(),
       contactEmail: body.contactEmail?.trim(),
+      neverExpires: body.neverExpires === true,
     });
     return jsonOk(result, 201);
   } catch (e) {

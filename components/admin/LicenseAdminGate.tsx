@@ -73,23 +73,40 @@ export function LicenseRenderKeysAccessButton({
   );
 }
 
+export async function confirmDeleteLicense(label: string): Promise<boolean> {
+  return window.confirm(
+    `¿Eliminar la licencia de "${label}"?\n\nEsta acción no se puede deshacer.`
+  );
+}
+
 export function LicenseDeleteButton({
   label,
   promptForDelete,
   onDelete,
+  showLabel = false,
+  requireGate = false,
 }: {
   label: string;
-  promptForDelete: (licenseLabel: string) => Promise<string | null>;
-  onDelete: (password: string) => Promise<void>;
+  /** Si requireGate es false, puede omitirse */
+  promptForDelete?: (licenseLabel: string) => Promise<string | null>;
+  onDelete: (password?: string) => Promise<void>;
+  showLabel?: boolean;
+  requireGate?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
 
   async function handleClick() {
     setBusy(true);
     try {
-      const password = await promptForDelete(label);
-      if (!password) return;
-      await onDelete(password);
+      if (requireGate && promptForDelete) {
+        const password = await promptForDelete(label);
+        if (!password) return;
+        await onDelete(password);
+        return;
+      }
+      const ok = await confirmDeleteLicense(label);
+      if (!ok) return;
+      await onDelete();
     } catch (e) {
       alert(e instanceof Error ? e.message : 'No se pudo eliminar la licencia');
     } finally {
@@ -102,11 +119,16 @@ export function LicenseDeleteButton({
       type="button"
       disabled={busy}
       onClick={handleClick}
-      className="rounded-lg p-2 text-red-300 transition-colors hover:bg-red-400/10 disabled:opacity-50"
+      className={
+        showLabel
+          ? 'inline-flex items-center gap-1.5 rounded-lg border border-red-400/30 px-2.5 py-1.5 text-xs font-medium text-red-300 transition-colors hover:bg-red-400/10 disabled:opacity-50'
+          : 'rounded-lg p-2 text-red-300 transition-colors hover:bg-red-400/10 disabled:opacity-50'
+      }
       aria-label={`Eliminar licencia de ${label}`}
       title="Eliminar licencia"
     >
-      <Trash2 className="h-4 w-4" />
+      <Trash2 className="h-4 w-4 shrink-0" />
+      {showLabel && (busy ? 'Eliminando…' : 'Eliminar')}
     </button>
   );
 }

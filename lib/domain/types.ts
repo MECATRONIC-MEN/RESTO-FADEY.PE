@@ -23,7 +23,9 @@ export interface License {
   planId: string;
   status: LicenseStatus;
   licenseKey: string;
-  expiresAt: string;
+  /** Null cuando neverExpires es true */
+  expiresAt: string | null;
+  neverExpires: boolean;
   modulesEnabled: string[];
   createdAt: string;
 }
@@ -91,7 +93,7 @@ export interface PosRenderLinkBundle {
   planName: string;
   centralApiUrl: string;
   envTemplate: string;
-  expiresAt: string;
+  expiresAt: string | null;
 }
 
 export interface GeneratePosLinkResult {
