@@ -7,8 +7,6 @@ import type { AdminNotification } from '@/lib/domain/types';
 import { deleteNotification } from '@/lib/admin/notification-actions';
 import { cn } from '@/lib/utils';
 
-const POLL_MS = 25_000;
-
 function NotificationIcon({ type }: { type: AdminNotification['type'] }) {
   if (type === 'pwa_install') return <Smartphone className="h-4 w-4 shrink-0 text-brand-cyan" />;
   if (type === 'demo_request') return <PlayCircle className="h-4 w-4 shrink-0 text-brand-cyan" />;
@@ -35,9 +33,11 @@ export function AdminNotificationBell() {
 
   useEffect(() => {
     load();
-    const id = setInterval(load, POLL_MS);
-    return () => clearInterval(id);
   }, [load]);
+
+  useEffect(() => {
+    if (open) load();
+  }, [open, load]);
 
   const unread = items.filter((n) => !n.readAt).length;
 

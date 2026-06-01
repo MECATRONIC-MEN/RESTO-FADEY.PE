@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import {
   Wallet,
@@ -27,28 +26,18 @@ import { KpiCard } from './KpiCard';
 import { StatusBadge } from './StatusBadge';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 
-const REFRESH_MS = 30_000;
-
 function formatMethod(method: string) {
   return method.charAt(0).toUpperCase() + method.slice(1);
 }
 
 export function AdminDashboard() {
-  const { data: stats, refetch: refetchStats } = useAdminApi<FinancialStats>('/api/statistics');
+  const { data: stats } = useAdminApi<FinancialStats>('/api/statistics');
   const { data: finance, error: financeError } =
     useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
-  const { data: payments, loading: loadingPayments, refetch: refetchPayments } =
+  const { data: payments, loading: loadingPayments } =
     useAdminApi<PaymentRecord[]>('/api/payments?limit=5');
 
   const recent = payments ?? [];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchStats();
-      refetchPayments();
-    }, REFRESH_MS);
-    return () => clearInterval(interval);
-  }, [refetchStats, refetchPayments]);
 
   const monthLabel = new Date().toLocaleString('es-PE', { month: 'long', year: 'numeric' });
 

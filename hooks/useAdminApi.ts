@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PaymentApprovalResult } from '@/lib/domain/types';
 
 interface ApiState<T> {
@@ -14,9 +14,11 @@ export function useAdminApi<T>(path: string): ApiState<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasLoadedOnce = useRef(false);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    const showBlockingLoad = !hasLoadedOnce.current;
+    if (showBlockingLoad) setLoading(true);
     setError(null);
     try {
       const res = await fetch(path);
@@ -25,10 +27,11 @@ export function useAdminApi<T>(path: string): ApiState<T> {
         throw new Error(json.error ?? 'Error al cargar datos');
       }
       setData(json.data);
+      hasLoadedOnce.current = true;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error desconocido');
     } finally {
-      setLoading(false);
+      if (showBlockingLoad) setLoading(false);
     }
   }, [path]);
 

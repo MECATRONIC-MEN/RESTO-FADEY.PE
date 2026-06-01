@@ -57,11 +57,6 @@ export function PaymentApprovalCenter() {
     refetchStats();
   }, [refetch, refetchStats]);
 
-  useEffect(() => {
-    const interval = setInterval(refetchAll, 15000);
-    return () => clearInterval(interval);
-  }, [refetchAll]);
-
   const list = payments ?? [];
 
   const pendingCount = useMemo(
@@ -228,7 +223,7 @@ export function PaymentApprovalCenter() {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
+                {loading && list.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-brand-mist">
                       Cargando…

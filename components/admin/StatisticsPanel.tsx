@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { X, ExternalLink } from 'lucide-react';
 import { useAdminApi } from '@/hooks/useAdminApi';
@@ -12,8 +12,6 @@ import { ProfitGrowthKpiCard } from './ProfitGrowthKpiCard';
 import { BarChart } from './BarChart';
 import { DashboardCard } from '@/components/dashboard/DashboardCard';
 import { SAAS_BACKOFFICE_FINANCE, type SaasBackofficeFinanceId } from '@/lib/saas-backoffice-finance';
-
-const REFRESH_MS = 30_000;
 
 function formatPen(amount: number) {
   return `S/ ${amount.toLocaleString('es-PE')}`;
@@ -36,12 +34,9 @@ function financeMetric(id: SaasBackofficeFinanceId, finance: SaasFinanceSummary 
 }
 
 export function StatisticsPanel() {
-  const { data: stats, loading, error, refetch } = useAdminApi<FinancialStats>('/api/statistics');
-  const {
-    data: finance,
-    error: financeError,
-    refetch: refetchFinance,
-  } = useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
+  const { data: stats, loading, error } = useAdminApi<FinancialStats>('/api/statistics');
+  const { data: finance, error: financeError } =
+    useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
   const [activeFinance, setActiveFinance] = useState<SaasBackofficeFinanceId | null>(null);
 
   const selectedFinance = useMemo(
@@ -49,19 +44,11 @@ export function StatisticsPanel() {
     [activeFinance]
   );
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-      refetchFinance();
-    }, REFRESH_MS);
-    return () => clearInterval(interval);
-  }, [refetch, refetchFinance]);
-
-  if (loading) {
+  if (loading && !stats) {
     return <p className="text-brand-mist">Cargando estadísticas…</p>;
   }
 
-  if (error || !stats) {
+  if ((error && !stats) || !stats) {
     return <p className="text-red-300">{error ?? 'Sin datos'}</p>;
   }
 

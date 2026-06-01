@@ -15,7 +15,7 @@ export function SaasProfitPanel() {
   const { data: summary, loading, error, refetch } =
     useAdminApi<SaasFinanceSummary>('/api/admin/finance/summary');
 
-  if (loading) return <p className="text-brand-mist">Cargando ganancia…</p>;
+  if (loading && !summary) return <p className="text-brand-mist">Cargando ganancia…</p>;
   if (error || !summary) return <p className="text-red-300">{error ?? 'Sin datos'}</p>;
 
   return (

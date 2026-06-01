@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { VoucherPreview } from './VoucherPreview';
 import { Check, X, Eye, RefreshCw } from 'lucide-react';
 import { useAdminApi, patchPayment } from '@/hooks/useAdminApi';
@@ -17,10 +17,6 @@ export function PaymentsPanel() {
     filter === 'all' ? '/api/payments' : `/api/payments?status=${filter}`;
   const { data: payments, loading, error, refetch } = useAdminApi<PaymentRecord[]>(path);
 
-  useEffect(() => {
-    const interval = setInterval(refetch, 15000);
-    return () => clearInterval(interval);
-  }, [refetch]);
   const [selected, setSelected] = useState<PaymentRecord | null>(null);
   const [acting, setActing] = useState(false);
 
