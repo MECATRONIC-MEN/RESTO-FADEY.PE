@@ -14,6 +14,7 @@ import {
 } from '@/components/admin/finance/finance-ui';
 
 export function StaffPayrollPanel() {
+  const today = new Date().toISOString().split('T')[0];
   const { data: staff, loading: loadingStaff, error: staffError, refetch: refetchStaff } =
     useAdminApi<SaasStaffMember[]>('/api/admin/finance/staff');
   const { data: payments, loading: loadingPay, error: payError, refetch: refetchPay } =
@@ -30,14 +31,16 @@ export function StaffPayrollPanel() {
 
   const [payStaffId, setPayStaffId] = useState('');
   const [payAmountNew, setPayAmountNew] = useState('');
-  const [payDueDate, setPayDueDate] = useState('');
+  const [payDueDate, setPayDueDate] = useState(today);
   const [payNotes, setPayNotes] = useState('');
   const [savingPay, setSavingPay] = useState(false);
   const [openSection, setOpenSection] = useState<'add' | 'pay' | 'history'>('add');
 
   const staffList = staff ?? [];
+  const activeStaffList = staffList.filter((s) => s.isActive);
   const paymentList = payments ?? [];
   const upcoming = (summary?.upcomingPayments ?? []).filter((p) => p.kind === 'staff');
+  const selectedStaff = staffList.find((s) => s.id === payStaffId);
 
   function refetchAll() {
     refetchStaff();
@@ -93,7 +96,7 @@ export function StaffPayrollPanel() {
       if (!res.ok || !json.success) throw new Error(json.error ?? 'Error');
       setPayStaffId('');
       setPayAmountNew('');
-      setPayDueDate('');
+      setPayDueDate(today);
       setPayNotes('');
       refetchAll();
     } catch (err) {
@@ -181,10 +184,29 @@ export function StaffPayrollPanel() {
         <DashboardCard>
           <p className="text-xs text-brand-slate">Colaboradores activos</p>
           <p className="mt-1 text-xl font-bold text-brand-soft">
-            {staffList.filter((s) => s.isActive).length}
+            {activeStaffList.length}
           </p>
         </DashboardCard>
       </div>
+
+      <DashboardCard title="Activos hoy">
+        {loadingStaff ? (
+          <p className="text-sm text-brand-mist">Cargando…</p>
+        ) : activeStaffList.length === 0 ? (
+          <p className="text-sm text-brand-mist">Sin colaboradores activos.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {activeStaffList.map((s) => (
+              <span
+                key={s.id}
+                className="rounded-full border border-brand-cyan/25 bg-brand-cyan/10 px-3 py-1 text-xs text-brand-soft"
+              >
+                {s.name}
+              </span>
+            ))}
+          </div>
+        )}
+      </DashboardCard>
 
       <div className="grid gap-2 sm:grid-cols-3">
         <button
@@ -330,7 +352,14 @@ export function StaffPayrollPanel() {
           <select
             required
             value={payStaffId}
-            onChange={(e) => setPayStaffId(e.target.value)}
+            onChange={(e) => {
+              const id = e.target.value;
+              setPayStaffId(id);
+              const staffMember = staffList.find((s) => s.id === id);
+              if (staffMember) {
+                setPayAmountNew(staffMember.payAmount ? String(staffMember.payAmount) : '');
+              }
+            }}
             className={FINANCE_INPUT_CLASS}
           >
             <option value="">Colaborador *</option>
@@ -368,6 +397,13 @@ export function StaffPayrollPanel() {
             Agregar pago programado
           </button>
         </form>
+        {selectedStaff && (
+          <p className="mt-3 text-xs text-brand-mist">
+            Seleccionado: <span className="text-brand-soft">{selectedStaff.name}</span>
+            {selectedStaff.role ? ` · ${selectedStaff.role}` : ''} · monto sugerido:{' '}
+            <span className="kpi-gold">{formatFinancePen(selectedStaff.payAmount)}</span>
+          </p>
+        )}
         </DashboardCard>
       )}
 
