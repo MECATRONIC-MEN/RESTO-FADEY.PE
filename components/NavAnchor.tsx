@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   getSectionIdFromHref,
   isLandingHashHref,
   landingHashHref,
-  scrollToSectionId,
+  scrollToSectionIdWithRetry,
+  setPendingLandingSection,
 } from '@/lib/nav-scroll';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +20,7 @@ interface NavAnchorProps {
 
 export function NavAnchor({ href, className, children, onNavigate }: NavAnchorProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const sectionId = getSectionIdFromHref(href);
   const isHash = isLandingHashHref(href);
   const targetHref = sectionId ? landingHashHref(sectionId) : href;
@@ -32,12 +34,30 @@ export function NavAnchor({ href, className, children, onNavigate }: NavAnchorPr
   }
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     onNavigate?.();
+
+    const go = () => {
+      scrollToSectionIdWithRetry(sectionId);
+      if (window.location.hash !== `#${sectionId}`) {
+        window.history.pushState(null, '', targetHref);
+      }
+    };
+
     if (pathname === '/') {
-      e.preventDefault();
-      scrollToSectionId(sectionId);
-      window.history.pushState(null, '', targetHref);
+      if (onNavigate) {
+        requestAnimationFrame(() => {
+          window.setTimeout(go, 50);
+          window.setTimeout(go, 350);
+        });
+      } else {
+        go();
+      }
+      return;
     }
+
+    setPendingLandingSection(sectionId);
+    router.push(targetHref);
   };
 
   return (

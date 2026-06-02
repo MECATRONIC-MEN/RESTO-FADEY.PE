@@ -7,7 +7,7 @@ import {
   getSectionIdFromHref,
   isLandingHashHref,
   landingHashHref,
-  scrollToSectionId,
+  scrollToSectionIdWithRetry,
 } from '@/lib/nav-scroll';
 import { cn } from '@/lib/utils';
 
@@ -61,8 +61,10 @@ export function Button({
           onClick={(e) => {
             if (pathname === '/') {
               e.preventDefault();
-              scrollToSectionId(sectionId);
-              window.history.pushState(null, '', targetHref);
+              scrollToSectionIdWithRetry(sectionId);
+              if (window.location.hash !== `#${sectionId}`) {
+                window.history.pushState(null, '', targetHref);
+              }
             }
           }}
         >
