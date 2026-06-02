@@ -306,7 +306,24 @@ export interface DemoRequestRecord extends DemoRequest {
   createdAt: string;
 }
 
-export type AdminNotificationType = 'lead' | 'demo_request' | 'pwa_install';
+export interface VisitorRatingInput {
+  name: string;
+  restaurant: string;
+  role: string;
+  comment: string;
+  result?: string;
+  rating: number;
+}
+
+export type VisitorRatingStatus = 'pending' | 'approved' | 'rejected';
+
+export interface VisitorRatingRecord extends VisitorRatingInput {
+  id: string;
+  status: VisitorRatingStatus;
+  createdAt: string;
+}
+
+export type AdminNotificationType = 'lead' | 'demo_request' | 'pwa_install' | 'visitor_rating';
 
 export interface AcademyCourse {
   id: string;
