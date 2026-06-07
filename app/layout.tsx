@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import '@/styles/globals.css';
 import { siteMetadata } from '@/lib/seo';
 import { SITE_URL } from '@/lib/constants';
+import { getTikTokPixelInlineScript } from '@/lib/analytics/tiktok-pixel';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 
 const inter = Inter({
@@ -66,6 +67,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* TikTok Pixel — entre <head></head> en todas las páginas (TikTok Ads Manager) */}
+        <script
+          dangerouslySetInnerHTML={{ __html: getTikTokPixelInlineScript() }}
         />
       </head>
       <body className="font-sans antialiased">
