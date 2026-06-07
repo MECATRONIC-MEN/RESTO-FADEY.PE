@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { trackTikTokSubmitForm } from '@/lib/analytics/tiktok-client';
 import { getWhatsAppUrl } from '@/lib/utils';
 
 const PLANS = ['Básico', 'Pro', 'Premium'] as const;
@@ -42,6 +43,17 @@ export function LeadSurveyForm() {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
+
+      const id = json.data?.id as string | undefined;
+      if (id) {
+        trackTikTokSubmitForm({
+          eventId: `lead_${id}`,
+          contentName: 'registro_interes',
+          email: form.email,
+          phone: form.phone,
+        });
+      }
+
       setDone(true);
     } catch {
       alert('No pudimos enviar tu solicitud. Escríbenos por WhatsApp.');
