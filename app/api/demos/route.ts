@@ -1,5 +1,7 @@
 import { jsonOk, jsonError, requireAdminSession } from '@/lib/api/server-auth';
 import { createDemoRequest, listDemoRequests } from '@/lib/services/demo-requests';
+import { trackTikTokServerEventAsync } from '@/lib/analytics/tiktok-events-api';
+import { getClientRequestContext } from '@/lib/analytics/request-context';
 import type { DemoRequest } from '@/lib/domain/types';
 
 /** GET — solicitudes de demo (solo admin) */
@@ -35,6 +37,17 @@ export async function POST(request: Request) {
       phone: body.phone?.trim(),
       businessName: body.businessName.trim(),
     });
+
+    const ctx = getClientRequestContext(request);
+    trackTikTokServerEventAsync({
+      event: 'SubmitForm',
+      eventId: `demo_${result.id}`,
+      email: body.email.trim(),
+      phone: body.phone?.trim(),
+      ...ctx,
+      properties: { content_name: 'solicitud_demo', content_type: 'lead' },
+    });
+
     return jsonOk(result, 201);
   } catch (e) {
     return jsonError(e instanceof Error ? e.message : 'Error', 500);

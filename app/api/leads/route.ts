@@ -1,5 +1,7 @@
 import { jsonOk, jsonError, requireAdminSession } from '@/lib/api/server-auth';
 import { createLead, listLeads } from '@/lib/services/leads';
+import { trackTikTokServerEventAsync } from '@/lib/analytics/tiktok-events-api';
+import { getClientRequestContext } from '@/lib/analytics/request-context';
 import type { CommercialLead } from '@/lib/domain/types';
 
 /** GET — solicitudes comerciales (solo admin) */
@@ -30,6 +32,17 @@ export async function POST(request: Request) {
 
   try {
     const result = await createLead(body);
+
+    const ctx = getClientRequestContext(request);
+    trackTikTokServerEventAsync({
+      event: 'SubmitForm',
+      eventId: `lead_${result.id}`,
+      email: body.email,
+      phone: body.phone,
+      ...ctx,
+      properties: { content_name: 'registro_interes', content_type: 'lead' },
+    });
+
     return jsonOk(result, 201);
   } catch (e) {
     return jsonError(e instanceof Error ? e.message : 'Error', 500);
