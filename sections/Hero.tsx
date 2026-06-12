@@ -89,9 +89,7 @@ function HeroCtaButtons({ className }: { className?: string }) {
         Ver Funciones
       </Button>
       <Button
-        href={getWhatsAppUrl(
-          'Hola, quiero recervar un plan para mi restaurante, y deseo más información.'
-        )}
+        href={getWhatsAppUrl()}
         variant="green"
         external
         className="w-full justify-center sm:w-auto"

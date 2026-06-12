@@ -25,7 +25,7 @@ export default function DemoPage() {
         <p className="mt-6 text-sm text-brand-slate">
           O por{' '}
           <a
-            href={getWhatsAppUrl('Hola, quiero solicitar una demo de Resto Fadey.')}
+            href={getWhatsAppUrl()}
             className="text-brand-green hover:underline"
             target="_blank"
             rel="noopener noreferrer"

@@ -14,9 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  const whatsappUrl = getWhatsAppUrl(
-    'Hola, quiero solicitar acceso a Resto Fadey para mi restaurante.'
-  );
+  const whatsappUrl = getWhatsAppUrl();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-app">

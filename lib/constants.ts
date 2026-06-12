@@ -14,9 +14,12 @@ export const CONTACT = {
 } as const;
 
 export const WHATSAPP_NUMBER = CONTACT.whatsapp;
-export const WHATSAPP_MESSAGE = encodeURIComponent(
-  'Hola, me interesa conocer Resto Fadey para mi restaurante.'
-);
+
+/** Mensaje prellenado en todos los enlaces wa.me de la web pública */
+export const WHATSAPP_DEFAULT_MESSAGE =
+  'Hola mi nombre es [pon aqui tu nombre] y mi negocio es [pon aqui el nombre de tu negocio], quiero contratar los servicios de Resto Fadey.pe para administrar mi negocio';
+
+export const WHATSAPP_MESSAGE = encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE);
 
 export const NAV_LINKS = [
   { href: '/#inicio', label: 'Inicio' },

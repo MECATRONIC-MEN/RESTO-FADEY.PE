@@ -61,7 +61,7 @@ export function DemoRequestForm() {
           Un asesor de Resto Fadey te contactará pronto para agendar tu demostración.
         </p>
         <Button
-          href={getWhatsAppUrl('Hola, acabo de solicitar una demo de Resto Fadey.')}
+          href={getWhatsAppUrl()}
           variant="green"
           external
           className="mt-6"

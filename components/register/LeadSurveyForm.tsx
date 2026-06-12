@@ -70,7 +70,7 @@ export function LeadSurveyForm() {
           Un asesor de Resto Fadey te contactará para activar tu acceso. No creamos cuentas
           automáticas.
         </p>
-        <Button href={getWhatsAppUrl('Hola, acabo de solicitar acceso a Resto Fadey.')} variant="primary" external className="mt-6">
+        <Button href={getWhatsAppUrl()} variant="primary" external className="mt-6">
           Escribir por WhatsApp
         </Button>
       </div>

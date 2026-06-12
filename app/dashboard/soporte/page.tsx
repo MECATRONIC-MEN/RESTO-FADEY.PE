@@ -22,7 +22,7 @@ export default function SoportePage() {
           Escríbenos y un asesor te responderá a la brevedad.
         </p>
         <a
-          href={getWhatsAppUrl('Hola, necesito soporte con mi panel Resto Fadey.')}
+          href={getWhatsAppUrl()}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary inline-flex items-center gap-2"
