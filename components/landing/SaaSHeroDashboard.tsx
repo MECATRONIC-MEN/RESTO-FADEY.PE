@@ -80,8 +80,10 @@ export function SaaSHeroDashboard() {
       <motion.div
         animate={reduced ? undefined : { y: [0, -10, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-        className="relative overflow-hidden rounded-2xl border border-white/20 bg-brand-navy/60 shadow-2xl backdrop-blur-xl"
+        className="relative rounded-2xl bg-white/90 p-px shadow-glow-cyan"
       >
+        <div className="rounded-[calc(1rem-1px)] bg-gradient-to-br from-brand-cyan/55 via-brand-blue/35 to-brand-gold/45 p-[2px]">
+          <div className="relative overflow-hidden rounded-[calc(1rem-3px)] border border-brand-cyan/25 bg-brand-navy/75 shadow-2xl backdrop-blur-xl">
         <div className="flex items-center gap-2 border-b border-white/10 bg-white/5 px-4 py-3">
           <span className="h-3 w-3 rounded-full bg-red-500/80" />
           <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
@@ -208,6 +210,8 @@ export function SaaSHeroDashboard() {
               />
             </div>
             <span className="text-[10px] text-brand-mist">Automatización 90%</span>
+          </div>
+        </div>
           </div>
         </div>
       </motion.div>
